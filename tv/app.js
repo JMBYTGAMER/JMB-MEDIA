@@ -2,7 +2,7 @@
 "use strict";
 var API="https://iptv-org.github.io/api/";
 var $=function(id){return document.getElementById(id);};
-var channels=[],streams=[],hls=null,video=$("tvVideo"),dialog=$("playerDialog"),channelGrid=$("channelGrid"),status=$("channelStatus"),programmeSection=$("programmeSection");
+var channels=[],streams=[],hls=null,visibleCount=180,video=$("tvVideo"),dialog=$("playerDialog"),channelGrid=$("channelGrid"),status=$("channelStatus"),programmeSection=$("programmeSection");
 var programmes=[
 {keys:["bigg boss malayalam","big boss malayalam","bigboss malayalam"],title:"Bigg Boss Malayalam",channels:["Asianet"],note:"Check the official broadcaster and authorised streaming service. Plans and availability vary by region.",links:[{label:"Asianet official site",url:"https://www.asianet.in/"},{label:"JioHotstar",url:"https://www.jiohotstar.com/"}]},
 {keys:["bigg boss tamil","big boss tamil"],title:"Bigg Boss Tamil",channels:["Star Vijay"],note:"Use the official broadcaster or authorised streaming service. A subscription may be needed.",links:[{label:"JioHotstar",url:"https://www.jiohotstar.com/"}]},
@@ -34,13 +34,15 @@ function render(){
  });
  list.sort(function(a,b){return sort==="country"?String(a.country||"").localeCompare(String(b.country||""))||a.name.localeCompare(b.name):a.name.localeCompare(b.name);});
  status.textContent=list.length.toLocaleString()+" channels found · "+channels.length.toLocaleString()+" non-mature public listings";
- if(!list.length){channelGrid.innerHTML='<div class="empty-state">No channels match those filters. Try a broader search or open the official broadcaster from the programme finder.</div>';return;}
- channelGrid.innerHTML=list.slice(0,180).map(function(ch){
+ if(!list.length){$("loadMoreChannels").classList.add("hidden");channelGrid.innerHTML='<div class="empty-state">No channels match those filters. Try a broader search or open the official broadcaster from the programme finder.</div>';return;}
+ channelGrid.innerHTML=list.slice(0,visibleCount).map(function(ch){
   var s=streamFor(ch),cats=(ch.categories||[]).slice(0,2),langs=(ch.languages||[]).slice(0,2),site=safeUrl(ch.website);
   var initials=ch.name.split(/\s+/).slice(0,2).map(function(w){return w[0]||"";}).join("").toUpperCase();
   var button=s?'<button class="btn small" data-watch="'+esc(ch.id)+'">▶ Watch public stream</button>':(site!=="#"?'<a class="btn small secondary" href="'+site+'" target="_blank" rel="noopener">Official site ↗</a>':'<span class="tag">Official link not listed</span>');
   return '<article class="media-card"><div class="card-top"><div class="avatar">'+esc(initials)+'</div><div style="min-width:0"><div class="card-title">'+esc(ch.name)+'</div><div class="muted tiny">'+esc(ch.country||"Worldwide")+' · '+esc(langs.join(", ")||"Language not listed")+'</div></div></div><div class="tag-row">'+cats.map(function(c){return '<span class="tag">'+esc(c)+'</span>';}).join("")+'<span class="tag">Public listing</span></div><div class="card-description">'+(ch.website?'Broadcaster website available.':'No official website is listed in the directory.')+(s?' A secure public stream matched the broadcaster website.':' Playback is not enabled for unverified third-party stream links.')+'</div><div class="card-actions">'+button+(site!=="#"?'<a class="btn small ghost" href="'+site+'" target="_blank" rel="noopener">Website ↗</a>':"")+'</div></article>';
  }).join("");
+ $("loadMoreChannels").classList.toggle("hidden",list.length<=visibleCount);
+ $("loadMoreChannels").textContent="Load more channels ("+(list.length-visibleCount).toLocaleString()+" remaining) ↓";
 }
 function openPlayer(channelId){
  var ch=channels.find(function(c){return c.id===channelId;}),s=ch&&streamFor(ch);
@@ -62,7 +64,8 @@ async function init(){
   fillSelect("categoryFilter",channels.flatMap(function(c){return c.categories||[];}));fillSelect("languageFilter",channels.flatMap(function(c){return c.languages||[];}));fillSelect("countryFilter",channels.map(function(c){return c.country;}));render();
  }catch(e){status.textContent="Could not load the live channel catalogue.";channelGrid.innerHTML='<div class="empty-state">'+esc(e.message)+' Check your connection, or browse official broadcaster websites from the programme finder.</div>';}
 }
-["channelSearch","categoryFilter","languageFilter","countryFilter","sortFilter"].forEach(function(id){$(id).addEventListener(id==="channelSearch"?"input":"change",render);});
+["channelSearch","categoryFilter","languageFilter","countryFilter","sortFilter"].forEach(function(id){$(id).addEventListener(id==="channelSearch"?"input":"change",function(){visibleCount=180;render();});});
+$("loadMoreChannels").addEventListener("click",function(){visibleCount+=180;render();});
 channelGrid.addEventListener("click",function(e){var b=e.target.closest("[data-watch]");if(b)openPlayer(b.getAttribute("data-watch"));});
 $("closePlayer").addEventListener("click",closePlayer);dialog.addEventListener("click",function(e){if(e.target===dialog)closePlayer();});
 var q=new URLSearchParams(location.search).get("q");if(q)$("channelSearch").value=q;
