@@ -1,0 +1,29 @@
+html.light{color-scheme:light}
+html.light body{background:radial-gradient(900px 500px at 80% -100px,rgba(141,114,255,.10),transparent 70%),#f3f5fa;color:#171b28}
+html.light .site-header{background:rgba(248,249,252,.88);border-color:rgba(20,25,40,.1)}
+html.light .main-nav a{color:#616a7b}html.light .main-nav a:hover,html.light .main-nav a.active{color:#161b29;background:rgba(20,25,40,.07)}
+html.light .brand small,html.light .muted,html.light .hero-copy,html.light .section-head p{color:#667085}
+html.light .service-card,html.light .media-card,html.light .side-panel,html.light .source-tile,html.light .story-list{background:rgba(255,255,255,.76);border-color:rgba(20,25,40,.1)}
+html.light .service-card p,html.light .card-description,html.light .story p,html.light .source-tile span{color:#667085}
+html.light .toolbar{background:rgba(255,255,255,.8);border-color:rgba(20,25,40,.1)}
+html.light .field{background:#fff;color:#171b28;border-color:rgba(20,25,40,.13)}
+html.light .field::placeholder{color:#7b8494}
+html.light .chip{background:rgba(20,25,40,.035);border-color:rgba(20,25,40,.13);color:#596274}
+html.light .chip.active,html.light .chip:hover{color:#171b28}
+html.light .mobile-nav{background:rgba(248,249,252,.98);border-color:rgba(20,25,40,.1)}
+html.light .mobile-nav a{background:rgba(20,25,40,.05);color:#171b28}
+html.light .icon-btn,html.light .menu-toggle{background:#fff;color:#171b28;border-color:rgba(20,25,40,.13)}
+html.light .tag{background:rgba(20,25,40,.07);color:#424c60}
+html.light .notice{color:#80582d;background:rgba(255,154,69,.10)}
+html.light .feature-band{border-color:rgba(20,25,40,.1)}
+html.light .radio-player{background:rgba(255,255,255,.94);border-color:rgba(20,25,40,.12);color:#171b28}
+html.light .radio-player .muted{color:#697386}
+html.light .footer{border-color:rgba(20,25,40,.1)}
+html.light .player-dialog{background:#fff;color:#171b28}
+html.light .player-help{color:#667085}
+html.light .empty-state,html.light .loading-state{border-color:rgba(20,25,40,.18);color:#667085}
+html.light .news-item{border-color:rgba(20,25,40,.1)}
+html.light .news-item h4{color:#171b28}
+html.light .story{border-color:rgba(20,25,40,.1)}
+html.light .story h3 a{color:#171b28}
+html.light .side-link{border-color:rgba(20,25,40,.1)}
