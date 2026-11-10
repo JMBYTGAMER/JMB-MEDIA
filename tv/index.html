@@ -3,34 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JMB TV – Live TV, Movies & Radio</title>
-<meta name="description" content="Discover public live TV channels, free-to-watch films and internet radio in JMB TV. Search, filter and play supported streams directly on your device.">
+<title>JMB TV — Live Channel Guide</title>
+<meta name="description" content="Browse public live television channels by name, category, language and broadcast region. Play supported streams directly in JMB TV.">
 <meta name="robots" content="index,follow,max-image-preview:large">
-<meta name="theme-color" content="#11130f">
+<meta name="theme-color" content="#0b1222">
 <link rel="preconnect" href="https://iptv-org.github.io" crossorigin>
-<link rel="preconnect" href="https://archive.org" crossorigin>
 <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-<link rel="canonical" href="https://tv.jmbhost.qzz.io/tv/">
+<link rel="canonical" href="https://media.jmbhost.qzz.io/tv/">
 <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg?v=2" />
 <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png?v=1" />
 <link rel="manifest" href="/favicon/site.webmanifest?v=3" />
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="JMB TV">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <!-- Google Search Console: paste your verification tag here, e.g. <meta name="google-site-verification" content="YOUR_CODE"> -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="JMB TV">
-<meta property="og:title" content="JMB TV – Live TV, Movies & Radio">
-<meta property="og:description" content="Explore public TV channels, free films and online radio. Search, filter and watch on any device.">
+<meta property="og:title" content="JMB TV — Live Channel Guide">
+<meta property="og:description" content="Browse public live television channels by category, language and region.">
 <meta property="og:url" content="https://tv.jmbhost.qzz.io/tv/">
-<meta property="og:image" content="https://tv.jmbhost.qzz.io/favicon/favicon.svg">
+<meta property="og:image" content="https://media.jmbhost.qzz.io/favicon/favicon.svg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="JMB TV – Live TV, Movies & Radio">
 <meta name="twitter:description" content="Explore public TV channels, free films and online radio. Search, filter and watch on any device.">
 <meta name="twitter:image" content="https://tv.jmbhost.qzz.io/favicon/favicon.svg">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"JMB TV","url":"https://tv.jmbhost.qzz.io/tv/","description":"Web player for public TV channel listings, free films and internet radio.","applicationCategory":"EntertainmentApplication","operatingSystem":"Any","image":"https://tv.jmbhost.qzz.io/favicon/favicon.svg","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+{"@context":"https://schema.org","@type":"WebApplication","name":"JMB TV","url":"https://tv.jmbhost.qzz.io/tv/","description":"Browse and play supported public live television streams.","applicationCategory":"EntertainmentApplication","operatingSystem":"Any","image":"https://tv.jmbhost.qzz.io/favicon/favicon.svg","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js" defer></script>
@@ -141,7 +140,7 @@
   #stage.idle{cursor:none}
   .line2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 </style>
-<link rel="stylesheet" href="jmb-tv-studio.css?v=2">
+<link rel="stylesheet" href="jmb-tv-only.css?v=1">
 </head>
 <body>
 <h1 class="sr-only">JMB TV – Watch live TV channels online for free</h1>
@@ -149,56 +148,99 @@
 <div class="orb" style="width:380px;height:380px;background:var(--accent);top:-120px;left:-100px"></div>
 <div class="orb" style="width:320px;height:320px;background:#3b82f6;bottom:-120px;right:-80px;animation-delay:-6s"></div>
 <noscript><p style="padding:2rem;text-align:center">JMB TV needs JavaScript to browse and play live TV channels. Please enable JavaScript and reload.</p></noscript>
-<header class="sticky top-0 z-30 t-bg2 backdrop-blur border-b t-bord px-3 py-2 flex flex-wrap items-center gap-2">
-  <div class="flex items-center gap-2 font-extrabold text-lg mr-2 tracking-tight"><img data-logo alt="JMB TV logo" class="h-8 w-auto drop-shadow">JMB TV</div>
-  <input id="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Search channels…" class="flex-1 min-w-[150px] max-w-xl t-input t-bord border rounded-full px-4 py-2 text-sm outline-none focus:border-blue-500">
-  <select id="cat" autocomplete="off" class="t-chip rounded-full px-3 py-2 text-sm outline-none max-w-[45%]"><option value="">All categories</option></select>
-  <select id="lang" autocomplete="off" class="t-chip rounded-full px-3 py-2 text-sm outline-none max-w-[45%]" title="Language"><option value="">Loading languages…</option></select>
-  <select id="area" autocomplete="off" class="t-chip rounded-full px-3 py-2 text-sm outline-none max-w-[45%]" title="Broadcast area"><option value="">All regions</option></select>
-  <button id="installBtn" class="btn hidden" title="Install JMB TV as an app" data-ic="download"><span class="hidden sm:inline">Install</span></button>
-  <button id="aboutBtn" class="btn" title="About us" data-ic="info"><span class="hidden sm:inline">About</span></button>
-  <button id="theme" class="btn" title="Switch light/dark theme"></button>
+<header class="tv-topbar">
+  <a class="tv-home-link" href="/" aria-label="Back to JMB MEDIA home" title="Back to JMB MEDIA">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <span><b>JMB MEDIA</b><small>BACK TO HOME</small></span>
+  </a>
+  <a class="tv-brand" href="./" aria-label="JMB TV home">
+    <img data-logo alt="JMB TV logo">
+    <span><b>JMB TV</b><span>TELEVISION</span></span>
+  </a>
+  <div class="tv-head-actions">
+    <button id="installBtn" class="btn hidden" title="Install JMB TV as an app" data-ic="download"><span>Install</span></button>
+    <button id="aboutBtn" class="btn" title="About JMB TV" data-ic="info"><span>About</span></button>
+    <button id="theme" class="btn" title="Switch light/dark theme" aria-label="Switch theme"></button>
+  </div>
 </header>
 
-<main class="p-3 sm:p-5">
-  <div id="tabs" class="flex gap-2 mb-3"><button class="chip on" data-tab="tv">Live TV</button><button class="chip" data-tab="mov">Movies &amp; TV</button><button class="chip" data-tab="radio">Radio</button></div>
-  <div id="liveView">
-  <section id="hero" class="hero mb-5">
-    <div class="flex flex-wrap items-center justify-between gap-5">
-      <div>
-        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight"><span class="brand-text">The world is live.</span></h2>
-        <p class="t-muted mt-1 text-sm max-w-md">Explore public channel listings, free films and internet radio. Pick something and press play.</p>
-        <div class="flex flex-wrap gap-2 mt-3"><button id="heroRnd" class="btn !bg-red-600 !text-white" data-ic="shuffle">Surprise me</button><button id="heroMov" class="btn" data-ic="play">Movies</button><button id="heroRadio" class="btn" data-ic="radio">Radio</button></div>
-      </div>
-      <div class="flex gap-6 text-center stat"><div><b id="stCh">0</b><p class="text-xs t-muted">channels</p></div><div><b id="stLang">0</b><p class="text-xs t-muted">languages</p></div><div><b id="stCat">0</b><p class="text-xs t-muted">categories</p></div></div>
+<main class="tv-main">
+  <div class="tv-page-heading">
+    <div>
+      <div class="tv-kicker">JMB MEDIA / TELEVISION</div>
+      <h1>Live channels</h1>
+    </div>
+    <div class="tv-mode-tag"><span class="tv-live-dot"></span> CHANNEL DIRECTORY</div>
+  </div>
+
+  <section class="tv-search-panel" aria-label="Find a TV channel">
+    <label class="tv-search-field">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <input id="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Search channels, networks or languages…" aria-label="Search TV channels">
+      <kbd>/</kbd>
+    </label>
+    <div class="tv-filter-selects" aria-label="Filter channels">
+      <select id="cat" autocomplete="off" title="Filter by category"><option value="">All categories</option></select>
+      <select id="lang" autocomplete="off" title="Filter by language"><option value="">Loading languages…</option></select>
+      <select id="area" autocomplete="off" title="Filter by broadcast area"><option value="">All regions</option></select>
     </div>
   </section>
-  <section id="picksWrap" class="hidden mb-6"><h2 class="sec mb-2">Today's picks</h2><div id="picks" class="no-scrollbar flex gap-3 overflow-x-auto pb-2"></div></section>
-  <div id="status" class="text-center t-muted py-20"><img data-logo alt="" class="h-16 w-auto mx-auto mb-3 animate-pulse">Loading playlist…</div>
-  <div id="chips" class="no-scrollbar flex gap-2 overflow-x-auto pb-3 mb-2"></div>
-  <section id="recentWrap" class="hidden mb-6">
-    <div class="flex items-center justify-between mb-2"><h2 class="sec">Recently watched</h2><button id="recentClear" class="text-xs t-muted hover:text-red-500 underline">Clear all</button></div>
-    <div id="recent" class="no-scrollbar flex gap-3 overflow-x-auto pb-2"></div>
-  </section>
-  <div id="bar" class="hidden flex flex-wrap items-center gap-2 mb-3">
-    <span id="count" class="text-xs t-muted mr-auto"></span>
-    <button id="hideBtn" class="btn !py-1.5 !px-3 text-xs" title="Hide channels that failed on this site"></button>
-    <button id="clearBtn" class="btn !py-1.5 !px-3 text-xs hidden" title="Clear search, category and language">Clear filters</button>
-    <button id="proxyTest" class="btn !py-1.5 !px-3 text-xs" title="Check that the proxy works">Test proxy</button>
-    <button id="proxyBtn" class="btn !py-1.5 !px-3 text-xs" title="Use a proxy for blocked or HTTP-only streams. Turn it off if it causes problems."></button>
-    <button id="rndBtn" class="btn !py-1.5 !px-3 text-xs" title="Play a random channel from this list" data-ic="shuffle">Surprise me</button>
-    <button id="scanBtn" class="btn !py-1.5 !px-3 text-xs" title="Check which channels work on this site" data-ic="scan">Scan list</button>
-    <button id="resetBtn" class="btn !py-1.5 !px-3 text-xs hidden" title="Show all hidden channels again">Reset</button>
+
+  <div class="tv-quick-label">Browse categories</div>
+  <div id="chips" class="no-scrollbar flex gap-2 overflow-x-auto pb-3" aria-label="Quick category filters"></div>
+
+  <div id="tabs" style="display:none!important" aria-hidden="true">
+    <button class="chip on" data-tab="tv">Live TV</button>
+    <button class="chip" data-tab="mov">Movies &amp; TV</button>
+    <button class="chip" data-tab="radio">Radio</button>
   </div>
-  <div id="scanProg" class="hidden mb-3">
-    <div class="flex justify-between text-xs t-muted mb-1"><span id="scanTxt"></span><button id="scanStop" class="underline hover:text-red-500">Stop</button></div>
-    <div class="h-1.5 rounded-full t-card overflow-hidden"><div id="scanBar" class="h-full bg-red-600 transition-all duration-300" style="width:0%"></div></div>
+
+  <div id="liveView">
+    <!-- Retained hidden compatibility nodes for the existing channel-data and player scripts. -->
+    <section id="hero" style="display:none!important" aria-hidden="true">
+      <button id="heroRnd" type="button">Random</button><button id="heroMov" type="button">Movies</button><button id="heroRadio" type="button">Radio</button>
+      <span id="stCh">0</span><span id="stLang">0</span><span id="stCat">0</span>
+    </section>
+    <section id="picksWrap" style="display:none!important" aria-hidden="true"><div id="picks"></div></section>
+
+    <div id="status" class="text-center t-muted py-20">
+      <img data-logo alt="" class="h-16 w-auto mx-auto mb-3">
+      <span>Loading TV channels…</span>
+    </div>
+
+    <section id="recentWrap" class="hidden">
+      <div class="flex items-center justify-between mb-2"><h2 class="sec">Recently watched</h2><button id="recentClear" class="text-xs t-muted underline">Clear</button></div>
+      <div id="recent" class="no-scrollbar flex gap-3 overflow-x-auto pb-2"></div>
+    </section>
+
+    <div id="bar" class="hidden">
+      <span id="count" class="text-xs t-muted"></span>
+      <button id="hideBtn" class="btn" title="Hide channels that failed on this site"></button>
+      <button id="clearBtn" class="btn hidden" title="Clear search and filters">Clear filters</button>
+      <details>
+        <summary>More tools</summary>
+        <div id="tvAdvanced">
+          <button id="proxyTest" class="btn" title="Check whether the stream proxy works">Test proxy</button>
+          <button id="proxyBtn" class="btn" title="Use a proxy for streams that need it">Proxy</button>
+          <button id="scanBtn" class="btn" title="Check which channels work on this site">Scan channels</button>
+          <button id="resetBtn" class="btn hidden" title="Show channels hidden by your checks">Reset checks</button>
+        </div>
+      </details>
+      <button id="rndBtn" class="btn" style="display:none!important" aria-hidden="true">Random channel</button>
+    </div>
+
+    <div id="scanProg" class="hidden">
+      <div class="flex justify-between text-xs t-muted mb-1"><span id="scanTxt"></span><button id="scanStop" class="underline">Stop</button></div>
+      <div class="h-1.5 rounded-full t-card overflow-hidden"><div id="scanBar" class="h-full transition-all duration-300" style="width:0%"></div></div>
+    </div>
+
+    <div id="grid" class="grid gap-x-4 gap-y-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"></div>
+    <div id="sentinel" class="h-1"></div>
+    <div class="text-center"><button id="more" class="btn hidden">Load more channels</button></div>
   </div>
-  <div id="grid" class="grid gap-x-4 gap-y-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"></div>
-  <div id="sentinel" class="h-1"></div>
-  <div class="text-center mt-8"><button id="more" class="btn hidden">Load more</button></div>
-</div>
-  <section id="movies" class="hidden">
+
+  <div style="display:none!important" aria-hidden="true">
+    <section id="movies" class="hidden" style="display:none!important" aria-hidden="true">
     <div class="flex items-center justify-between gap-3"><h2 class="sec">Movies &amp; TV</h2><button id="movRnd" class="btn !py-1.5 !px-3 text-xs" data-ic="shuffle">Surprise me</button></div>
     <p class="text-xs t-muted mt-1">Free public-domain and openly licensed films from the Internet Archive, in many languages. Search by title in the box above.</p>
     <div id="movChips" class="no-scrollbar flex gap-2 overflow-x-auto pb-3 mb-2 mt-3"></div>
@@ -208,24 +250,26 @@
     <div id="movGrid" class="grid gap-x-4 gap-y-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"></div>
     <div class="text-center mt-8"><button id="movMore" class="btn hidden">Load more</button></div>
   </section>
-  <section id="radio" class="hidden">
+  <section id="radio" class="hidden" style="display:none!important" aria-hidden="true">
     <h2 class="sec">Radio</h2>
     <p class="text-xs t-muted mt-1">Free internet radio stations from around the world, from the community Radio Browser directory. Search by name or pick a genre.</p>
     <div id="radioChips" class="no-scrollbar flex gap-2 overflow-x-auto pb-3 mb-2 mt-3"></div>
     <div id="radioStatus" class="text-sm t-muted mb-3"></div>
     <div id="radioGrid" class="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></div>
   </section>
+  </div>
 </main>
-<footer class="text-center text-xs t-muted px-4 pb-10 pt-4">
-  <p class="max-w-2xl mx-auto mb-3">Watch live TV online with JMB TV: thousands of news, sports, movies, music, kids and entertainment channels from around the world. Search by name, filter by category or language, and stream in your browser on mobile, tablet or desktop.</p>
-  JMB TV · Streams come from public playlists and belong to their owners ·
-  <button id="aboutLink" class="underline hover:text-red-500 transition-colors">About us</button> · <button id="keysLink" class="underline hover:text-red-500 transition-colors">Shortcuts</button>
+
+<footer class="tv-footer">
+  <span>JMB TV</span><span>·</span><span>Public channel directory</span><span>·</span>
+  <button id="aboutLink" type="button">About</button><span>·</span>
+  <button id="keysLink" type="button">Keyboard shortcuts</button>
 </footer>
 
 <!-- Watch page -->
 <section id="watch" class="hidden fixed inset-0 z-40 t-bg overflow-y-auto">
   <div class="max-w-6xl mx-auto p-2 sm:p-4">
-    <button id="back" class="btn mb-3" data-ic="back">Back</button>
+    <div class="tv-watch-nav"><button id="back" class="btn" data-ic="back">Back to channels</button><a class="tv-watch-home" href="/" aria-label="Back to JMB MEDIA home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back to JMB MEDIA</a></div>
     <div id="watchSlot" class="bg-black rounded-xl overflow-hidden"></div>
     <div class="flex items-start justify-between gap-3 mt-3"><h2 id="wTitle" class="text-lg sm:text-xl font-semibold"></h2><div class="flex gap-2 shrink-0"><button id="saveBtn" class="btn hidden" title="Save movie"></button><button id="shareBtn" class="btn" title="Share" data-ic="share">Share</button></div></div>
     <p id="wMeta" class="text-sm t-muted"></p>
@@ -253,12 +297,12 @@
       <p class="text-sm t-muted mt-2" style="--i:2">JMB TV is a media player and discovery directory. Browse public channel listings, search by category or language, and watch supported streams inside this page. We do not unlock subscriptions, remove regional restrictions or bypass broadcaster protections.</p>
     </div>
     <ul class="stag mt-5 space-y-2 text-sm">
-      <li class="flex gap-2" style="--i:3"><span data-ic="check" class="text-red-500 shrink-0 mt-0.5"></span>Live previews on hover or press-and-hold</li>
+      <li class="flex gap-2" style="--i:3"><span data-ic="check" class="text-red-500 shrink-0 mt-0.5"></span>Live channel previews where the broadcaster supports them</li>
       <li class="flex gap-2" style="--i:4"><span data-ic="check" class="text-red-500 shrink-0 mt-0.5"></span>Draggable mini-player, Picture-in-Picture and fullscreen</li>
       <li class="flex gap-2" style="--i:5"><span data-ic="check" class="text-red-500 shrink-0 mt-0.5"></span>Multiple audio tracks, brightness and aspect-ratio controls</li>
       <li class="flex gap-2" style="--i:6"><span data-ic="check" class="text-red-500 shrink-0 mt-0.5"></span>Light and dark themes, responsive on every screen</li>
       <li class="flex gap-2" style="--i:7"><span data-ic="check" class="text-red-500 shrink-0 mt-0.5"></span>Installable as an app (Install button, or Share → Add to Home Screen on iPhone)</li>
-      <li class="flex gap-2" style="--i:7"><span data-ic="check" class="text-red-500 shrink-0 mt-0.5"></span>Free public-domain movies with Save and Continue watching</li>
+      <li class="flex gap-2" style="--i:7"><span data-ic="check" class="text-red-500 shrink-0 mt-0.5"></span>TV channel search, category filters and broadcast-region filters</li>
     </ul>
     <p class="stag mt-5 text-xs t-muted"><span style="--i:7">Shortcuts: <b>Space/K</b> play·pause, <b>F</b> fullscreen, <b>M</b> mute, <b>A</b> aspect, <b>/</b> search, <b>Esc</b> back.</span></p>
     <div id="accents" class="stag mt-4 flex items-center justify-center gap-2"><span class="text-xs t-muted mr-1" style="--i:8">Accent</span><button data-a="#dc2626" style="background:#dc2626"></button><button data-a="#2563eb" style="background:#2563eb"></button><button data-a="#16a34a" style="background:#16a34a"></button><button data-a="#9333ea" style="background:#9333ea"></button><button data-a="#ea580c" style="background:#ea580c"></button><button data-a="#db2777" style="background:#db2777"></button></div>
@@ -1475,7 +1519,7 @@ document.addEventListener('pointerdown', e => {
 });
 
 // ---- Logo ----
-const LOGO = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ef3340"/><stop offset="1" stop-color="#ff8a35"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity=".28"/></filter></defs><rect x="3" y="3" width="94" height="94" rx="25" fill="url(#g)" filter="url(#s)"/><path d="M25 24h11v37c0 10-6 16-16 16-5 0-9-1-13-4l6-9c2 2 4 3 7 3 4 0 5-2 5-7V24z" fill="#fff"/><path d="M45 24h22c12 0 19 6 19 15 0 6-3 10-8 12 7 2 11 7 11 14 0 11-8 18-21 18H45V24zm13 11v12h8c4 0 7-2 7-6s-3-6-7-6h-8zm0 23v14h9c5 0 8-2 8-7 0-4-3-7-8-7h-9z" fill="#fff"/></svg>');
+const LOGO = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7398ff"/><stop offset="1" stop-color="#53dfd2"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity=".28"/></filter></defs><rect x="3" y="3" width="94" height="94" rx="25" fill="#101a30" stroke="url(#g)" stroke-width="4" filter="url(#s)"/><path d="M25 24h11v37c0 10-6 16-16 16-5 0-9-1-13-4l6-9c2 2 4 3 7 3 4 0 5-2 5-7V24z" fill="#fff"/><path d="M45 24h22c12 0 19 6 19 15 0 6-3 10-8 12 7 2 11 7 11 14 0 11-8 18-21 18H45V24zm13 11v12h8c4 0 7-2 7-6s-3-6-7-6h-8zm0 23v14h9c5 0 8-2 8-7 0-4-3-7-8-7h-9z" fill="#fff"/></svg>')
 document.querySelectorAll('[data-logo]').forEach(i => i.src = LOGO);
 
 // ---- Icons init ----
@@ -1520,8 +1564,11 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) addEven
 
 buildMovChips(); syncMat();
 const P0 = new URLSearchParams(location.search);
-if (P0.get('tab') === 'radio') setTab('radio'); else if (P0.get('tab') === 'movies' || P0.get('m')) setTab('mov');
-if (P0.get('m')) openMovie(P0.get('m'));
+if (P0.has('tab') || P0.has('m')) {
+  P0.delete('tab'); P0.delete('m');
+  const cleaned = P0.toString();
+  history.replaceState(history.state, '', location.pathname + (cleaned ? '?' + cleaned : ''));
+}
 renderRecent();
 load();
 </script>
