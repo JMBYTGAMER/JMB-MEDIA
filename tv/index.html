@@ -6,7 +6,7 @@
 <title>JMB TV – Live TV, Movies & Radio</title>
 <meta name="description" content="Discover public live TV channels, free-to-watch films and internet radio in JMB TV. Search, filter and play supported streams directly on your device.">
 <meta name="robots" content="index,follow,max-image-preview:large">
-<meta name="theme-color" content="#0f0f0f">
+<meta name="theme-color" content="#07101e">
 <link rel="preconnect" href="https://iptv-org.github.io" crossorigin>
 <link rel="preconnect" href="https://archive.org" crossorigin>
 <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
@@ -141,6 +141,7 @@
   #stage.idle{cursor:none}
   .line2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 </style>
+<link rel="stylesheet" href="jmb-tv-theme.css?v=1">
 </head>
 <body>
 <h1 class="sr-only">JMB TV – Watch live TV channels online for free</h1>
@@ -153,6 +154,7 @@
   <input id="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Search channels…" class="flex-1 min-w-[150px] max-w-xl t-input t-bord border rounded-full px-4 py-2 text-sm outline-none focus:border-blue-500">
   <select id="cat" autocomplete="off" class="t-chip rounded-full px-3 py-2 text-sm outline-none max-w-[45%]"><option value="">All categories</option></select>
   <select id="lang" autocomplete="off" class="t-chip rounded-full px-3 py-2 text-sm outline-none max-w-[45%]" title="Language"><option value="">Loading languages…</option></select>
+  <select id="area" autocomplete="off" class="t-chip rounded-full px-3 py-2 text-sm outline-none max-w-[45%]" title="Broadcast area"><option value="">All regions</option></select>
   <button id="installBtn" class="btn hidden" title="Install JMB TV as an app" data-ic="download"><span class="hidden sm:inline">Install</span></button>
   <button id="aboutBtn" class="btn" title="About us" data-ic="info"><span class="hidden sm:inline">About</span></button>
   <button id="theme" class="btn" title="Switch light/dark theme"></button>
