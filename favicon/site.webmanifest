@@ -1,0 +1,17 @@
+{
+  "name": "JMB TV",
+  "short_name": "JMB TV",
+  "start_url": "/tv/",
+  "scope": "/tv/",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#dc2626",
+  "icons": [
+    {
+      "src": "/favicon/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
