@@ -1,0 +1,365 @@
+/*
+ JMB TV — SIGNAL / EDITION 02
+ Original visual identity for JMB MEDIA.
+ Direction: editorial broadcast console, graphite / warm paper / signal-lime.
+ This stylesheet is intentionally separate from the reference site's styles.
+*/
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root{
+ --bg:#11130f;--fg:#f2f0e7;--muted:#a4a89a;
+ --card:#1a1d17;--card2:#20241c;--chip:#25291f;--chip-hover:#303728;
+ --border:rgba(226,235,205,.13);
+ --accent:#d7ff45;--accent-2:#ff9b5e;--accent-3:#a5d8d2;
+ --shadow:0 18px 50px rgba(0,0,0,.28);
+ --radius:12px;
+ color-scheme:dark;
+}
+html.light{
+ --bg:#f1f0e8;--fg:#1c2118;--muted:#6e7567;
+ --card:#fffef7;--card2:#e8ebdc;--chip:#e6e8dc;--chip-hover:#dce1ce;
+ --border:rgba(32,48,22,.16);
+ --accent:#557b00;--accent-2:#c45a25;--accent-3:#347f79;
+ --shadow:0 14px 36px rgba(43,52,28,.12);
+ color-scheme:light;
+}
+html{background:var(--bg)!important;scroll-behavior:smooth}
+body{
+ background:
+  radial-gradient(ellipse at 92% 8%,rgba(215,255,69,.055),transparent 28rem),
+  linear-gradient(180deg,rgba(255,255,255,.012),transparent 40rem),
+  var(--bg)!important;
+ color:var(--fg)!important;
+ font-family:"Space Grotesk",system-ui,sans-serif!important;
+ overflow-x:hidden;
+}
+body:before{
+ content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.08;
+ background-image:radial-gradient(rgba(240,244,220,.65) .65px,transparent .65px);
+ background-size:5px 5px;mask-image:linear-gradient(180deg,#000,transparent 78%);
+}
+::selection{background:var(--accent);color:#111}
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:0}
+::-webkit-scrollbar-track{background:var(--card)}
+button,input,select{font-family:inherit!important}
+a{color:inherit}
+#progress{height:3px!important;background:var(--accent)!important;box-shadow:0 0 18px color-mix(in srgb,var(--accent) 38%,transparent)!important}
+.orb{opacity:.035!important;filter:blur(100px)!important;animation:signalDrift 30s ease-in-out infinite alternate!important}
+@keyframes signalDrift{to{transform:translate3d(-45px,32px,0) scale(1.12)}}
+html.light .orb{opacity:.025!important}
+
+/* Header: clean broadcast toolbar */
+body>header{
+ min-height:68px;padding:11px clamp(14px,3vw,42px)!important;gap:11px!important;
+ background:rgba(17,19,15,.94)!important;border-bottom:1px solid var(--border)!important;
+ backdrop-filter:blur(16px);box-shadow:0 8px 28px rgba(0,0,0,.12);
+ animation:toolbarIn .5s ease both!important;
+}
+html.light body>header{background:rgba(245,244,235,.94)!important}
+@keyframes toolbarIn{from{opacity:0;transform:translateY(-9px)}to{opacity:1;transform:none}}
+body>header>div:first-child{
+ font:700 19px "Space Grotesk",sans-serif!important;letter-spacing:-.065em!important;
+}
+body>header [data-logo]{width:34px!important;height:34px!important;filter:grayscale(1) contrast(1.5)}
+#q{
+ min-height:43px!important;border:1px solid var(--border)!important;border-radius:8px!important;
+ background:var(--card)!important;color:var(--fg)!important;padding:0 16px!important;
+ font-size:13px!important;box-shadow:none!important;
+}
+#q::placeholder{color:var(--muted)!important}
+#q:focus{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent)!important;outline-offset:1px;border-color:var(--accent)!important}
+#cat,#lang,#area,#movLang{
+ min-height:42px!important;border:1px solid var(--border)!important;border-radius:8px!important;
+ background:var(--card)!important;color:var(--fg)!important;padding:0 12px!important;font-size:12px!important;
+ max-width:min(210px,42vw)!important;
+}
+#installBtn,#aboutBtn,#theme{
+ min-height:40px!important;border-radius:8px!important;border:1px solid var(--border)!important;
+ background:transparent!important;color:var(--fg)!important;padding:0 13px!important;
+ font-size:11px!important;font-weight:700!important;letter-spacing:.025em;
+}
+#installBtn:hover,#aboutBtn:hover,#theme:hover{background:var(--accent)!important;color:#15180f!important;border-color:var(--accent)!important;transform:translateY(-2px)}
+#installBtn svg,#aboutBtn svg,#theme svg{color:inherit}
+
+/* Canvas and content width */
+main{width:min(1500px,100%)!important;margin:0 auto!important;padding:clamp(14px,2.4vw,36px)!important}
+#tabs{
+ display:flex;gap:0!important;width:max-content;max-width:100%;overflow:auto;
+ border-bottom:1px solid var(--border);margin:2px 0 24px!important;padding:0!important;
+ background:transparent!important;border-radius:0!important;
+}
+#tabs .chip{
+ border:0!important;border-bottom:3px solid transparent!important;border-radius:0!important;
+ background:transparent!important;color:var(--muted)!important;
+ padding:12px 22px!important;font-size:12px!important;font-weight:700!important;
+ letter-spacing:.055em;text-transform:uppercase;transition:color .18s,border-color .18s,background .18s!important;
+}
+#tabs .chip:hover{color:var(--fg)!important;background:rgba(255,255,255,.035)!important;transform:none!important}
+#tabs .chip.on{background:transparent!important;color:var(--accent)!important;border-bottom-color:var(--accent)!important;box-shadow:none!important}
+
+/* Big editorial signal banner */
+#hero{
+ position:relative;isolation:isolate;overflow:hidden;
+ min-height:250px!important;padding:clamp(23px,4vw,48px)!important;
+ border:1px solid rgba(215,255,69,.24)!important;border-radius:10px!important;
+ background:
+  linear-gradient(105deg,rgba(215,255,69,.10),transparent 45%),
+  repeating-linear-gradient(135deg,rgba(255,255,255,.022) 0 1px,transparent 1px 12px),
+  #1d2119!important;
+ box-shadow:var(--shadow)!important;
+}
+#hero:before{
+ content:"JMB / ON AIR";position:absolute;z-index:-1;right:-.02em;bottom:-.29em;
+ font:700 clamp(76px,15vw,210px)/.9 "Space Grotesk",sans-serif;
+ letter-spacing:-.105em;color:rgba(215,255,69,.055);white-space:nowrap;pointer-events:none;
+}
+#hero:after{
+ content:"";position:absolute;z-index:-1;right:9%;top:16%;width:118px;height:118px;
+ border:1px solid rgba(215,255,69,.35);border-radius:50%;
+ box-shadow:0 0 0 15px rgba(215,255,69,.035),0 0 0 34px rgba(215,255,69,.02);
+ animation:radarSweep 18s linear infinite;
+}
+@keyframes radarSweep{to{transform:rotate(360deg)}}
+#hero>div{position:relative;z-index:1}
+#hero h2{font:700 clamp(30px,5vw,54px)/.98 "Space Grotesk",sans-serif!important;letter-spacing:-.085em!important;max-width:640px}
+.brand-text{
+ background:none!important;color:var(--fg)!important;
+ -webkit-text-fill-color:var(--fg)!important;
+}
+#hero h2 .brand-text:after{
+ content:" / LIVE";display:inline-block;margin-left:.2em;
+ color:var(--accent);font:700 .36em "IBM Plex Mono",monospace;letter-spacing:.08em;vertical-align:middle;
+}
+#hero p{color:#bdc3b1!important;max-width:480px!important;font-size:13px!important;line-height:1.75!important}
+#hero .stat{gap:clamp(18px,4vw,45px)!important}
+#hero .stat b{font:700 clamp(24px,3vw,35px) "Space Grotesk"!important;color:var(--accent)!important;letter-spacing:-.06em}
+#hero .stat p{font:600 9px "IBM Plex Mono",monospace!important;color:#abb49d!important;letter-spacing:.12em;text-transform:uppercase}
+#hero .btn{
+ min-height:42px!important;padding:0 16px!important;border-radius:7px!important;
+ background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.19)!important;
+ color:#f3f4e8!important;font:700 11px "IBM Plex Mono",monospace!important;
+ text-transform:uppercase;letter-spacing:.035em;box-shadow:none!important;
+}
+#hero #heroRnd{background:var(--accent)!important;color:#171b10!important;border-color:var(--accent)!important}
+#hero .btn:hover{transform:translateY(-3px)!important;box-shadow:0 9px 25px rgba(0,0,0,.2)!important}
+html.light #hero{background:linear-gradient(105deg,rgba(85,123,0,.12),transparent 50%),repeating-linear-gradient(135deg,rgba(34,52,14,.025) 0 1px,transparent 1px 12px),#20271a!important}
+html.light #hero p,html.light #hero .stat p{color:#c4cfb2!important}
+
+/* Section identity / headings */
+.sec{font:700 17px "Space Grotesk",sans-serif!important;letter-spacing:-.04em!important;text-transform:uppercase}
+.sec:before{width:15px!important;height:3px!important;border-radius:0!important;background:var(--accent)!important}
+#picksWrap,#recentWrap{margin-top:29px!important}
+#picks,#recent{gap:13px!important;padding:4px 2px 15px!important}
+#picks article,#recent article{width:196px!important;flex:0 0 196px!important}
+#picks article .thumb,#recent article .thumb{border-radius:8px!important}
+#picks article h3,#recent article h3{font-weight:700!important;font-size:12px!important}
+#chips,#movChips,#radioChips{gap:7px!important;padding:7px 1px 15px!important}
+#chips .chip,#movChips .chip,#radioChips .chip,#matChips .chip{
+ border:1px solid var(--border)!important;border-radius:6px!important;padding:8px 12px!important;
+ background:var(--card)!important;color:var(--muted)!important;
+ font:600 10px "IBM Plex Mono",monospace!important;text-transform:uppercase;letter-spacing:.04em;
+}
+#chips .chip.on,#movChips .chip.on,#radioChips .chip.on,#matChips .chip.on,
+#chips .chip:hover,#movChips .chip:hover,#radioChips .chip:hover,#matChips .chip:hover{
+ background:var(--accent)!important;color:#14180c!important;border-color:var(--accent)!important;
+}
+#bar{
+ display:flex;align-items:center;gap:7px!important;padding:10px!important;
+ border:1px solid var(--border)!important;border-radius:8px!important;
+ background:var(--card)!important;
+}
+#count{font:600 10px "IBM Plex Mono",monospace!important;color:var(--muted)!important}
+.btn{
+ min-height:36px!important;border:1px solid var(--border)!important;border-radius:7px!important;
+ background:var(--chip)!important;color:var(--fg)!important;padding:8px 12px!important;
+ font:600 10px "IBM Plex Mono",monospace!important;letter-spacing:.025em;
+ transition:background .16s,color .16s,transform .16s,border-color .16s!important;
+}
+.btn:hover{background:var(--accent)!important;color:#14180c!important;border-color:var(--accent)!important;transform:translateY(-2px)!important;box-shadow:none!important}
+.btn:active{transform:scale(.97)!important}
+#grid{
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:17px 13px!important;margin-top:8px;
+}
+#grid article,#related article{
+ min-width:0;padding:8px!important;border:1px solid var(--border)!important;
+ border-radius:9px!important;background:var(--card)!important;box-shadow:none!important;
+ overflow:hidden;position:relative;animation:stationEnter .42s cubic-bezier(.2,.8,.2,1) both;
+ transition:transform .19s,border-color .19s,background .19s!important;
+}
+#grid article:before,#related article:before{
+ content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);
+ transform:scaleY(0);transform-origin:bottom;transition:transform .2s;
+}
+#grid article:hover,#related article:hover{
+ transform:translateY(-4px)!important;border-color:color-mix(in srgb,var(--accent) 55%,var(--border))!important;
+ background:var(--card2)!important;box-shadow:0 15px 30px rgba(0,0,0,.18)!important;
+}
+#grid article:hover:before,#related article:hover:before{transform:scaleY(1)}
+@keyframes stationEnter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+#grid article .thumb,#related article .thumb{
+ aspect-ratio:16/9!important;border-radius:6px!important;
+ background:
+  linear-gradient(135deg,rgba(215,255,69,.12),transparent 48%),
+  linear-gradient(315deg,rgba(255,155,94,.12),transparent 48%),
+  #24291d!important;
+}
+#grid article .thumb>span:first-child,#related article .thumb>span:first-child{
+ font:700 27px "Space Grotesk"!important;letter-spacing:-.07em;color:rgba(234,239,210,.68)!important;
+}
+#grid article .thumb img,#related article .thumb img{padding:12px!important;transition:transform .3s!important}
+#grid article:hover .thumb img,#related article:hover .thumb img{transform:scale(1.055)!important}
+#grid article h3,#related article h3{
+ font:700 12px/1.35 "Space Grotesk",sans-serif!important;color:var(--fg)!important;
+ margin:10px 2px 4px!important;letter-spacing:-.015em;
+}
+#grid article p,#related article p{
+ color:var(--muted)!important;margin:0 2px 3px!important;
+ font:500 9px "IBM Plex Mono",monospace!important;text-transform:uppercase;letter-spacing:.02em;
+}
+#grid article .heart,#related article .heart{
+ width:30px!important;height:30px!important;border-radius:6px!important;
+ background:rgba(12,16,8,.85)!important;border:1px solid rgba(255,255,255,.28)!important;
+}
+#grid article .heart.saved,#related article .heart.saved{
+ background:var(--accent)!important;color:#111!important;border-color:var(--accent)!important;
+}
+.fv{opacity:1!important}
+#grid article .dot,#related article .dot{background:var(--accent)!important;box-shadow:0 0 10px var(--accent)!important}
+#grid article .thumb>span.absolute.bottom-1,#related article .thumb>span.absolute.bottom-1{
+ right:7px!important;bottom:7px!important;padding:5px 7px!important;border-radius:4px!important;
+ background:#13170e!important;color:var(--accent)!important;border:1px solid rgba(215,255,69,.28)!important;
+ font:700 8px "IBM Plex Mono",monospace!important;letter-spacing:.08em;
+}
+#more,#movMore{
+ min-width:190px!important;border:0!important;border-radius:7px!important;
+ background:var(--accent)!important;color:#15180e!important;padding:12px 20px!important;
+ font:700 11px "IBM Plex Mono",monospace!important;text-transform:uppercase;
+}
+#status{padding:52px 14px!important;color:var(--muted)!important;font:600 11px "IBM Plex Mono",monospace!important}
+.shimmer{background:linear-gradient(100deg,var(--card) 20%,rgba(215,255,69,.12) 50%,var(--card) 80%)!important;background-size:220% 100%!important;animation:signalShimmer 1.65s linear infinite!important}
+@keyframes signalShimmer{to{background-position:-220% 0}}
+
+/* Movies and radio keep the same JMB visual language */
+#movies,#radio{padding:22px 0 12px}
+#movies>p,#radio>p{color:var(--muted)!important;line-height:1.7}
+#movGrid,#radioGrid{gap:14px!important}
+#movGrid article,#radioGrid>button,#related article{
+ border:1px solid var(--border)!important;border-radius:9px!important;background:var(--card)!important;
+}
+#movGrid article:hover,#radioGrid>button:hover{border-color:var(--accent)!important;box-shadow:var(--shadow)!important}
+#radioBar{
+ background:rgba(20,24,17,.97)!important;border-top:1px solid var(--border)!important;
+ backdrop-filter:blur(18px);box-shadow:0 -12px 32px rgba(0,0,0,.25);
+}
+html.light #radioBar{background:rgba(255,254,247,.97)!important}
+#radioBar [data-ic]{background:var(--accent)!important;color:#12160c!important;border-radius:7px!important}
+#radioBar p{color:var(--fg)!important}
+#radioBar button{border-radius:6px!important}
+
+/* Player: cinematic black stage, lime controls, square geometry */
+#watch{
+ background:rgba(10,12,9,.985)!important;backdrop-filter:blur(18px);z-index:65!important;
+}
+html.light #watch{background:rgba(241,240,232,.985)!important}
+#watch>div{max-width:1200px!important;padding:clamp(12px,3vw,34px)!important}
+#watch #back{border-radius:6px!important}
+#watchSlot{
+ border:1px solid rgba(215,255,69,.25)!important;border-radius:9px!important;
+ overflow:hidden;box-shadow:0 25px 70px rgba(0,0,0,.45)!important;
+}
+#watch h2{font:700 22px "Space Grotesk",sans-serif!important;letter-spacing:-.04em}
+#watch #wTitle{font-size:clamp(19px,3vw,28px)!important}
+#watch #wMeta,#watch #wDesc{color:var(--muted)!important;line-height:1.7}
+#stage,#frame{background:#000!important}
+#ctl{background:linear-gradient(transparent,rgba(0,0,0,.95))!important}
+#ctl .btn{background:rgba(20,24,15,.84)!important;color:#f4f4e7!important;border:1px solid rgba(215,255,69,.22)!important;border-radius:5px!important}
+#seekFill,#seekKnob{background:var(--accent)!important}
+#seekBuf{background:rgba(255,255,255,.24)!important}
+#miniSlot{
+ border:1px solid rgba(215,255,69,.4)!important;border-radius:9px!important;
+ box-shadow:0 25px 60px rgba(0,0,0,.5)!important;
+}
+#miniBar{background:linear-gradient(rgba(12,15,9,.9),transparent)!important}
+#err{background:rgba(8,10,6,.9)!important}
+#about,#keys,#age{background:rgba(8,10,7,.78)!important;backdrop-filter:blur(15px)}
+#aboutCard,#keysCard,#ageCard{
+ background:var(--card)!important;border:1px solid var(--border)!important;
+ border-radius:10px!important;box-shadow:0 25px 90px rgba(0,0,0,.48)!important;
+}
+#aboutCard h2,#keysCard h2,#ageCard h2{font-family:"Space Grotesk",sans-serif!important}
+#aboutCard p,#aboutCard li,#keysCard dd,#ageCard p{color:var(--muted)!important;line-height:1.7}
+#accents button{border-radius:5px!important}
+#toast{background:var(--card2)!important;color:var(--fg)!important;border:1px solid var(--border)!important;border-radius:7px!important;box-shadow:var(--shadow)!important}
+#toTop{background:var(--accent)!important;color:#111!important;border:0!important;border-radius:7px!important}
+footer{color:var(--muted)!important;font:500 10px/1.8 "IBM Plex Mono",monospace!important}
+footer button{color:var(--accent)!important}
+
+/* Alternate theme keeps contrast but uses warm paper and forest ink */
+html.light body{
+ color:var(--fg)!important;
+ background:radial-gradient(ellipse at 90% 5%,rgba(85,123,0,.06),transparent 30rem),var(--bg)!important;
+}
+html.light body>header{background:rgba(241,240,232,.95)!important}
+html.light #hero{color:#f2f0e7!important}
+html.light #grid article,html.light #related article,html.light #movGrid article,html.light #radioGrid>button{
+ background:var(--card)!important;border-color:var(--border)!important;box-shadow:0 7px 20px rgba(38,48,27,.06)!important;
+}
+html.light #grid article .thumb,html.light #related article .thumb{
+ background:linear-gradient(135deg,rgba(85,123,0,.1),transparent 50%),linear-gradient(315deg,rgba(196,90,37,.1),transparent 50%),#e5e8d9!important;
+}
+html.light #grid article h3,html.light #related article h3{color:var(--fg)!important}
+html.light #grid article p,html.light #related article p{color:var(--muted)!important}
+html.light #bar{background:rgba(255,254,247,.8)!important}
+html.light .btn{color:var(--fg)!important}
+html.light #hero .btn{color:#f2f0e7!important}
+html.light #hero #heroRnd{color:#171b10!important}
+html.light #aboutCard,html.light #keysCard,html.light #ageCard{background:#fffef7!important}
+html.light #ctl .btn{color:#fff!important}
+html.light #watch{color:var(--fg)!important}
+
+/* Responsive composition */
+@media(max-width:760px){
+ body>header{padding:10px 11px!important;gap:8px!important}
+ body>header>div:first-child{font-size:16px!important;gap:7px!important}
+ body>header [data-logo]{width:29px!important;height:29px!important}
+ #q{order:5;flex:1 1 100%;max-width:none!important;min-width:100%!important;height:42px!important}
+ #cat,#lang,#area{flex:1 1 calc(33.333% - 5px);max-width:calc(33.333% - 4px)!important;min-width:0!important;font-size:9px!important;padding:0 7px!important}
+ #installBtn,#aboutBtn,#theme{min-height:35px!important;padding:0 9px!important;font-size:10px!important}
+ main{padding:13px!important}
+ #tabs{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));}
+ #tabs .chip{padding:11px 3px!important;font-size:10px!important;text-align:center}
+ #hero{min-height:0!important;padding:23px 18px!important;border-radius:8px!important}
+ #hero h2{font-size:31px!important;max-width:270px}
+ #hero p{max-width:100%!important;font-size:11px!important}
+ #hero:before{font-size:95px;right:-.1em;bottom:-.1em}
+ #hero:after{width:70px;height:70px;right:5%;top:12%}
+ #hero .stat{justify-content:flex-start!important;gap:24px!important}
+ #hero .stat b{font-size:22px!important}
+ #hero .stat p{font-size:8px!important}
+ #hero .btn{min-height:37px!important;padding:0 11px!important;font-size:9px!important}
+ #picks article,#recent article{width:158px!important;flex-basis:158px!important}
+ #grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:11px 8px!important}
+ #grid article,#related article{padding:6px!important;border-radius:7px!important}
+ #grid article .thumb,#related article .thumb{border-radius:5px!important}
+ #grid article .thumb>span:first-child,#related article .thumb>span:first-child{font-size:22px!important}
+ #grid article h3,#related article h3{font-size:10px!important;margin:8px 2px 3px!important}
+ #grid article p,#related article p{font-size:8px!important}
+ #bar{gap:5px!important;padding:7px!important;border-radius:7px!important}
+ #bar .btn{font-size:9px!important;padding:6px 8px!important;min-height:30px!important}
+ #count{flex:1 1 100%;font-size:9px!important}
+ #watch>div{padding:10px!important}
+ #watchSlot{border-radius:7px!important}
+ #radioBar{padding:8px!important;gap:7px!important}
+ #radioBar .btn{min-height:32px!important;padding:6px 8px!important}
+}
+@media(max-width:380px){
+ #hero h2{font-size:27px!important}
+ #hero .stat{gap:16px!important}
+ #hero .stat b{font-size:19px!important}
+ #tabs .chip{font-size:9px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
