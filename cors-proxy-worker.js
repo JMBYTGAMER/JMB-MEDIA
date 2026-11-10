@@ -7,7 +7,7 @@
 // video / audio / playlist data (HTML, JSON, scripts … are refused) · size and time limits · per-visitor
 // rate limit (best effort) · strips cookies and unknown headers · no logging or storage.
 
-const ALLOWED = ['https://tv.jmbhost.qzz.io', 'https://tv.jbhub.ryzn.pro']; // exact origins allowed to use this proxy. Empty list = nobody.
+const ALLOWED = ['https://media.jmbhost.qzz.io']; // exact origins allowed to use this proxy. Empty list = nobody.
 const MAX_BYTES = 80 * 1024 * 1024;   // largest single response that is passed through
 const MAX_PLAYLIST = 2 * 1024 * 1024; // largest playlist that is rewritten
 const MAX_REDIRECTS = 4;
