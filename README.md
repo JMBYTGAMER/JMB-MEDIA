@@ -36,8 +36,8 @@ This project is plain HTML, CSS and JavaScript. Enable **GitHub Pages** for the 
 ├── tv/
 │   ├── index.html
 │   ├── jmb-tv-only.css
-│   ├── tv.css
-│   └── app.js
+│   ├── sw.js
+│   └── STREAM-SETUP.md
 ├── newspaper/
 │   ├── index.html
 │   └── app.js
