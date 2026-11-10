@@ -1,68 +1,1448 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>JMB TV — Watch authorised live channels</title>
-<meta name="description" content="Discover channels and watch authorised public live streams in the JMB TV in-page player.">
-<meta name="theme-color" content="#090b12">
-<link rel="stylesheet" href="../assets/css/styles.css"><link rel="stylesheet" href="../assets/css/theme.css"><link rel="stylesheet" href="tv.css">
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JMB TV – Live TV, Movies & Radio</title>
+<meta name="description" content="Discover public live TV channels, free-to-watch films and internet radio in JMB TV. Search, filter and play supported streams directly on your device.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#0f0f0f">
+<link rel="preconnect" href="https://iptv-org.github.io" crossorigin>
+<link rel="preconnect" href="https://archive.org" crossorigin>
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+<link rel="canonical" href="https://tv.jmbhost.qzz.io/tv/">
+<link rel="icon" type="image/png" href="/favicon/favicon-96x96.png?v=1" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg?v=1" />
+<link rel="shortcut icon" href="/favicon/favicon.ico?v=1" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png?v=1" />
+<link rel="manifest" href="/favicon/site.webmanifest?v=2" />
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="JMB TV">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<!-- Google Search Console: paste your verification tag here, e.g. <meta name="google-site-verification" content="YOUR_CODE"> -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="JMB TV">
+<meta property="og:title" content="JMB TV – Live TV, Movies & Radio">
+<meta property="og:description" content="Explore public TV channels, free films and online radio. Search, filter and watch on any device.">
+<meta property="og:url" content="https://tv.jmbhost.qzz.io/tv/">
+<meta property="og:image" content="https://tv.jmbhost.qzz.io/tv/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="JMB TV – Live TV, Movies & Radio">
+<meta name="twitter:description" content="Explore public TV channels, free films and online radio. Search, filter and watch on any device.">
+<meta name="twitter:image" content="https://tv.jmbhost.qzz.io/tv/og-image.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"JMB TV","url":"https://tv.jmbhost.qzz.io/tv/","description":"Web player for public TV channel listings, free films and internet radio.","applicationCategory":"EntertainmentApplication","operatingSystem":"Any","image":"https://tv.jmbhost.qzz.io/tv/og-image.png","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js" defer></script>
+<style>
+  :root{--glow:#ef444424;--bg:#0f0f0f;--fg:#f1f1f1;--card:#1f1f1f;--chip:#272727;--chiph:#3f3f3f;--bord:#ffffff2e;--input:#121212;--muted:#9ca3af}
+  html.light{--glow:#ef444416;--bg:#ffffff;--fg:#0f0f0f;--card:#ececec;--chip:#f0f0f0;--chiph:#e0e0e0;--bord:#00000026;--input:#ffffff;--muted:#606060}
+  body{background:var(--bg) radial-gradient(900px 320px at 50% -140px,var(--glow),transparent) no-repeat;color:var(--fg);font-family:Roboto,system-ui,sans-serif;transition:background .2s,color .2s}
+  .t-bg{background:var(--bg)}.t-bg2{background:color-mix(in srgb,var(--bg) 95%,transparent)}
+  .t-card{background:var(--card)}.t-chip{background:var(--chip);color:var(--fg)}
+  .t-input{background:var(--input);color:var(--fg)}.t-bord{border-color:var(--bord)!important}.t-muted{color:var(--muted)}
+  ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:#3a3a3a;border-radius:6px}
+  input[type=range]{accent-color:#ff0000;cursor:pointer}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.45rem .7rem;border-radius:9999px;background:var(--chip);font-size:.9rem;line-height:1;transition:transform .15s,background .2s}
+  .btn:hover{background:var(--chiph);transform:translateY(-1px)}.btn:active{transform:scale(.9)}
+  .t-input{transition:box-shadow .2s,border-color .2s}.t-input:focus{box-shadow:0 0 0 3px #3b82f640}
+  .no-scrollbar{scrollbar-width:none}.no-scrollbar::-webkit-scrollbar{display:none}
+  .chip{padding:.4rem .9rem;border-radius:9999px;background:var(--chip);white-space:nowrap;font-size:.85rem;font-weight:500;transition:transform .15s,background .2s,color .2s}
+  .chip:hover{background:var(--chiph)}.chip:active{transform:scale(.94)}
+  .chip.on{background:var(--fg);color:var(--bg)}
+  .rc{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+  .del{opacity:0;transition:opacity .2s,background .2s,transform .15s}.rc:hover .del,.del:focus{opacity:1}.del:active{transform:scale(.85)}
+  @media (hover:none){.del{opacity:1}}
+  .toast-in{animation:toastIn .3s cubic-bezier(.2,.8,.2,1)}@keyframes toastIn{from{opacity:0;transform:translate(-50%,20px)}}
+  .sec{display:flex;align-items:center;gap:.5rem;font-weight:600}.sec:before{content:"";width:4px;height:1.1rem;border-radius:4px;background:#ef4444}
+  :root{--accent:#dc2626}
+  .bg-red-600,.\!bg-red-600,.hover\:bg-red-600:hover{background-color:var(--accent)!important}
+  .text-red-500,.text-red-400,.hover\:text-red-500:hover{color:var(--accent)!important}
+  .border-t-red-500{border-top-color:var(--accent)!important}
+  .sec:before{background:var(--accent)}
+  .brand-text{background:linear-gradient(90deg,var(--accent),#f59e0b);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:70;transition:width .1s}
+  .orb{position:fixed;border-radius:50%;filter:blur(90px);opacity:.16;pointer-events:none;z-index:-1;animation:orb 18s ease-in-out infinite alternate}
+  html.light .orb{opacity:.09}
+  @keyframes orb{to{transform:translate(60px,40px) scale(1.2)}}
+  .hero{position:relative;overflow:hidden;border-radius:1.25rem;padding:1.4rem;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 30%,transparent),transparent 65%),var(--card)}
+  .hero:after{content:"";position:absolute;inset:-60%;background:conic-gradient(from 0deg,transparent,color-mix(in srgb,var(--accent) 22%,transparent),transparent 30%);animation:heroSpin 16s linear infinite;pointer-events:none}
+  .hero>*{position:relative;z-index:1}
+  @keyframes heroSpin{to{transform:rotate(360deg)}}
+  .stat b{font-size:1.5rem;font-weight:800}
+  .fv{opacity:0;transition:opacity .2s,background .2s,transform .15s}
+  article:hover .fv,.fv.saved,.fv:focus{opacity:1}
+  @media (hover:none){.fv{opacity:1}}
+  #grid article,#movGrid article{content-visibility:auto;contain-intrinsic-size:auto 200px}
+  #accents button{width:1.5rem;height:1.5rem;border-radius:9999px;transition:transform .15s}
+  #accents button:hover{transform:scale(1.15)}#accents button.on{outline:2px solid var(--fg);outline-offset:2px}
+  .btn.hidden{display:none}
+  @media (max-width:767px){ /* movies on phones: controls sit below the video. Live TV keeps the overlay controls. */
+    #stage.movie:not(:fullscreen):not(.mini) #ctl{position:static;background:#0c0c0c;opacity:1!important;transform:none!important;pointer-events:auto!important}
+    #stage.movie:not(:fullscreen) #ctl .btn{padding:.4rem .55rem}
+    #stage.movie:not(:fullscreen) #vol,#stage.movie:not(:fullscreen) .lbl{display:none}
+  }
+  #frame{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+  #seek{touch-action:none}
+  #seek:hover .st,#seek.drag .st{height:6px}
+  #seekKnob{transform:translate(-50%,-50%) scale(0);transition:transform .15s}
+  #seek:hover #seekKnob,#seek.drag #seekKnob{transform:translate(-50%,-50%) scale(1)}
+  @media (hover:none){#seekKnob{transform:translate(-50%,-50%) scale(1)}}
+  .hint{position:absolute;top:50%;padding:.6rem .95rem;border-radius:9999px;background:#000b;color:#fff;font-size:.95rem;font-weight:700;pointer-events:none;opacity:0}
+  .hint.show{animation:hintPop .75s ease-out}
+  @keyframes hintPop{0%{opacity:0;transform:translateY(-50%) scale(.7)}20%{opacity:1;transform:translateY(-50%) scale(1)}80%{opacity:1;transform:translateY(-50%)}100%{opacity:0;transform:translateY(-50%) scale(1.05)}}
+  .mv{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+  .heart{transition:background .2s,transform .15s}.heart:active{transform:scale(.85)}
+  .heart.saved{background:var(--accent)!important;color:#fff}.heart.saved svg{fill:currentColor}
+  .thumb{transition:transform .25s,box-shadow .25s}
+  article:hover .thumb{transform:translateY(-4px) scale(1.02);box-shadow:0 12px 28px #0006}
+  #grid article,#related article{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+  .enter{animation:enter .4s cubic-bezier(.2,.8,.2,1)}.pop{animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+  .bump{animation:bump .35s}.spin-once{animation:spinOnce .5s}
+  .dot{width:6px;height:6px;border-radius:50%;background:#fff;animation:blink 1.2s infinite}
+  @keyframes rise{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+  @keyframes enter{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:scale(.6) translateY(20px)}to{opacity:1;transform:none}}
+  @keyframes bump{40%{transform:translate(-50%,-50%) scale(1.25)}}
+  @keyframes spinOnce{to{transform:rotate(360deg)}}
+  @keyframes blink{50%{opacity:.25}}
+    .menu-in{animation:menuIn .18s ease-out;transform-origin:bottom right}
+  @keyframes menuIn{from{opacity:0;transform:translateY(6px) scale(.96)}}
+  .pv{animation:fade .25s}@keyframes fade{from{opacity:0}}
+  #grid article,#related article{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+  #grid img,#related img{-webkit-user-drag:none}
+  header{animation:dropIn .5s cubic-bezier(.2,.8,.2,1) backwards}
+  @keyframes dropIn{from{transform:translateY(-100%);opacity:0}}
+  .btn{position:relative;overflow:hidden}
+  .ripple{position:absolute;border-radius:50%;background:currentColor;opacity:.25;transform:scale(0);animation:ripple .6s ease-out;pointer-events:none}
+  @keyframes ripple{to{transform:scale(2.5);opacity:0}}
+  .shimmer{background:linear-gradient(90deg,var(--card) 25%,var(--chiph) 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite linear}
+  @keyframes shimmer{to{background-position:-200% 0}}
+  .thumb img:not(.ld){opacity:0}.thumb img.ld{animation:imgIn .5s backwards}
+  @keyframes imgIn{from{opacity:0;transform:scale(.9)}}
+  .stag>*{animation:rise .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*70ms)}
+  .float{animation:float 3s ease-in-out infinite}@keyframes float{50%{transform:translateY(-6px)}}
+  .fade{animation:fade .25s}
+  #miniSlot{transition:left .35s cubic-bezier(.2,.8,.2,1),top .35s cubic-bezier(.2,.8,.2,1);touch-action:none;cursor:grab}
+  #miniSlot.dragging{transition:none;cursor:grabbing;box-shadow:0 20px 40px #0008}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  #stage .btn{background:#ffffff2e;color:#fff}#stage .btn:hover{background:#ffffff4d}
+
+  #frame{aspect-ratio:16/9;max-height:75vh;margin:0 auto}
+  .mini #frame{aspect-ratio:16/9!important;max-height:none!important;width:100%!important}
+  .mini #ctl,.mini #bigPlay{display:none}
+  #stage:not(.mini) #miniBar{display:none}
+  #stage:fullscreen{background:#000;display:flex;flex-direction:column;justify-content:center}
+  #stage:fullscreen #frame{width:100%;height:100%!important;max-height:none!important;aspect-ratio:auto!important}
+  #ctl{position:absolute;bottom:0;left:0;right:0;color:#fff;background:linear-gradient(transparent,#000d);transition:opacity .25s,transform .25s}
+  #bigPlay{transition:opacity .25s}
+  #stage.idle #ctl{opacity:0;transform:translateY(10px);pointer-events:none}
+  #stage.idle #bigPlay{opacity:0;pointer-events:none}
+  #stage.idle{cursor:none}
+  .line2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+</style>
 </head>
 <body>
-<header class="site-header"><div class="container header-inner">
-<a class="brand" href="../"><span class="brand-mark">JM</span><span>JMB MEDIA<small>WATCH · READ · LISTEN</small></span></a>
-<nav class="main-nav"><a data-nav="tv" href="../tv/">JMB TV</a><a data-nav="newspaper" href="../newspaper/">Newspapers</a><a data-nav="radio" href="../radio/">Radio</a><a data-nav="social" href="../social/">Social Media</a></nav>
-<div class="header-actions"><button class="icon-btn" data-theme-toggle aria-label="Toggle theme">◐</button><button class="menu-toggle" data-menu-toggle aria-label="Open menu" aria-expanded="false">☰</button></div>
-</div><nav class="mobile-nav" data-mobile-nav><a href="../tv/">📺 JMB TV</a><a href="../newspaper/">📰 Newspapers</a><a href="../radio/">📻 JMB Radio</a><a href="../social/">🌍 Social Media</a></nav></header>
+<h1 class="sr-only">JMB TV – Watch live TV channels online for free</h1>
+<div id="progress"></div>
+<div class="orb" style="width:380px;height:380px;background:var(--accent);top:-120px;left:-100px"></div>
+<div class="orb" style="width:320px;height:320px;background:#3b82f6;bottom:-120px;right:-80px;animation-delay:-6s"></div>
+<noscript><p style="padding:2rem;text-align:center">JMB TV needs JavaScript to browse and play live TV channels. Please enable JavaScript and reload.</p></noscript>
+<header class="sticky top-0 z-30 t-bg2 backdrop-blur border-b t-bord px-3 py-2 flex flex-wrap items-center gap-2">
+  <div class="flex items-center gap-2 font-extrabold text-lg mr-2 tracking-tight"><img data-logo alt="JMB TV logo" class="h-8 w-auto drop-shadow">JMB TV</div>
+  <input id="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Search channels…" class="flex-1 min-w-[150px] max-w-xl t-input t-bord border rounded-full px-4 py-2 text-sm outline-none focus:border-blue-500">
+  <select id="cat" autocomplete="off" class="t-chip rounded-full px-3 py-2 text-sm outline-none max-w-[45%]"><option value="">All categories</option></select>
+  <select id="lang" autocomplete="off" class="t-chip rounded-full px-3 py-2 text-sm outline-none max-w-[45%]" title="Language"><option value="">Loading languages…</option></select>
+  <button id="installBtn" class="btn hidden" title="Install JMB TV as an app" data-ic="download"><span class="hidden sm:inline">Install</span></button>
+  <button id="aboutBtn" class="btn" title="About us" data-ic="info"><span class="hidden sm:inline">About</span></button>
+  <button id="theme" class="btn" title="Switch light/dark theme"></button>
+</header>
 
-<main class="container tv-page">
-<section class="tv-hero">
-<div class="tv-hero-copy">
-<span class="eyebrow"><i></i> JMB MEDIA · LIVE TV</span>
-<h1>Your screen.<br><span class="gradient">Your world.</span></h1>
-<p>Discover television channels from around the world and watch eligible public streams right here. Choose a channel, press play, and stay on JMB TV.</p>
-<div class="tv-hero-pills"><span>▶ In-page player</span><span>HD when provided</span><span>Mobile friendly</span></div>
+<main class="p-3 sm:p-5">
+  <div id="tabs" class="flex gap-2 mb-3"><button class="chip on" data-tab="tv">Live TV</button><button class="chip" data-tab="mov">Movies &amp; TV</button><button class="chip" data-tab="radio">Radio</button></div>
+  <div id="liveView">
+  <section id="hero" class="hero mb-5">
+    <div class="flex flex-wrap items-center justify-between gap-5">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight"><span class="brand-text">The world is live.</span></h2>
+        <p class="t-muted mt-1 text-sm max-w-md">Thousands of free channels, movies and radio stations. Pick something and press play.</p>
+        <div class="flex flex-wrap gap-2 mt-3"><button id="heroRnd" class="btn !bg-red-600 !text-white" data-ic="shuffle">Surprise me</button><button id="heroMov" class="btn" data-ic="play">Movies</button><button id="heroRadio" class="btn" data-ic="radio">Radio</button></div>
+      </div>
+      <div class="flex gap-6 text-center stat"><div><b id="stCh">0</b><p class="text-xs t-muted">channels</p></div><div><b id="stLang">0</b><p class="text-xs t-muted">languages</p></div><div><b id="stCat">0</b><p class="text-xs t-muted">categories</p></div></div>
+    </div>
+  </section>
+  <section id="picksWrap" class="hidden mb-6"><h2 class="sec mb-2">Today's picks</h2><div id="picks" class="no-scrollbar flex gap-3 overflow-x-auto pb-2"></div></section>
+  <div id="status" class="text-center t-muted py-20"><img data-logo alt="" class="h-16 w-auto mx-auto mb-3 animate-pulse">Loading playlist…</div>
+  <div id="chips" class="no-scrollbar flex gap-2 overflow-x-auto pb-3 mb-2"></div>
+  <section id="recentWrap" class="hidden mb-6">
+    <div class="flex items-center justify-between mb-2"><h2 class="sec">Recently watched</h2><button id="recentClear" class="text-xs t-muted hover:text-red-500 underline">Clear all</button></div>
+    <div id="recent" class="no-scrollbar flex gap-3 overflow-x-auto pb-2"></div>
+  </section>
+  <div id="bar" class="hidden flex flex-wrap items-center gap-2 mb-3">
+    <span id="count" class="text-xs t-muted mr-auto"></span>
+    <button id="hideBtn" class="btn !py-1.5 !px-3 text-xs" title="Hide channels that failed on this site"></button>
+    <button id="clearBtn" class="btn !py-1.5 !px-3 text-xs hidden" title="Clear search, category and language">Clear filters</button>
+    <button id="proxyTest" class="btn !py-1.5 !px-3 text-xs" title="Check that the proxy works">Test proxy</button>
+    <button id="proxyBtn" class="btn !py-1.5 !px-3 text-xs" title="Use a proxy for blocked or HTTP-only streams. Turn it off if it causes problems."></button>
+    <button id="rndBtn" class="btn !py-1.5 !px-3 text-xs" title="Play a random channel from this list" data-ic="shuffle">Surprise me</button>
+    <button id="scanBtn" class="btn !py-1.5 !px-3 text-xs" title="Check which channels work on this site" data-ic="scan">Scan list</button>
+    <button id="resetBtn" class="btn !py-1.5 !px-3 text-xs hidden" title="Show all hidden channels again">Reset</button>
+  </div>
+  <div id="scanProg" class="hidden mb-3">
+    <div class="flex justify-between text-xs t-muted mb-1"><span id="scanTxt"></span><button id="scanStop" class="underline hover:text-red-500">Stop</button></div>
+    <div class="h-1.5 rounded-full t-card overflow-hidden"><div id="scanBar" class="h-full bg-red-600 transition-all duration-300" style="width:0%"></div></div>
+  </div>
+  <div id="grid" class="grid gap-x-4 gap-y-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"></div>
+  <div id="sentinel" class="h-1"></div>
+  <div class="text-center mt-8"><button id="more" class="btn hidden">Load more</button></div>
 </div>
-<div class="tv-hero-art" aria-hidden="true"><div class="tv-screen"><div class="tv-screen-top"><span></span><span></span><span></span></div><div class="tv-screen-content"><div class="tv-screen-play">▶</div><b>JMB <em>LIVE</em></b><small>WATCH · DISCOVER · ENJOY</small></div></div><div class="tv-orbit tv-orbit-one"></div><div class="tv-orbit tv-orbit-two"></div></div>
-</section>
-
-<section class="tv-search-panel">
-<div class="tv-search-heading"><div><span class="page-kicker">CHANNEL DISCOVERY</span><h2>Find something to watch</h2><p>Search by channel, country, language or category.</p></div><span class="tv-live-indicator"><i></i> DIRECTORY ONLINE</span></div>
-<div class="toolbar tv-toolbar">
-<input id="channelSearch" class="field search-field" type="search" placeholder="Search channels — Asianet, BBC, Kairali..." aria-label="Search channels">
-<select id="categoryFilter" class="field"><option value="">All categories</option></select>
-<select id="languageFilter" class="field"><option value="">All languages</option></select>
-<select id="countryFilter" class="field"><option value="">All countries</option></select>
-<select id="availabilityFilter" class="field"><option value="">All channels</option><option value="playable">Watchable on JMB TV</option></select>
-</div>
-<div class="tv-stat-grid">
-<div><strong id="totalCount">—</strong><span>listed channels</span></div>
-<div><strong id="playableCount">—</strong><span>playable here</span></div>
-<div><strong id="hdCount">—</strong><span>HD streams listed</span></div>
-</div>
-<div class="tv-notice"><span>ⓘ</span><p>JMB TV plays only streams that are openly available, use HTTPS, and can be matched to the broadcaster’s own domain. Paid channels, geo-blocked feeds and streams requiring hidden access headers cannot be unlocked here. Some channels may therefore show as unavailable in the in-page player.</p></div>
-</section>
-
-<section id="programmeSection" class="tv-program-section hidden">
-<div class="tv-section-heading"><div><span class="page-kicker">SMART SEARCH</span><h2>Programme results</h2><p>Find the broadcaster associated with a show. Playback is offered here only when an authorised public stream is available.</p></div></div>
-<div id="programmeResults" class="tv-program-grid"></div>
-</section>
-
-<section class="tv-directory-section">
-<div class="tv-section-heading"><div><span class="page-kicker">EXPLORE CHANNELS</span><h2>Channel directory</h2><p>Playable channels appear first. Unavailable channels stay in the directory without sending you away to another website.</p></div>
-<div class="tv-sort-wrap"><label for="sortFilter">Sort</label><select id="sortFilter" class="field"><option value="playable">Playable first</option><option value="name">Name A–Z</option><option value="country">Country</option></select></div></div>
-<div class="tv-result-line"><span id="channelStatus">Preparing channel catalogue…</span><span class="tv-source-label">Source: public channel metadata</span></div>
-<div class="tv-channel-grid" id="channelGrid"><div class="loading-state">Preparing JMB TV <span class="loading-dot"></span><span class="loading-dot"></span></div></div>
-<div class="tv-load-wrap"><button id="loadMoreChannels" class="btn secondary hidden" type="button">Load more channels ↓</button></div>
-</section>
+  <section id="movies" class="hidden">
+    <div class="flex items-center justify-between gap-3"><h2 class="sec">Movies &amp; TV</h2><button id="movRnd" class="btn !py-1.5 !px-3 text-xs" data-ic="shuffle">Surprise me</button></div>
+    <p class="text-xs t-muted mt-1">Free public-domain and openly licensed films from the Internet Archive, in many languages. Search by title in the box above.</p>
+    <div id="movChips" class="no-scrollbar flex gap-2 overflow-x-auto pb-3 mb-2 mt-3"></div>
+    <div class="flex flex-wrap items-center gap-2 mb-3 text-xs"><span class="t-muted">Maturity</span><div id="matChips" class="flex gap-2"><button class="chip" data-mat="all">All</button><button class="chip" data-mat="safe">Hide mature</button><button class="chip" data-mat="family">Family</button></div><span class="t-muted">Based on tags, not official ratings</span></div>
+    <div class="flex items-center gap-2 mb-3 text-xs"><span class="t-muted">Language</span><select id="movLang" class="t-chip rounded-full px-3 py-1.5 text-xs outline-none" title="Filter movies by language"></select></div>
+    <div id="movStatus" class="text-sm t-muted mb-3"></div>
+    <div id="movGrid" class="grid gap-x-4 gap-y-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"></div>
+    <div class="text-center mt-8"><button id="movMore" class="btn hidden">Load more</button></div>
+  </section>
+  <section id="radio" class="hidden">
+    <h2 class="sec">Radio</h2>
+    <p class="text-xs t-muted mt-1">Free internet radio stations from around the world, from the community Radio Browser directory. Search by name or pick a genre.</p>
+    <div id="radioChips" class="no-scrollbar flex gap-2 overflow-x-auto pb-3 mb-2 mt-3"></div>
+    <div id="radioStatus" class="text-sm t-muted mb-3"></div>
+    <div id="radioGrid" class="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></div>
+  </section>
 </main>
+<footer class="text-center text-xs t-muted px-4 pb-10 pt-4">
+  <p class="max-w-2xl mx-auto mb-3">Watch live TV online with JMB TV: thousands of news, sports, movies, music, kids and entertainment channels from around the world. Search by name, filter by category or language, and stream in your browser on mobile, tablet or desktop.</p>
+  JMB TV · Streams come from public playlists and belong to their owners ·
+  <button id="aboutLink" class="underline hover:text-red-500 transition-colors">About us</button> · <button id="keysLink" class="underline hover:text-red-500 transition-colors">Shortcuts</button>
+</footer>
 
-<dialog class="player-dialog tv-player-dialog" id="playerDialog">
-<div class="tv-player-head"><div class="tv-player-brand"><span class="brand-mark">JM</span><div><span class="page-kicker">NOW PLAYING ON JMB TV</span><h2 id="playerTitle">Channel</h2><p id="playerMeta">Live stream</p></div></div>
-<div class="tv-player-controls"><label class="tv-quality-label" for="qualitySelect">QUALITY</label><select id="qualitySelect" class="field"><option value="">Auto</option></select><button class="icon-btn" id="closePlayer" aria-label="Close player">✕</button></div></div>
-<div class="tv-video-frame"><video id="tvVideo" controls playsinline autoplay></video><div id="playerLoading" class="tv-player-loading hidden"><span class="loading-dot"></span> Connecting to stream…</div></div>
-<div class="tv-player-foot"><span class="tv-live-indicator"><i></i> LIVE PLAYER</span><p id="playerHelp">Stream quality and availability depend on the broadcaster.</p></div>
-</dialog>
-<footer class="footer"><div class="container footer-inner"><div>© <span data-year></span> JMB MEDIA · JMB TV</div><div class="footer-links"><a href="../newspaper/">Newspapers</a><a href="../radio/">Radio</a><a href="../social/">Social Media</a><span>Public channel metadata</span></div></div></footer>
-<script src="../assets/js/common.js"></script><script src="app.js"></script>
-</body></html>
+<!-- Watch page -->
+<section id="watch" class="hidden fixed inset-0 z-40 t-bg overflow-y-auto">
+  <div class="max-w-6xl mx-auto p-2 sm:p-4">
+    <button id="back" class="btn mb-3" data-ic="back">Back</button>
+    <div id="watchSlot" class="bg-black rounded-xl overflow-hidden"></div>
+    <div class="flex items-start justify-between gap-3 mt-3"><h2 id="wTitle" class="text-lg sm:text-xl font-semibold"></h2><div class="flex gap-2 shrink-0"><button id="saveBtn" class="btn hidden" title="Save movie"></button><button id="shareBtn" class="btn" title="Share" data-ic="share">Share</button></div></div>
+    <p id="wMeta" class="text-sm t-muted"></p>
+    <p id="wDesc" class="text-sm t-muted mt-3 max-w-3xl whitespace-pre-line"></p>
+    <div id="eps" class="hidden mt-5 max-w-3xl">
+      <div class="flex items-center justify-between mb-2"><h2 class="sec">Episodes</h2><span id="epCount" class="text-xs t-muted"></span></div>
+      <div id="seasonChips" class="no-scrollbar flex gap-2 overflow-x-auto pb-2"></div>
+      <div id="epList" class="grid gap-2 sm:grid-cols-2 max-h-96 overflow-y-auto pr-1"></div>
+    </div>
+    <h2 id="relH" class="font-semibold mt-6 mb-3">More in this category</h2>
+    <div id="related" class="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"></div>
+  </div>
+</section>
+
+<!-- Mini player -->
+<div id="miniSlot" class="hidden fixed bottom-3 right-3 z-50 w-64 sm:w-80 rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/20 bg-black"></div>
+
+<!-- Player stage (single video element is moved between watch page and mini slot) -->
+<div id="about" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+  <div id="aboutCard" class="t-bg rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6 shadow-2xl ring-1 ring-white/10 relative">
+    <button id="aboutClose" class="btn absolute top-3 right-3 !p-2" title="Close" data-ic="close"></button>
+    <div class="stag text-center">
+      <img data-logo alt="JMB TV logo" class="h-20 w-auto mx-auto float" style="--i:0">
+      <h2 class="text-2xl font-extrabold mt-3" style="--i:1">About JMB TV</h2>
+      <p class="text-sm t-muted mt-2" style="--i:2">JMB TV is a free live-TV web player. Browse thousands of publicly available IPTV channels from around the world, search by name, filter by category or language, and watch in a fast, clean player.</p>
+    </div>
+    <ul class="stag mt-5 space-y-2 text-sm">
+      <li class="flex gap-2" style="--i:3"><span data-ic="check" class="text-red-500 shrink-0 mt-0.5"></span>Live previews on hover or press-and-hold</li>
+      <li class="flex gap-2" style="--i:4"><span data-ic="check" class="text-red-500 shrink-0 mt-0.5"></span>Draggable mini-player, Picture-in-Picture and fullscreen</li>
+      <li class="flex gap-2" style="--i:5"><span data-ic="check" class="text-red-500 shrink-0 mt-0.5"></span>Multiple audio tracks, brightness and aspect-ratio controls</li>
+      <li class="flex gap-2" style="--i:6"><span data-ic="check" class="text-red-500 shrink-0 mt-0.5"></span>Light and dark themes, responsive on every screen</li>
+      <li class="flex gap-2" style="--i:7"><span data-ic="check" class="text-red-500 shrink-0 mt-0.5"></span>Installable as an app (Install button, or Share → Add to Home Screen on iPhone)</li>
+      <li class="flex gap-2" style="--i:7"><span data-ic="check" class="text-red-500 shrink-0 mt-0.5"></span>Free public-domain movies with Save and Continue watching</li>
+    </ul>
+    <p class="stag mt-5 text-xs t-muted"><span style="--i:7">Shortcuts: <b>Space/K</b> play·pause, <b>F</b> fullscreen, <b>M</b> mute, <b>A</b> aspect, <b>/</b> search, <b>Esc</b> back.</span></p>
+    <div id="accents" class="stag mt-4 flex items-center justify-center gap-2"><span class="text-xs t-muted mr-1" style="--i:8">Accent</span><button data-a="#dc2626" style="background:#dc2626"></button><button data-a="#2563eb" style="background:#2563eb"></button><button data-a="#16a34a" style="background:#16a34a"></button><button data-a="#9333ea" style="background:#9333ea"></button><button data-a="#ea580c" style="background:#ea580c"></button><button data-a="#db2777" style="background:#db2777"></button></div>
+    <p class="stag mt-4 text-xs t-muted rounded-xl t-card p-3"><span style="--i:8">JMB TV does not host, store or upload any video. Channels come from the public iptv-org playlists and belong to their respective owners; some may be offline or region-locked. Player powered by HLS.js.</span></p>
+  </div>
+</div>
+<div id="toast" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-[70] flex items-center gap-3 rounded-full bg-[#272727] text-white text-sm pl-4 pr-2 py-2 shadow-2xl ring-1 ring-white/10"><span id="toastTxt"></span><button id="toastAct" class="btn !py-1 !px-3 text-xs !bg-white/15 hidden">Undo</button></div>
+<button id="toTop" class="btn hidden fixed bottom-4 left-4 z-40 !p-3 shadow-lg ring-1 ring-white/10" title="Back to top" data-ic="up"></button>
+<div id="radioBar" class="hidden fixed bottom-0 inset-x-0 z-[45] t-bg2 backdrop-blur border-t t-bord px-3 py-2 flex items-center gap-3">
+  <span class="w-10 h-10 rounded-lg bg-red-600 text-white flex items-center justify-center shrink-0" data-ic="radio"></span>
+  <div class="min-w-0 flex-1"><p id="rbName" class="font-medium truncate text-sm"></p><p id="rbMeta" class="text-xs t-muted truncate"></p></div>
+  <input id="rbVol" type="range" min="0" max="1" step="0.01" value="1" class="hidden sm:block w-24" title="Volume">
+  <button id="rbPlay" class="btn" title="Play / Pause"></button><button id="rbClose" class="btn" title="Stop" data-ic="close"></button>
+</div>
+<div id="keys" class="hidden fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+  <div id="keysCard" class="t-bg rounded-2xl w-full max-w-sm max-h-[90vh] overflow-y-auto p-6 shadow-2xl ring-1 ring-white/10 relative">
+    <button id="keysClose" class="btn absolute top-3 right-3 !p-2" title="Close" data-ic="close"></button>
+    <h2 class="text-xl font-bold mb-3">Keyboard shortcuts</h2>
+    <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
+      <dt><b>Space / K</b></dt><dd class="t-muted">Play / pause</dd><dt><b>F</b></dt><dd class="t-muted">Fullscreen</dd><dt><b>M</b></dt><dd class="t-muted">Mute</dd><dt><b>A</b></dt><dd class="t-muted">Fit / Stretch / Crop</dd>
+      <dt><b>J / L</b></dt><dd class="t-muted">Back / forward 10 s (movies)</dd><dt><b>← / →</b></dt><dd class="t-muted">Back / forward 5 s (movies)</dd><dt><b>0–9</b></dt><dd class="t-muted">Jump to 0–90% (movies)</dd><dt><b>&lt; / &gt;</b></dt><dd class="t-muted">Slower / faster (movies)</dd>
+      <dt><b>/</b></dt><dd class="t-muted">Search</dd><dt><b>?</b></dt><dd class="t-muted">This list</dd><dt><b>Esc</b></dt><dd class="t-muted">Back / close</dd>
+    </dl>
+  </div>
+</div>
+<div id="age" class="hidden fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+  <div id="ageCard" class="t-bg rounded-2xl w-full max-w-sm p-6 text-center shadow-2xl ring-1 ring-white/10">
+    <div class="w-14 h-14 mx-auto rounded-full bg-red-600 text-white flex items-center justify-center text-lg font-extrabold">18+</div>
+    <h2 class="text-xl font-bold mt-3">Mature content</h2>
+    <p id="ageTxt" class="text-sm t-muted mt-2"></p>
+    <p class="text-sm mt-3 font-medium">Are you 18 years or older?</p>
+    <div class="flex gap-2 justify-center mt-4"><button id="ageNo" class="btn">No, go back</button><button id="ageYes" class="btn !bg-red-600 !text-white">Yes, I'm 18+</button></div>
+    <p class="text-[11px] t-muted mt-3">This is a self-declaration, not an ID check.</p>
+  </div>
+</div>
+<div id="parking" class="hidden">
+<div id="stage" class="relative bg-black">
+  <div id="frame" class="bg-black"><video id="v" class="w-full h-full object-contain" playsinline></video></div>
+  <div id="spin" class="hidden absolute inset-0 flex items-center justify-center pointer-events-none"><div class="w-12 h-12 rounded-full border-4 border-white/25 border-t-red-500 animate-spin"></div></div>
+  <div id="err" class="hidden absolute inset-0 flex items-center justify-center text-center p-4 bg-black/80 text-sm text-red-300"></div>
+  <div id="miniBar" class="absolute inset-x-0 top-0 flex justify-between p-1 bg-gradient-to-b from-black/80 to-transparent">
+    <span id="mTitle" class="text-xs truncate px-1 pt-1"></span>
+    <span class="flex gap-1"><button id="mPlay" class="btn !p-1.5"></button><button id="mOpen" class="btn !p-1.5" title="Expand" data-ic="expand"></button><button id="mClose" class="btn !p-1.5" title="Close" data-ic="close"></button></span>
+  </div>
+  <button id="bigPlay" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-black/60 text-white text-2xl hover:bg-black/80 inline-flex items-center justify-center"></button>
+  <div id="hintL" class="hint" style="left:12%"></div><div id="hintR" class="hint" style="right:12%"></div>
+  <div id="boost" class="hidden absolute top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/70 text-white text-sm font-semibold pointer-events-none">2× speed</div>
+  <div id="ctl" class="flex flex-wrap items-center gap-2 p-2 sm:p-3 text-sm">
+    <div id="seek" class="hidden w-full relative h-6 cursor-pointer select-none" title="Click or drag to skip">
+      <div class="st absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 rounded bg-white/25 transition-all"><div id="seekBuf" class="absolute inset-y-0 left-0 rounded bg-white/40" style="width:0"></div><div id="seekFill" class="absolute inset-y-0 left-0 rounded bg-red-600" style="width:0"></div></div>
+      <div id="seekKnob" class="absolute top-1/2 w-3.5 h-3.5 rounded-full bg-red-600" style="left:0"></div>
+      <div id="seekTip" class="hidden absolute bottom-full mb-1 -translate-x-1/2 px-2 py-0.5 rounded bg-black/80 text-white text-xs tabular-nums pointer-events-none"></div>
+    </div>
+    <button id="play" class="btn" title="Play/Pause"></button>
+    <button id="skipB" class="btn hidden" title="Back 10 seconds (J)" data-ic="back10"></button>
+    <button id="skipF" class="btn hidden" title="Forward 10 seconds (L)" data-ic="fwd10"></button>
+    <button id="mute" class="btn" title="Mute"></button>
+    <input id="vol" type="range" min="0" max="1" step="0.01" value="1" class="w-20 sm:w-28" title="Volume">
+    <span id="timeTxt" class="hidden text-xs tabular-nums text-white/90 whitespace-nowrap"></span>
+    <label class="flex items-center gap-1 text-white/80" data-ic="sun"><input id="bri" type="range" min="0.3" max="1.8" step="0.05" value="1" class="w-20 sm:w-28" title="Brightness"></label>
+    <button id="ratio" class="btn" title="Aspect: Fit / Stretch / Crop (A)"></button>
+    <span class="flex-1"></span>
+    <div id="speedWrap" class="relative hidden">
+      <button id="spd" class="btn" title="Playback speed (&lt; &gt;)">1×</button>
+      <div id="spdMenu" class="hidden absolute bottom-full right-0 mb-2 min-w-[8rem] max-h-40 sm:max-h-64 overflow-y-auto rounded-xl bg-black/90 backdrop-blur p-1 text-sm shadow-xl ring-1 ring-white/15"></div>
+    </div>
+    <div id="audWrap" class="relative hidden">
+      <button id="aud" class="btn" title="Audio track" data-ic="audio"><span class="lbl">Audio</span></button>
+      <div id="audMenu" class="hidden absolute bottom-full right-0 mb-2 min-w-[11rem] max-h-36 sm:max-h-56 overflow-y-auto rounded-xl bg-black/90 backdrop-blur p-1 text-sm shadow-xl ring-1 ring-white/15"></div>
+    </div>
+    <button id="pip" class="btn" title="Picture-in-Picture" data-ic="pip"><span class="lbl">PiP</span></button>
+    <button id="minib" class="btn" title="Mini player" data-ic="mini"><span class="lbl">Mini</span></button>
+    <button id="fs" class="btn" title="Fullscreen"></button>
+  </div>
+</div>
+
+</div>
+<script>
+// ---- Config ----
+const PLAYLIST = 'https://iptv-org.github.io/iptv/index.m3u';
+// Optional CORS proxy, used automatically when a stream is blocked. Deploy cors-proxy-worker.js, then e.g. 'https://jb-proxy.yourname.workers.dev/?url='
+const PROXY = 'https://jb-proxy.johanbiju15.workers.dev/?url=';
+const LANG_PLAYLIST = 'https://iptv-org.github.io/iptv/index.language.m3u'; // used for the language filter
+const PAGE = 60;
+const BASE_TITLE = document.title;
+const SKEL = '<div><div class="aspect-video rounded-xl shimmer"></div><div class="h-3 w-4/5 mt-3 rounded shimmer"></div><div class="h-3 w-2/5 mt-2 rounded shimmer"></div></div>';
+const $ = id => document.getElementById(id);
+const url = x => location.protocol === 'https:' ? x.replace(/^http:/, 'https:') : x; // try https on secure pages
+const viaProxy = x => PROXY + encodeURIComponent(x);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const P = {
+  play:'<polygon points="6 3 20 12 6 21" fill="currentColor"/>',
+  pause:'<rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/>',
+  volume:'<polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/>',
+  mute:'<polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path d="M22 9l-6 6M16 9l6 6"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+  pip:'<rect x="2" y="4" width="20" height="16" rx="2"/><rect x="12" y="11" width="8" height="6" rx="1" fill="currentColor"/>',
+  mini:'<path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/>',
+  fs:'<path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>',
+  fsExit:'<path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/>',
+  expand:'<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>',
+  close:'<path d="M18 6 6 18M6 6l12 12"/>',
+  back:'<path d="M19 12H5M12 19l-7-7 7-7"/>',
+  audio:'<path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>',
+  scan:'<path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10"/>',
+  download:'<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>',
+  share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',
+  back10:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><text x="12" y="15.5" font-size="7.5" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none">10</text>',
+  fwd10:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/><text x="12" y="15.5" font-size="7.5" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none">10</text>',
+  external:'<path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+  radio:'<circle cx="12" cy="12" r="2"/><path d="M4.9 19.1a10 10 0 0 1 0-14.2M7.8 16.2a6 6 0 0 1 0-8.4M16.2 7.8a6 6 0 0 1 0 8.4M19.1 4.9a10 10 0 0 1 0 14.2"/>',
+  heart:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
+  shuffle:'<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
+  up:'<path d="m18 15-6-6-6 6"/>',
+  aspect:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h3M7 9v3M17 15h-3M17 15v-3"/>',
+  info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>'
+};
+const ic = (n, s = 18) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+const setIcon = (el, n, s) => el.innerHTML = ic(n, s);
+function re(el, c) { el.classList.remove(c); void el.offsetWidth; el.classList.add(c); } // restart CSS animation
+const spin = on => $('spin').classList.toggle('hidden', !on);
+
+let channels = [], filtered = [], shown = 0, cur = null, hls = null, mode = 'none';
+const v = $('v'), stage = $('stage');
+
+// ---- Playlist ----
+function attr(s, k) { const m = s.match(new RegExp(k + '="([^"]*)"')); return m ? m[1].trim() : ''; }
+function parseM3U(text) {
+  const out = []; let info = null;
+  for (const raw of text.split(/\r?\n/)) {
+    const l = raw.trim();
+    if (l.startsWith('#EXTINF')) {
+      info = { name: l.slice(l.lastIndexOf(',') + 1).trim() || attr(l, 'tvg-name') || 'Unknown',
+               logo: attr(l, 'tvg-logo'), tvg: attr(l, 'tvg-id'), langs: [],
+               cats: attr(l, 'group-title').split(';').map(s => s.trim()).filter(Boolean) };
+      if (!info.cats.length) info.cats = ['Uncategorized'];
+    } else if (info && l && !l.startsWith('#')) {
+      info.url = l; info.id = out.length; out.push(info); info = null;
+    }
+  }
+  return out;
+}
+async function load() {
+  try {
+    $('grid').innerHTML = SKEL.repeat(12);
+    const langReq = fetchLangText();
+    const r = await fetch(url(PLAYLIST));
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    channels = parseM3U(await r.text());
+    const cats = [...new Set(channels.flatMap(c => c.cats))].sort();
+    $('cat').insertAdjacentHTML('beforeend', cats.map(c => `<option>${esc(c)}</option>`).join(''));
+    buildChips();
+    const P = new URLSearchParams(location.search), deep = P.get('c'); wantLang = P.get('lang') || '';
+    if (P.get('q')) $('q').value = P.get('q');
+    if (cats.includes(P.get('cat'))) $('cat').value = P.get('cat');
+    $('status').classList.add('hidden');
+    applyFilter(); loadLangs(langReq); buildHome();
+    if (deep) { const ch = channels.find(c => chId(c) === deep); if (ch) openWatch(ch); }
+  } catch (e) {
+    $('grid').innerHTML = '';
+    $('status').innerHTML = `Could not load playlist (${esc(e.message)}).<br>Check your connection or set <code>PROXY</code> in the script.`;
+  }
+}
+
+async function fetchLangText() { // direct first, then proxy (if configured)
+  const tries = [url(LANG_PLAYLIST)]; if (PROXY) tries.push(viaProxy(LANG_PLAYLIST));
+  for (const t of tries) { try { const x = await fetch(t); if (x.ok) return await x.text(); } catch (e) {} }
+  return null;
+}
+let langState = 'loading', langRetried = false, wantLang = '';
+async function loadLangs(req) {
+  const sel = $('lang'); langState = 'loading'; sel.options[0].textContent = 'Loading languages…';
+  const txt = await req;
+  const byUrl = new Map(), byId = new Map();
+  const add = (m, k, n) => { if (!k) return; if (!m.has(k)) m.set(k, new Set()); m.get(k).add(n); };
+  if (txt) parseM3U(txt).forEach(l => l.cats.forEach(g => { const n = g === 'Undefined' ? 'Other' : g; add(byUrl, l.url, n); add(byId, l.tvg, n); }));
+  let hit = 0; // match by stream URL, or by channel id as a fallback
+  channels.forEach(c => { const set = byUrl.get(c.url) || byId.get(c.tvg); c.langs = set ? [...set] : []; if (set) hit++; });
+  const langs = [...new Set(channels.flatMap(c => c.langs))].sort();
+  sel.length = 1;
+  if (!hit || !langs.length) {
+    langState = 'failed'; sel.options[0].textContent = 'Languages unavailable – tap to retry';
+    if (!langRetried) { langRetried = true; setTimeout(() => loadLangs(fetchLangText()), 4000); }
+    return;
+  }
+  langState = 'ready'; sel.options[0].textContent = 'All languages'; countUp($('stLang'), langs.length);
+  sel.insertAdjacentHTML('beforeend', langs.map(l => `<option>${esc(l)}</option>`).join(''));
+  re(sel, 'pop');
+  if (wantLang && langs.includes(wantLang)) { sel.value = wantLang; wantLang = ''; applyFilter(); }
+}
+$('lang').onclick = () => { if (langState === 'failed') loadLangs(fetchLangText()); };
+
+// ---- Hide channels that don't work on this site ----
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)) || []; } catch (e) { return []; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+const bad = new Set(store.get('jbBad')), good = new Set(store.get('jbGood'));
+let hideBad = true, scan = null;
+try { hideBad = localStorage.getItem('jbHide') !== '0'; } catch (e) {}
+const saveSets = () => { store.set('jbBad', [...bad]); store.set('jbGood', [...good]); };
+function refreshBar() {
+  syncChips(); syncProxyUi();
+  const fOn = !!($('q').value.trim() || $('cat').value || $('lang').value || favOnly);
+  $('clearBtn').classList.toggle('hidden', !fOn);
+  $('hero').classList.toggle('hidden', fOn); $('picksWrap').classList.toggle('hidden', fOn || !$('picks').children.length);
+  $('bar').classList.remove('hidden');
+  const n = channels.reduce((a, c) => a + (bad.has(c.url) ? 1 : 0), 0);
+  $('count').textContent = `${filtered.length.toLocaleString()} channels` + (hideBad && n ? ` · ${n.toLocaleString()} hidden` : '');
+  $('hideBtn').textContent = `Hide broken: ${hideBad ? 'On' : 'Off'}`;
+  $('hideBtn').classList.toggle('!bg-red-600', hideBad); $('hideBtn').classList.toggle('!text-white', hideBad);
+  $('resetBtn').classList.toggle('hidden', !bad.size && !good.size);
+}
+// A channel "works here" if its playlist loads from this page (same check the player needs)
+async function probe(u) {
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 8000);
+  try {
+    const x = await fetch(u, { signal: ctl.signal, cache: 'no-store' });
+    if (!x.ok) return false;
+    const rd = x.body.getReader(), { value } = await rd.read(); rd.cancel();
+    return new TextDecoder().decode(value || new Uint8Array()).trimStart().startsWith('#EXTM3U');
+  } catch (e) { return false; } finally { clearTimeout(t); }
+}
+const checkChannel = async c => (await probe(url(c.url))) || (proxyMode === 'worker' && PROXY ? probe(viaProxy(c.url)) : false);
+async function scanList() {
+  if (scan) return;
+  const todo = filtered.filter(c => !good.has(c.url));
+  if (!todo.length) return alert('Nothing new to check in this list.');
+  if (todo.length > 300 && !confirm(`Check ${todo.length.toLocaleString()} channels? This can take a few minutes.\nTip: pick a country, category or language first for a faster scan.`)) return;
+  scan = { stop: false, done: 0, bad: 0, total: todo.length };
+  $('scanProg').classList.remove('hidden'); $('scanBtn').disabled = true;
+  let i = 0;
+  const run = async () => {
+    while (!scan.stop && i < todo.length) {
+      const c = todo[i++], ok = await checkChannel(c);
+      if (ok) { good.add(c.url); bad.delete(c.url); } else { bad.add(c.url); scan.bad++; }
+      scan.done++;
+      $('scanTxt').textContent = `Checking ${scan.done.toLocaleString()} / ${scan.total.toLocaleString()} · ${scan.bad.toLocaleString()} broken`;
+      $('scanBar').style.width = (scan.done / scan.total * 100) + '%';
+      if (scan.done % 40 === 0) saveSets();
+    }
+  };
+  await Promise.all(Array.from({ length: 8 }, run));
+  saveSets();
+  $('scanTxt').textContent = `${scan.stop ? 'Stopped' : 'Done'}: ${scan.bad.toLocaleString()} broken channel${scan.bad === 1 ? '' : 's'} hidden`;
+  scan = null; $('scanBtn').disabled = false;
+  setTimeout(() => { if (!scan) $('scanProg').classList.add('hidden'); }, 3000);
+  applyFilter();
+}
+$('scanBtn').onclick = scanList; $('clearBtn').onclick = resetFilters;
+$('scanStop').onclick = () => { if (scan) scan.stop = true; };
+$('hideBtn').onclick = () => { hideBad = !hideBad; try { localStorage.setItem('jbHide', hideBad ? '1' : '0'); } catch (e) {} applyFilter(); };
+$('resetBtn').onclick = () => { if (confirm('Show all hidden channels and forget scan results?')) { bad.clear(); good.clear(); saveSets(); applyFilter(); } };
+
+// ---- Proxy (public or your own) with an on/off switch ----
+const PUBLIC_PROXIES = [ // free third-party proxies: can be slow, rate-limited or offline
+  { name: 'AllOrigins', wrap: u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u) },
+  { name: 'CodeTabs', wrap: u => 'https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent(u) }
+];
+const PLABEL = { off: 'Off', public: 'Public', worker: 'Your proxy' };
+let proxyMode = PROXY ? 'worker' : 'public';
+try {
+  const m = localStorage.getItem('jbProxy'); if (m === 'off' || m === 'public' || (m === 'worker' && PROXY)) proxyMode = m;
+  if (PROXY && localStorage.getItem('jbProxyUrl') !== PROXY) { proxyMode = 'worker'; localStorage.setItem('jbProxy', 'worker'); localStorage.setItem('jbProxyUrl', PROXY); }
+} catch (e) {}
+const proxyList = () => proxyMode === 'off' ? [] : proxyMode === 'public' ? PUBLIC_PROXIES
+  : [{ name: 'Your proxy', wrap: u => u.startsWith(PROXY) ? u : PROXY + encodeURIComponent(u), ping: PROXY.replace(/\?url=$/, '?ping=1') }];
+function syncProxyUi() {
+  const b = $('proxyBtn'); b.textContent = 'Proxy: ' + PLABEL[proxyMode];
+  b.classList.toggle('!bg-red-600', proxyMode !== 'off'); b.classList.toggle('!text-white', proxyMode !== 'off');
+}
+function setProxy(m) { proxyMode = m; try { localStorage.setItem('jbProxy', m); } catch (e) {} syncProxyUi(); }
+function cycleProxy() {
+  const modes = ['off', 'public', ...(PROXY ? ['worker'] : [])];
+  setProxy(modes[(modes.indexOf(proxyMode) + 1) % modes.length]); toast('Proxy: ' + PLABEL[proxyMode]);
+}
+async function proxyHealthy(p) { // fetch a tiny known page through the proxy
+  try { const x = await fetch(p.ping || p.wrap('https://example.com/'), { cache: 'no-store' }); const tx = await x.text(); return x.ok && (tx.includes('Example Domain') || tx.includes('jb-proxy-ok')); }
+  catch (e) { return false; }
+}
+$('proxyBtn').onclick = cycleProxy;
+async function testProxy() { // tells you exactly where the proxy setup is failing
+  const list = proxyList();
+  if (!list.length) return alert('Proxy is Off. Press the Proxy button to choose Public or Your proxy, then test again.');
+  if (proxyMode === 'worker' && !PROXY) return alert('The PROXY address in index.html is empty. Paste your Cloudflare Worker address there first.');
+  const px = list[0], out = ['Mode: ' + PLABEL[proxyMode]];
+  try {
+    const r1 = await fetch(px.ping || px.wrap('https://example.com/'), { cache: 'no-store' }), t1 = await r1.text();
+    if (r1.ok && (t1.includes('Example Domain') || t1.includes('jb-proxy-ok'))) out.push('OK: the proxy reaches the internet.');
+    else {
+      const say = t1.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80);
+      let why = '';
+      if (r1.status === 403) why = ' Your site address is not in the ALLOWED list of the worker, or the worker is not the latest version.';
+      else if (r1.status === 404 || r1.status === 530 || /1042|nothing here/i.test(t1)) why = ' No worker answers at that address. Check the address after PROXY, and that the worker is deployed with its workers.dev route enabled.';
+      else if (r1.ok) why = ' The address answers, but it is not running the proxy code. Paste cors-proxy-worker.js into the worker and press Deploy.';
+      out.push(`FAIL: the proxy answered ${r1.status}.${why}` + (say ? `\nIt said: "${say}"` : ''));
+      return alert(out.join('\n'));
+    }
+  } catch (e) { return alert(out.concat('FAIL: could not reach the proxy. Check the address after PROXY (it must end with /?url=), that the worker is deployed, and that you uploaded the new index.html.').join('\n')); }
+  try {
+    const r2 = await fetch(px.wrap('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'), { cache: 'no-store' }), t2 = await r2.text();
+    if (!r2.ok || !t2.startsWith('#EXTM3U')) out.push(`FAIL: a public test stream did not load (${r2.status}). It may be down; try again later.`);
+    else if (proxyMode === 'worker') out.push(t2.includes('?url=') ? 'OK: playlist rewriting works. Channels that still fail are blocked by their own servers (offline, region-locked, or refusing Cloudflare).' : 'FAIL: playlists are not rewritten. Paste the latest cors-proxy-worker.js into your worker and deploy it again.');
+    else out.push('OK: the test stream loads.');
+  } catch (e) { out.push('FAIL: the test stream could not be loaded through the proxy.'); }
+  alert(out.join('\n'));
+}
+$('proxyTest').onclick = testProxy;
+
+// ---- Movies (Internet Archive: public-domain and openly licensed films) ----
+const IA = 'https://archive.org';
+const GENRES = [['Comedy', 'comedy'], ['Drama', 'drama'], ['Horror', 'horror'], ['Sci-Fi', 'sci-fi'], ['Western', 'western'], ['Film Noir', 'film noir'], ['Animation', 'animation'], ['Documentary', 'documentary'], ['Romance', 'romance'], ['Mystery', 'mystery'], ['Silent', 'silent film'], ['Musical', 'musical'], ['Adventure', 'adventure'], ['Crime', 'crime'], ['War', 'war'], ['Thriller', 'thriller'], ['Fantasy', 'fantasy'], ['Educational', 'educational'], ['Short films', 'short film']];
+const MOVCH = [['discover', '', 'Popular'], ['latest', '', 'Latest added'], ['newest', '', 'Newest films'], ['series', '', 'TV Series'], ['saved', '', 'Saved'], ['recent', '', 'Continue watching'], ['cartoons', '', 'Cartoons'], ['vintage', '', 'Vintage cartoons'], ['ephemeral', '', 'Ephemeral films'], ...GENRES.map(([l, g]) => ['discover', g, l])];
+const getObj = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
+const setObj = (k, x) => { try { localStorage.setItem(k, JSON.stringify(x)); } catch (e) {} };
+let movSaved = getObj('jbMovSaved', []), movPos = getObj('jbMovPos', {});
+let tab = 'tv', movKind = 'discover', movSubject = '', movPage = 1, movTotal = 0, movToken = 0, lastSave = 0;
+const LN = { eng: 'English', en: 'English', hin: 'Hindi', hi: 'Hindi', spa: 'Spanish', es: 'Spanish', fre: 'French', fra: 'French', fr: 'French', ger: 'German', deu: 'German', de: 'German', ita: 'Italian', it: 'Italian', rus: 'Russian', ru: 'Russian', jpn: 'Japanese', ja: 'Japanese', chi: 'Chinese', zho: 'Chinese', zh: 'Chinese', kor: 'Korean', ko: 'Korean', ara: 'Arabic', ar: 'Arabic', tur: 'Turkish', tr: 'Turkish', por: 'Portuguese', pt: 'Portuguese', tam: 'Tamil', tel: 'Telugu', mal: 'Malayalam', ben: 'Bengali', dut: 'Dutch', nld: 'Dutch', swe: 'Swedish', pol: 'Polish' };
+const langName = x => { x = String(x || '').trim(); return !x ? '' : LN[x.toLowerCase()] || (x.length <= 3 ? x.toUpperCase() : x[0].toUpperCase() + x.slice(1).toLowerCase()); };
+const langLabel = x => [...new Set([].concat(x || []).map(langName).filter(Boolean))].slice(0, 3).join(', ');
+const LANG_LIST = ['English', 'Hindi', 'Tamil', 'Telugu', 'Malayalam', 'Bengali', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Russian', 'Chinese', 'Japanese', 'Korean', 'Arabic', 'Turkish', 'Dutch', 'Swedish', 'Polish'];
+const langQuery = n => [n.toLowerCase(), ...Object.keys(LN).filter(k => LN[k] === n)].join(' OR ');
+let movLang = ''; try { movLang = localStorage.getItem('jbMovLang') || ''; } catch (e) {}
+$('movLang').innerHTML = '<option value="">All languages</option>' + LANG_LIST.map(n => `<option value="${langQuery(n)}">${n}</option>`).join('');
+$('movLang').value = movLang;
+$('movLang').onchange = e => {
+  movLang = e.target.value; try { localStorage.setItem('jbMovLang', movLang); } catch (x) {}
+  if (tab === 'mov' && movKind !== 'saved' && movKind !== 'recent') renderMovies();
+};
+const qStore = { tv: '', mov: '', radio: '' };
+let movMat = 'safe'; try { movMat = localStorage.getItem('jbMat') || 'safe'; } catch (e) {}
+function syncMat() { document.querySelectorAll('#matChips .chip').forEach(b => b.classList.toggle('on', b.dataset.mat === movMat)); }
+$('matChips').onclick = e => {
+  const b = e.target.closest('[data-mat]'); if (!b) return;
+  movMat = b.dataset.mat; try { localStorage.setItem('jbMat', movMat); } catch (e) {}
+  syncMat(); if (tab === 'mov' && movKind === 'discover') renderMovies();
+};
+const isSaved = id => movSaved.some(x => x.id === id);
+const one = x => Array.isArray(x) ? x[0] : x;
+
+const MATURE = 'horror OR erotic OR erotica OR nudity OR sexploitation OR exploitation OR gore OR grindhouse OR "x-rated" OR pornography';
+const MATURE_TITLE = 'nude OR nudist OR erotic OR sex OR sexy OR porn';
+const MAIN = 'feature_films OR film_noir OR silent_films OR scifi_horror OR comedy_films';
+const KIND_COLL = { series: 'classic_tv', cartoons: 'animationandcartoons', vintage: 'vintage_cartoons', ephemeral: 'prelinger' }, KIND_SORT = { latest: 'addeddate desc', newest: 'year desc' };
+async function iaSearch(q, subject, page, mat = 'all', coll = MAIN, sort = 'downloads desc', lang = '') {
+  const parts = [`collection:(${coll})`, 'mediatype:(movies)'];
+  const clean = q.replace(/[^\p{L}\p{N} ]/gu, ' ').trim();
+  if (clean) parts.push(`title:(${clean})`);
+  if (subject) parts.push(`subject:("${subject}")`);
+  if (lang) parts.push(`language:(${lang})`);
+  if (sort.startsWith('year')) parts.push('year:[1900 TO 2026]');
+  if (mat !== 'all') parts.push(`NOT subject:(${MATURE})`, `NOT title:(${MATURE_TITLE})`);
+  if (mat === 'family') parts.push('subject:(family OR children OR kids OR animation OR cartoon OR "fairy tale")');
+  const p = new URLSearchParams({ q: parts.join(' AND '), rows: '48', page: String(page), output: 'json' });
+  ['identifier', 'title', 'year', 'subject', 'language'].forEach(f => p.append('fl[]', f));
+  p.append('sort[]', sort);
+  const r = await fetch(`${IA}/advancedsearch.php?${p}`);
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return (await r.json()).response;
+}
+const movCard = (m, i, pct) => `<article data-mid="${esc(m.id)}" data-title="${esc(m.title)}" data-file="${esc(m.file || '')}" data-m="${m.mature ? 1 : 0}" class="mv group cursor-pointer" style="animation-delay:${Math.min(i, 24) * 30}ms">
+  <div class="thumb relative aspect-video rounded-xl t-card overflow-hidden flex items-center justify-center"><span class="text-2xl font-bold text-gray-600">${esc((m.title || '').slice(0, 2).toUpperCase())}</span><img src="${IA}/services/img/${encodeURIComponent(m.id)}" loading="lazy" decoding="async" onload="this.classList.add('ld')" onerror="this.remove()" class="absolute inset-0 w-full h-full object-cover ${m.mature ? 'blur-md scale-110' : ''}">
+    ${m.mature ? '<span class="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold">18+</span>' : ''}
+    <button data-save="${esc(m.id)}" class="heart absolute top-1.5 right-1.5 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-600 ${isSaved(m.id) ? 'saved' : ''}" title="Save">${ic('heart', 16)}</button>
+    ${pct ? `<div class="absolute bottom-0 left-0 h-1 bg-red-600" style="width:${pct}%"></div>` : ''}</div>
+  <h3 class="mt-2 text-sm font-medium line2">${esc(m.title)}</h3><p class="text-xs t-muted">${esc([m.year, m.lang].filter(Boolean).join(' · '))}</p></article>`;
+function syncMovChips() { document.querySelectorAll('#movChips .chip').forEach(b => { const [k, g] = MOVCH[+b.dataset.i]; b.classList.toggle('on', k === movKind && g === movSubject); }); }
+async function renderMovies(append = false) {
+  const tok = ++movToken, g = $('movGrid'), st = $('movStatus'), more = $('movMore');
+  syncMovChips();
+  if (movKind === 'saved' || movKind === 'recent') {
+    const list = movKind === 'saved' ? movSaved : Object.entries(movPos).sort((a, b) => b[1].ts - a[1].ts).map(([k, x]) => ({ id: x.id || k, file: x.file || '', title: x.title, pct: Math.round(x.t / x.d * 100) }));
+    g.innerHTML = list.map((m, i) => movCard(m, i, m.pct)).join(''); more.classList.add('hidden');
+    st.textContent = list.length ? '' : movKind === 'saved' ? 'Nothing saved yet. Tap the heart on any movie.' : 'Movies you start watching show up here so you can continue.';
+    return;
+  }
+  if (!append) { g.innerHTML = SKEL.repeat(12); movPage = 1; }
+  st.textContent = '';
+  try {
+    const res = await iaSearch($('q').value.trim(), movSubject, movPage, movMat, KIND_COLL[movKind] || MAIN, KIND_SORT[movKind] || 'downloads desc', movLang);
+    if (tok !== movToken) return;
+    movTotal = res.numFound;
+    const html = res.docs.map((d, i) => movCard({ id: d.identifier, title: one(d.title) || d.identifier, year: one(d.year), lang: langLabel(d.language), mature: isHigh(d.subject, one(d.title)) }, i)).join('');
+    if (append) g.insertAdjacentHTML('beforeend', html); else g.innerHTML = html;
+    st.textContent = movTotal || append ? `${movTotal.toLocaleString()} movies` : 'No movies found.' + (movMat !== 'all' ? ' The maturity filter is on – try "All".' : ' Try another title.');
+    more.classList.toggle('hidden', g.querySelectorAll('article').length >= movTotal);
+  } catch (e) {
+    if (tok === movToken) { g.innerHTML = ''; more.classList.add('hidden'); st.innerHTML = 'Could not load movies from the Internet Archive. <button id="movRetry" class="underline">Retry</button>'; }
+  }
+}
+function searchMovies() { if (movKind === 'saved' || movKind === 'recent') { movKind = 'discover'; movSubject = ''; } renderMovies(); }
+function buildMovChips() { $('movChips').innerHTML = MOVCH.map(([k, g, l], i) => `<button class="chip" data-i="${i}">${l}</button>`).join(''); }
+function setTab(t) {
+  stopQueued(); qStore[tab] = $('q').value; tab = t;
+  const tv = t === 'tv';
+  $('liveView').classList.toggle('hidden', !tv); $('movies').classList.toggle('hidden', t !== 'mov'); $('radio').classList.toggle('hidden', t !== 'radio');
+  $('cat').classList.toggle('hidden', !tv); $('lang').classList.toggle('hidden', !tv);
+  document.querySelectorAll('#tabs .chip').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  $('q').placeholder = { tv: 'Search channels…', mov: 'Search movies & TV…', radio: 'Search radio stations…' }[t]; $('q').value = qStore[t] || '';
+  try { history.replaceState(history.state, '', t === 'mov' ? '?tab=movies' : t === 'radio' ? '?tab=radio' : location.pathname + filterQuery()); } catch (e) {}
+  if (t === 'mov') renderMovies(); else if (t === 'radio') renderRadio(); else if (channels.length) applyFilter();
+}
+$('tabs').onclick = e => { const b = e.target.closest('[data-tab]'); if (b && b.dataset.tab !== tab) setTab(b.dataset.tab); };
+$('movChips').onclick = e => { const b = e.target.closest('.chip'); if (b) { [movKind, movSubject] = MOVCH[+b.dataset.i]; renderMovies(); } };
+$('movMore').onclick = () => { movPage++; renderMovies(true); };
+let lastMore = 0;
+new IntersectionObserver(es => { if (es[0].isIntersecting && tab === 'mov' && Date.now() - lastMore > 1500) { lastMore = Date.now(); $('movMore').click(); } }, { rootMargin: '600px' }).observe($('movMore'));
+$('movStatus').onclick = e => { if (e.target.id === 'movRetry') renderMovies(); };
+function toggleSave(id, title) {
+  if (isSaved(id)) { movSaved = movSaved.filter(x => x.id !== id); toast('Removed from Saved'); }
+  else { movSaved.unshift({ id, title }); toast('Saved'); }
+  setObj('jbMovSaved', movSaved);
+  document.querySelectorAll(`[data-save="${CSS.escape(id)}"]`).forEach(b => b.classList.toggle('saved', isSaved(id)));
+  if (tab === 'mov' && movKind === 'saved') renderMovies();
+}
+$('movGrid').onclick = async e => {
+  const h = e.target.closest('[data-save]');
+  if (h) { const a = h.closest('article'); toggleSave(h.dataset.save, a.dataset.title); return; }
+  const a = e.target.closest('article'); if (!a) return;
+  if (a.dataset.m === '1' && !(await ageGate(a.dataset.title))) return;
+  openMovie(a.dataset.mid, a.dataset.title, a.dataset.file || '');
+};
+function updateSaveBtn() {
+  const sv = !!cur && isSaved(cur.mid), b = $('saveBtn');
+  b.innerHTML = ic('heart') + (sv ? 'Saved' : 'Save');
+  b.classList.toggle('!bg-red-600', sv); b.classList.toggle('!text-white', sv);
+  b.querySelector('svg').style.fill = sv ? 'currentColor' : 'none';
+}
+$('saveBtn').onclick = () => { if (cur && cur.isMovie) { toggleSave(cur.mid, cur.name); updateSaveBtn(); } };
+function savePos() { // remember where you stopped, so "Continue watching" can resume
+  if (!cur || !cur.isMovie || !v.duration || !isFinite(v.duration) || v.currentTime < 5) return;
+  if (v.currentTime / v.duration > .95) delete movPos[posKey()];
+  else movPos[posKey()] = { id: cur.mid, file: cur.file || '', t: Math.floor(v.currentTime), d: Math.floor(v.duration), ts: Date.now(), title: cur.label || cur.name };
+  const keep = Object.entries(movPos).sort((a, b) => b[1].ts - a[1].ts).slice(0, 40);
+  movPos = Object.fromEntries(keep); setObj('jbMovPos', movPos);
+}
+v.addEventListener('timeupdate', () => { if (Date.now() - lastSave > 5000) { lastSave = Date.now(); savePos(); } });
+v.addEventListener('pause', savePos);
+function pickFile(files) {
+  const mp4 = files.filter(f => /\.(mp4|m4v)$/i.test(f.name));
+  for (const fmt of ['h.264', 'h.264 ia', 'mpeg4', '512kb mpeg4']) { const f = mp4.find(x => (x.format || '').toLowerCase() === fmt); if (f) return f; }
+  return mp4[0] || files.find(f => /\.ogv$/i.test(f.name)) || null;
+}
+const stripHtml = h => { const d = document.createElement('div'); d.innerHTML = h; return d.textContent.replace(/\s+/g, ' ').trim(); };
+const HIGH = /\b(erotic|erotica|nudity|nudist|nude|sexploitation|exploitation|gore|grindhouse|x-rated|pornography|porn|sex|sexy|adult)\b/i;
+const isHigh = (subj, title) => HIGH.test([].concat(subj || []).join(' ') + ' ' + (title || ''));
+function ageGate(title) { // self-declared 18+ question, asked once per browser session
+  try { if (sessionStorage.getItem('jbAge18') === '1') return Promise.resolve(true); } catch (e) {}
+  return new Promise(res => {
+    $('ageTxt').textContent = `“${title || 'This title'}” is tagged as mature content and may not be suitable for anyone under 18.`;
+    $('age').classList.remove('hidden'); re($('ageCard'), 'pop');
+    const done = ok => { $('age').classList.add('hidden'); if (ok) { try { sessionStorage.setItem('jbAge18', '1'); } catch (e) {} } res(ok); };
+    $('ageYes').onclick = () => done(true);
+    $('ageNo').onclick = () => { done(false); toast('Okay, going back'); };
+    $('age').onclick = e => { if (e.target.id === 'age') $('ageNo').click(); };
+  });
+}
+// ---- seasons & episodes (items with several video files) ----
+const posKey = () => cur.mid + '#' + (cur.file || '');
+let epSeason = 0;
+function epInfo(f) {
+  const t = (f.title || f.name).replace(/[_.]+/g, ' ');
+  let m = t.match(/s(?:eason)?\s*0*(\d{1,2})\s*[-x ]?\s*e(?:p(?:isode)?)?\s*0*(\d{1,3})/i) || t.match(/\b0*(\d{1,2})x0*(\d{1,3})\b/i);
+  if (m) return { season: +m[1], ep: +m[2] };
+  m = t.match(/(?:^|\s)e(?:p(?:isode)?)?\s*0*(\d{1,3})\b/i) || t.match(/\bepisode\s*0*(\d{1,3})\b/i);
+  return { season: null, ep: m ? +m[1] : null };
+}
+const epTitle = f => (f.title || f.name.replace(/\.[^.]+$/, '')).replace(/_+/g, ' ').trim();
+function epLabel(f, i) { const { season, ep } = epInfo(f); return season != null && ep != null ? `S${season} E${ep}` : ep != null ? `E${ep}` : `Part ${i + 1}`; }
+const dur = l => { if (!l) return ''; const n = String(l).includes(':') ? String(l).split(':').reduce((a, x) => a * 60 + +x, 0) : parseFloat(l); return n ? fmt(n) : ''; };
+function episodesOf(files) {
+  const groups = new Map();
+  files.filter(f => /\.(mp4|m4v|ogv)$/i.test(f.name) && !/trailer|sample|preview|promo/i.test(f.name)).forEach(f => {
+    const k = (f.original || f.name).replace(/\.[^.]+$/, ''); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(f);
+  });
+  const eps = []; groups.forEach(list => { const f = pickFile(list); if (f) eps.push(f); });
+  return eps.sort((a, b) => { const x = epInfo(a), y = epInfo(b); return ((x.season ?? 0) - (y.season ?? 0)) || ((x.ep ?? 1e9) - (y.ep ?? 1e9)) || a.name.localeCompare(b.name, undefined, { numeric: true }); });
+}
+function renderEpisodes() {
+  const eps = cur.eps, box = $('eps');
+  if (eps.length < 2) { box.classList.add('hidden'); return; }
+  box.classList.remove('hidden');
+  const seasons = [...new Set(eps.map(f => epInfo(f).season).filter(x => x != null))].sort((a, b) => a - b);
+  if (epSeason && !seasons.includes(epSeason)) epSeason = 0;
+  $('epCount').textContent = `${eps.length} ${seasons.length || eps.some(f => epInfo(f).ep != null) ? 'episodes' : 'parts'}`;
+  $('seasonChips').innerHTML = seasons.length > 1 ? [0, ...seasons].map(n => `<button class="chip ${n === epSeason ? 'on' : ''}" data-season="${n}">${n ? 'Season ' + n : 'All'}</button>`).join('') : '';
+  $('epList').innerHTML = eps.map((f, i) => [f, i]).filter(([f]) => !epSeason || epInfo(f).season === epSeason).map(([f, i]) =>
+    `<button data-ep="${i}" class="text-left rounded-xl t-card px-3 py-2 flex items-center justify-between gap-3 transition-colors hover:bg-[var(--chiph)] ${i === cur.epI ? '!bg-red-600 !text-white' : ''}"><span class="truncate text-sm"><b class="mr-2">${esc(epLabel(f, i))}</b>${esc(epTitle(f))}</span><span class="text-xs opacity-70 shrink-0">${dur(f.length)}</span></button>`).join('');
+}
+$('seasonChips').onclick = e => { const b = e.target.closest('[data-season]'); if (b && cur && cur.isMovie) { epSeason = +b.dataset.season; renderEpisodes(); } };
+$('epList').onclick = e => { const b = e.target.closest('[data-ep]'); if (b && cur && cur.isMovie) playEpisode(+b.dataset.ep); };
+function playEpisode(i) {
+  const f = cur.eps[i]; if (!f) return;
+  savePos();
+  cur.epI = i; cur.file = f.name;
+  const multi = cur.eps.length > 1, tag = multi ? epLabel(f, i) : '';
+  cur.label = multi ? `${cur.name} · ${tag}` : cur.name;
+  $('wMeta').textContent = [tag && `${tag} · ${epTitle(f)}`, cur.year, cur.lang, cur.creator, 'Internet Archive'].filter(Boolean).join(' • ');
+  const pos = movPos[posKey()] || (multi ? null : movPos[cur.mid]);
+  v.onloadedmetadata = () => { if (pos && pos.t > 10 && v.duration > pos.t + 10) { v.currentTime = pos.t; toast(`Resumed at ${Math.floor(pos.t / 60)}:${String(pos.t % 60).padStart(2, '0')}`); } };
+  v.onerror = () => { if (cur && cur.isMovie) fail('This video could not be played. Try another one.'); };
+  spin(true); $('err').classList.add('hidden');
+  v.src = `${IA}/download/${encodeURIComponent(cur.mid)}/${f.name.split('/').map(encodeURIComponent).join('/')}`;
+  v.play().catch(() => {});
+  const s = epInfo(f).season; if (s != null && epSeason && epSeason !== s) epSeason = s;
+  renderEpisodes();
+}
+v.addEventListener('ended', () => { if (cur && cur.isMovie && cur.eps && cur.epI < cur.eps.length - 1) { toast('Up next: ' + epLabel(cur.eps[cur.epI + 1], cur.epI + 1)); playEpisode(cur.epI + 1); } });
+async function openMovie(id, title = '', file = '') {
+  savePos(); v.pause(); v.removeAttribute('src'); v.load(); // so the old video's time is never saved under the new title
+  if (hls) { hls.destroy(); hls = null; } renderAudio(); clearTimeout(startT); v.onloadedmetadata = null;
+  cur = { name: title || 'Loading…', url: 'ia:' + id, cats: [], langs: [], isMovie: true, mid: id, id: -1, file: '', eps: [], epI: 0 };
+  curVia = 0; $('err').classList.add('hidden'); spin(true);
+  const link = '?m=' + encodeURIComponent(id);
+  try { if (mode !== 'watch') history.pushState({ w: 1 }, '', link); else history.replaceState(history.state, '', link); } catch (e) {}
+  $('wTitle').textContent = title; $('wMeta').textContent = ''; $('wDesc').textContent = ''; $('related').innerHTML = ''; $('eps').classList.add('hidden');
+  $('relH').classList.add('hidden'); $('saveBtn').classList.remove('hidden'); updateSaveBtn();
+  setMode('watch'); $('watch').scrollTop = 0; v.playbackRate = 1; syncMovieUi();
+  try {
+    const r = await fetch(`${IA}/metadata/${encodeURIComponent(id)}`);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    if (!cur || cur.mid !== id) return; // you moved on
+    const md = j.metadata || {};
+    cur.name = one(md.title) || title || id; cur.year = one(md.year); cur.creator = one(md.creator); cur.lang = langLabel(md.language);
+    document.title = `${cur.name} – Watch Free | JMB TV`; $('wTitle').textContent = cur.name;
+    if (isHigh(md.subject, cur.name) && !(await ageGate(cur.name))) { // mature: ask before anything plays
+      if (cur && cur.mid === id) { closePlayer(); if (history.state && history.state.w) history.back(); }
+      return;
+    }
+    if (!cur || cur.mid !== id) return;
+    $('wDesc').textContent = stripHtml([].concat(md.description || '').join(' ')).slice(0, 900);
+    const eps = episodesOf(j.files || []);
+    if (!eps.length) throw new Error('no playable video file');
+    cur.eps = eps;
+    const last = Object.values(movPos).filter(x => x.id === id).sort((a, b) => b.ts - a.ts)[0];
+    const want = file || (last && last.file) || '';
+    const i = Math.max(0, eps.findIndex(f => f.name === want));
+    epSeason = epInfo(eps[i]).season || 0;
+    playEpisode(i);
+  } catch (e) { if (cur && cur.mid === id) fail(`This title could not be loaded (${e.message}). Try another one.`); }
+}
+function reopen() { // expand the mini-player back to the watch page
+  if (!cur) return;
+  if (!cur.isMovie) return openWatch(cur);
+  try { history.pushState({ w: 1 }, '', '?m=' + encodeURIComponent(cur.mid)); } catch (e) {}
+  setMode('watch');
+}
+
+// ---- Player extras for movies: seek bar, skip 10s, speed, hold for 2x ----
+const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+const fmt = t => { t = Math.max(0, Math.floor(t || 0)); const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), sc = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(sc).padStart(2, '0'); };
+let seeking = false, dragRatio = 0, lastTap = 0, tapT = 0, hold2 = false, holdT2 = 0, prevRate = 1;
+function syncMovieUi() { // movie-only controls are hidden for live channels
+  const m = !!(cur && cur.isMovie);
+  stage.classList.toggle('movie', m);
+  ['seek', 'skipB', 'skipF', 'timeTxt', 'speedWrap'].forEach(id => $(id).classList.toggle('hidden', !m));
+  if (!m) { v.playbackRate = 1; $('spdMenu').classList.add('hidden'); }
+  updateSeek();
+}
+function updateSeek() {
+  if (!cur || !cur.isMovie) return;
+  const d = v.duration, t = seeking ? dragRatio * (d || 0) : v.currentTime;
+  if (!isFinite(d) || !d) { $('timeTxt').textContent = fmt(t); return; }
+  let b = 0; for (let i = 0; i < v.buffered.length; i++) if (v.buffered.start(i) <= v.currentTime + .5 && v.buffered.end(i) >= v.currentTime) b = v.buffered.end(i);
+  const pc = t / d * 100;
+  $('seekFill').style.width = pc + '%'; $('seekKnob').style.left = pc + '%'; $('seekBuf').style.width = Math.max(b, t) / d * 100 + '%';
+  $('timeTxt').innerHTML = `${fmt(t)} / ${fmt(d)}<span class="hidden sm:inline"> · ${fmt(d - t)} left</span>`;
+}
+['timeupdate', 'progress', 'durationchange', 'loadedmetadata', 'seeked'].forEach(ev => v.addEventListener(ev, updateSeek));
+const seekEl = $('seek');
+const ratioAt = e => { const rc = seekEl.getBoundingClientRect(); return Math.min(1, Math.max(0, (e.clientX - rc.left) / rc.width)); };
+seekEl.addEventListener('pointerdown', e => { if (!isFinite(v.duration)) return; seeking = true; dragRatio = ratioAt(e); seekEl.classList.add('drag'); seekEl.setPointerCapture(e.pointerId); updateSeek(); });
+seekEl.addEventListener('pointermove', e => {
+  if (!isFinite(v.duration)) return;
+  const q = ratioAt(e), tip = $('seekTip'); tip.textContent = fmt(q * v.duration); tip.style.left = q * 100 + '%'; tip.classList.remove('hidden');
+  if (seeking) { dragRatio = q; updateSeek(); }
+});
+seekEl.addEventListener('pointerup', e => { if (!seeking) return; seeking = false; seekEl.classList.remove('drag'); v.currentTime = ratioAt(e) * v.duration; wake(); updateSeek(); });
+seekEl.addEventListener('pointercancel', () => { seeking = false; seekEl.classList.remove('drag'); });
+seekEl.addEventListener('pointerleave', () => $('seekTip').classList.add('hidden'));
+function seekBy(sec, side) {
+  const d = v.duration; if (!isFinite(d)) return;
+  v.currentTime = Math.min(d, Math.max(0, v.currentTime + sec)); wake();
+  const h = $(side === 'l' ? 'hintL' : 'hintR'); h.textContent = (sec > 0 ? '+' : '−') + Math.abs(sec) + 's'; re(h, 'show');
+}
+$('skipB').onclick = () => seekBy(-10, 'l'); $('skipF').onclick = () => seekBy(10, 'r');
+function renderSpeed() {
+  $('spd').textContent = v.playbackRate + '×';
+  $('spdMenu').innerHTML = SPEEDS.map(x => `<button data-s="${x}" class="w-full flex items-center justify-between gap-4 px-3 py-1.5 rounded-lg text-left hover:bg-white/15 ${x === v.playbackRate ? 'text-red-400 font-semibold' : 'text-white'}"><span>${x === 1 ? 'Normal' : x + '×'}</span>${x === v.playbackRate ? ic('check', 16) : ''}</button>`).join('');
+}
+v.addEventListener('ratechange', renderSpeed);
+$('spd').onclick = () => { const m = $('spdMenu'); m.classList.toggle('hidden'); if (!m.classList.contains('hidden')) re(m, 'menu-in'); };
+$('spdMenu').onclick = e => { const b = e.target.closest('[data-s]'); if (b) { v.playbackRate = +b.dataset.s; $('spdMenu').classList.add('hidden'); } };
+document.addEventListener('click', e => { if (!e.target.closest('#speedWrap')) $('spdMenu').classList.add('hidden'); });
+function stepSpeed(d) { const i = SPEEDS.indexOf(v.playbackRate); v.playbackRate = SPEEDS[Math.min(SPEEDS.length - 1, Math.max(0, (i < 0 ? 3 : i) + d))]; }
+renderSpeed();
+// press and hold the picture = 2x speed until you let go
+v.addEventListener('pointerdown', e => {
+  if (mode !== 'watch' || !cur || !cur.isMovie || e.button > 0) return;
+  clearTimeout(holdT2);
+  holdT2 = setTimeout(() => { if (v.paused) return; hold2 = true; prevRate = v.playbackRate; v.playbackRate = 2; $('boost').classList.remove('hidden'); }, 450);
+});
+const endHold2 = () => { clearTimeout(holdT2); if (hold2) { v.playbackRate = prevRate; $('boost').classList.add('hidden'); setTimeout(() => hold2 = false, 150); } };
+['pointerup', 'pointercancel', 'pointerleave'].forEach(t => v.addEventListener(t, endHold2));
+v.addEventListener('contextmenu', e => { if (mode === 'watch') e.preventDefault(); });
+
+// ---- Home extras: favorites, hero, picks, radio, accent colors, shortcuts ----
+let fav = new Set(getObj('jbFav', [])), favOnly = false;
+function toggleFav(c, btn) {
+  if (!c) return;
+  if (fav.has(c.url)) { fav.delete(c.url); toast('Removed from Favorites'); } else { fav.add(c.url); toast('Added to Favorites'); }
+  setObj('jbFav', [...fav]);
+  document.querySelectorAll(`[data-fav="${c.id}"]`).forEach(b => b.classList.toggle('saved', fav.has(c.url)));
+  if (favOnly) applyFilter();
+}
+function countUp(el, n) {
+  const t0 = performance.now();
+  const step = now => { const k = Math.min(1, (now - t0) / 900); el.textContent = Math.round(n * (1 - Math.pow(1 - k, 3))).toLocaleString(); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+function buildHome() {
+  countUp($('stCh'), channels.length); countUp($('stCat'), new Set(channels.flatMap(c => c.cats)).size);
+  let seed = Math.floor(Date.now() / 864e5) || 1; // same picks all day
+  const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+  const pool = channels.filter(c => c.logo && !bad.has(c.url));
+  for (let i = pool.length - 1; i > 0 && i > pool.length - 40; i--) { const j = Math.floor(rnd() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  const picks = pool.slice(-14);
+  $('picks').innerHTML = picks.map((c, i) => `<div class="shrink-0 w-44 sm:w-56">${card(c, i)}</div>`).join('');
+  $('picksWrap').classList.toggle('hidden', !picks.length || !$('hero').offsetParent);
+}
+$('heroRnd').onclick = () => { const pool = channels.filter(c => !bad.has(c.url)); if (pool.length) openWatch(pool[Math.floor(Math.random() * pool.length)]); };
+$('heroMov').onclick = () => setTab('mov'); $('heroRadio').onclick = () => setTab('radio');
+$('picks').onclick = e => clickCard(e);
+$('movRnd').onclick = async () => {
+  try {
+    const kind = movKind === 'saved' || movKind === 'recent' ? 'discover' : movKind;
+    const res = await iaSearch('', movSubject, 1 + Math.floor(Math.random() * 20), movMat, KIND_COLL[kind] || MAIN, 'downloads desc', movLang);
+    const d = res.docs[Math.floor(Math.random() * res.docs.length)];
+    if (!d) return toast('Nothing found, try again');
+    if (isHigh(d.subject, one(d.title)) && !(await ageGate(one(d.title)))) return;
+    openMovie(d.identifier, one(d.title));
+  } catch (e) { toast('Could not pick a movie right now'); }
+};
+
+// ---- Radio (community Radio Browser directory) ----
+const RB = ['https://de1.api.radio-browser.info', 'https://nl1.api.radio-browser.info', 'https://at1.api.radio-browser.info'];
+const RADIO_TAGS = ['Top', 'Pop', 'Rock', 'News', 'Talk', 'Jazz', 'Classical', 'Hip hop', 'Electronic', 'Country', 'Bollywood', 'Reggae', 'Lounge', 'Kids'];
+let radioTag = '', radioList = [], radioTok = 0, radioNow = -1;
+const ra = new Audio(); ra.preload = 'none';
+async function rbFetch(path) { for (const b of RB) { try { const x = await fetch(b + path); if (x.ok) return await x.json(); } catch (e) {} } throw new Error('directory unreachable'); }
+const radioCard = (x, i) => `<button data-r="${i}" class="mv text-left flex items-center gap-3 rounded-xl t-card p-3 hover:-translate-y-0.5 hover:shadow-lg transition ${radioNow === i ? 'ring-2' : ''}" style="animation-delay:${Math.min(i, 20) * 25}ms">
+  <span class="w-12 h-12 shrink-0 rounded-lg bg-red-600 text-white flex items-center justify-center font-bold overflow-hidden relative">${esc(((x.name || '?').trim()[0] || '?').toUpperCase())}${x.favicon && /^https:/i.test(x.favicon) ? `<img src="${esc(x.favicon)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()" class="absolute inset-0 w-full h-full object-cover bg-white">` : ''}</span>
+  <span class="min-w-0"><span class="block font-medium truncate">${esc((x.name || 'Station').trim())}</span><span class="block text-xs t-muted truncate">${esc([x.countrycode, (x.tags || '').split(',').slice(0, 2).filter(Boolean).join(', '), x.bitrate ? x.bitrate + ' kbps' : ''].filter(Boolean).join(' · '))}</span></span></button>`;
+async function renderRadio() {
+  const tok = ++radioTok, g = $('radioGrid'), st = $('radioStatus');
+  $('radioChips').innerHTML = RADIO_TAGS.map(n => { const tg = n === 'Top' ? '' : n.toLowerCase(); return `<button class="chip ${tg === radioTag ? 'on' : ''}" data-t="${tg}">${n}</button>`; }).join('');
+  g.innerHTML = SKEL.repeat(8); st.textContent = '';
+  const p = new URLSearchParams({ limit: '80', hidebroken: 'true', order: 'clickcount', reverse: 'true' });
+  const q = $('q').value.trim(); if (q) p.set('name', q); if (radioTag) p.set('tag', radioTag);
+  try {
+    let list = await rbFetch('/json/stations/search?' + p);
+    if (tok !== radioTok) return;
+    if (location.protocol === 'https:') list = list.filter(x => /^https:/i.test(x.url_resolved || x.url || ''));
+    radioList = list; g.innerHTML = list.map(radioCard).join('');
+    st.textContent = list.length ? `${list.length} stations` : 'No stations found. Try another search.';
+  } catch (e) { if (tok === radioTok) { g.innerHTML = ''; st.innerHTML = 'Could not reach the radio directory. <button id="radioRetry" class="underline">Retry</button>'; } }
+}
+function playRadio(i) {
+  const x = radioList[i]; if (!x) return;
+  radioNow = i; v.pause();
+  ra.src = x.url_resolved || x.url; ra.play().catch(() => toast('This station could not be played'));
+  $('rbName').textContent = (x.name || 'Station').trim();
+  $('rbMeta').textContent = [x.countrycode, (x.tags || '').split(',').slice(0, 2).filter(Boolean).join(', ')].filter(Boolean).join(' · ');
+  $('radioBar').classList.remove('hidden'); re($('radioBar'), 'enter'); document.body.style.paddingBottom = '4.5rem';
+  document.querySelectorAll('#radioGrid [data-r]').forEach(b => b.classList.toggle('ring-2', +b.dataset.r === i));
+  if (x.stationuuid) rbFetch('/json/url/' + x.stationuuid).catch(() => {}); // counts a listen for the directory
+  if ('mediaSession' in navigator && window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({ title: x.name || 'Station', artist: 'JMB TV Radio' });
+}
+ra.onplay = ra.onpause = () => setIcon($('rbPlay'), ra.paused ? 'play' : 'pause');
+ra.onerror = () => { if (ra.getAttribute('src')) toast('This station is unavailable right now'); };
+$('rbPlay').onclick = () => ra.paused ? ra.play().catch(() => {}) : ra.pause();
+$('rbClose').onclick = () => { ra.pause(); ra.removeAttribute('src'); ra.load(); $('radioBar').classList.add('hidden'); document.body.style.paddingBottom = ''; radioNow = -1; document.querySelectorAll('#radioGrid .ring-2').forEach(b => b.classList.remove('ring-2')); };
+$('rbVol').oninput = e => { ra.volume = +e.target.value; };
+$('radioGrid').onclick = e => { const b = e.target.closest('[data-r]'); if (b) playRadio(+b.dataset.r); };
+$('radioChips').onclick = e => { const b = e.target.closest('.chip'); if (b) { radioTag = b.dataset.t; renderRadio(); } };
+$('radioStatus').onclick = e => { if (e.target.id === 'radioRetry') renderRadio(); };
+v.addEventListener('playing', () => { if (!ra.paused) ra.pause(); }); // video and radio never overlap
+setIcon($('rbPlay'), 'play');
+
+// ---- Accent color, shortcuts help, scroll progress, tab hidden ----
+function setAccent(c) {
+  document.documentElement.style.setProperty('--accent', c); setObj('jbAccent', c);
+  document.querySelectorAll('#accents [data-a]').forEach(b => b.classList.toggle('on', b.dataset.a === c));
+}
+$('accents').onclick = e => { const b = e.target.closest('[data-a]'); if (b) setAccent(b.dataset.a); };
+setAccent(getObj('jbAccent', '#dc2626'));
+const keysOpen = () => !$('keys').classList.contains('hidden');
+function toggleKeys(on) { $('keys').classList.toggle('hidden', !on); if (on) re($('keysCard'), 'pop'); }
+$('keysLink').onclick = () => toggleKeys(true); $('keysClose').onclick = () => toggleKeys(false);
+$('keys').onclick = e => { if (e.target.id === 'keys') toggleKeys(false); };
+document.addEventListener('keydown', e => {
+  if (e.key === '?' && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); toggleKeys(!keysOpen()); }
+  else if (e.key === 'Escape' && keysOpen()) { toggleKeys(false); e.stopImmediatePropagation(); }
+});
+addEventListener('scroll', () => { const h = document.documentElement; $('progress').style.width = scrollY / Math.max(1, h.scrollHeight - innerHeight) * 100 + '%'; }, { passive: true });
+document.addEventListener('visibilitychange', () => { if (document.hidden) stopPreview(); });
+
+// ---- Toast ----
+let toastT;
+function toast(msg, undo) {
+  const t = $('toast'); $('toastTxt').textContent = msg;
+  $('toastAct').classList.toggle('hidden', !undo);
+  $('toastAct').onclick = () => { if (undo) undo(); t.classList.add('hidden'); };
+  t.classList.remove('hidden'); re(t, 'toast-in');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.add('hidden'), 5000);
+}
+
+// ---- Recently watched (saved in this browser only) ----
+let recent = store.get('jbRecent');
+const saveRecent = () => store.set('jbRecent', recent);
+function addRecent(c) {
+  recent = [{ name: c.name, logo: c.logo, url: c.url, cats: c.cats, langs: c.langs || [], tvg: c.tvg || '' }, ...recent.filter(x => x.url !== c.url)].slice(0, 24);
+  saveRecent(); renderRecent();
+}
+const rcard = (x, i) => `<article data-r="${i}" class="rc group relative shrink-0 w-40 sm:w-52 cursor-pointer" style="animation-delay:${Math.min(i, 8) * 40}ms">
+  <div class="thumb relative aspect-video rounded-xl t-card flex items-center justify-center overflow-hidden"><span class="text-2xl font-bold text-gray-600">${esc(x.name.trim().slice(0, 2).toUpperCase())}</span>${x.logo ? `<img src="${esc(x.logo)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onload="this.classList.add('ld')" onerror="this.remove()" class="absolute inset-0 w-full h-full object-contain p-3">` : ''}</div>
+  <button data-del="${i}" class="del absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-red-600" title="Remove from recent">${ic('close', 14)}</button>
+  <h3 class="mt-2 text-sm font-medium line2">${esc(x.name)}</h3></article>`;
+function renderRecent() {
+  $('recentWrap').classList.toggle('hidden', !recent.length);
+  $('recent').innerHTML = recent.map(rcard).join('');
+}
+$('recent').onclick = e => {
+  const d = e.target.closest('[data-del]');
+  if (d) {
+    const i = +d.dataset.del, gone = recent[i]; recent.splice(i, 1); saveRecent(); renderRecent();
+    return toast('Removed from recent', () => { recent.splice(i, 0, gone); saveRecent(); renderRecent(); });
+  }
+  const a = e.target.closest('article'), x = a && recent[+a.dataset.r];
+  if (x) openWatch(channels.find(c => c.url === x.url) || { ...x, id: -1 });
+};
+$('recentClear').onclick = () => {
+  const old = recent; recent = []; saveRecent(); renderRecent();
+  toast('Recent history cleared', () => { recent = old; saveRecent(); renderRecent(); });
+};
+
+// ---- Category chips, surprise, back-to-top, shortcuts ----
+function buildChips() {
+  const n = {}; channels.forEach(c => c.cats.forEach(k => n[k] = (n[k] || 0) + 1));
+  const top = Object.keys(n).filter(k => k !== 'Undefined' && k !== 'Uncategorized').sort((a, b) => n[b] - n[a]).slice(0, 16);
+  $('chips').innerHTML = '<button class="chip" data-fav="1">★ Favorites</button>' + ['', ...top].map(k => `<button class="chip" data-c="${esc(k)}">${k ? esc(k) : 'All'}</button>`).join('');
+}
+function syncChips() { document.querySelectorAll('#chips .chip').forEach(b => b.classList.toggle('on', b.dataset.fav ? favOnly : !favOnly && b.dataset.c === $('cat').value)); }
+$('chips').onclick = e => {
+  const b = e.target.closest('.chip'); if (!b) return;
+  if (b.dataset.fav) favOnly = !favOnly; else { favOnly = false; $('cat').value = b.dataset.c; }
+  applyFilter();
+};
+$('rndBtn').onclick = () => { if (!filtered.length) return toast('No channels in this list'); openWatch(filtered[Math.floor(Math.random() * filtered.length)]); };
+$('toTop').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+addEventListener('scroll', () => {
+  const show = scrollY > 700 && mode !== 'watch', el = $('toTop');
+  if (show === !el.classList.contains('hidden')) return;
+  el.classList.toggle('hidden', !show); if (show) re(el, 'pop');
+}, { passive: true });
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName) && mode !== 'watch') { e.preventDefault(); $('q').focus(); }
+});
+
+// ---- Grid ----
+function card(c, i = 0) {
+  const ini = esc(c.name.trim().slice(0, 2).toUpperCase());
+  return `<article data-id="${c.id}" class="cursor-pointer group" style="animation-delay:${Math.min(i, 24) * 30}ms">
+    <div class="relative aspect-video rounded-xl t-card flex items-center justify-center overflow-hidden thumb">
+      <span class="text-3xl font-bold text-gray-600">${ini}</span>
+      ${c.logo ? `<img src="${esc(c.logo)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onload="this.classList.add('ld')" onerror="this.remove()" class="absolute inset-0 w-full h-full object-contain p-4 t-card transition-transform duration-300 group-hover:scale-110">` : ''}
+      <button data-fav="${c.id}" class="heart fv absolute top-1.5 right-1.5 z-10 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-600 ${fav.has(c.url) ? 'saved' : ''}" title="Favorite">${ic('heart', 16)}</button>
+      <span class="absolute bottom-1 right-1 z-10 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1"><i class="dot"></i>LIVE</span>
+    </div>
+    <h3 class="mt-2 text-sm font-medium line2">${esc(c.name)}</h3>
+    <p class="text-xs t-muted truncate">${esc(c.cats.join(' · '))}</p></article>`;
+}
+function filterQuery() { // ?q= ?cat= ?lang= for the current controls
+  const p = new URLSearchParams(), q = $('q').value.trim(), cat = $('cat').value, lang = $('lang').value;
+  if (q) p.set('q', q); if (cat) p.set('cat', cat); if (lang) p.set('lang', lang);
+  const qs = p.toString(); return qs ? '?' + qs : '';
+}
+function syncUrl() { // keep the address bar in step with the controls so a filtered view can be shared
+  if (mode === 'watch' || tab !== 'tv') return;
+  try { history.replaceState(history.state, '', location.pathname + filterQuery()); } catch (e) {}
+}
+function resetFilters() { // clear search + category + language and show every channel again
+  $('q').value = ''; $('cat').value = ''; $('lang').value = ''; qStore.tv = ''; favOnly = false;
+  clearTimeout(t); applyFilter(); window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function applyUrlState() { // make the controls (and the grid) follow the address bar after Back / Forward
+  const P = new URLSearchParams(location.search);
+  if (P.get('c') || P.get('m') || P.get('tab')) return;
+  const has = (sel, v) => [...sel.options].some(o => o.value === v) ? v : '';
+  const q = P.get('q') || '', cat = has($('cat'), P.get('cat') || ''), lang = has($('lang'), P.get('lang') || '');
+  if (q === $('q').value.trim() && cat === $('cat').value && lang === $('lang').value) return;
+  $('q').value = q; $('cat').value = cat; $('lang').value = lang;
+  if (channels.length) applyFilter();
+}
+function applyFilter() {
+  const q = $('q').value.trim().toLowerCase(), cat = $('cat').value, lang = $('lang').value;
+  filtered = channels.filter(c => (!hideBad || !bad.has(c.url)) && (!favOnly || fav.has(c.url)) && (!cat || c.cats.includes(cat)) && (!lang || c.langs.includes(lang)) && (!q || c.name.toLowerCase().includes(q)));
+  stopPreview(); $('grid').innerHTML = ''; shown = 0;
+  syncUrl(); refreshBar();
+  if (!filtered.length) $('grid').innerHTML = '<div class="col-span-full text-center t-muted py-16">' + (favOnly && !fav.size ? 'No favorites yet. Tap the heart on any channel.' : 'No channels match.') + ' <button id="noRes" class="underline hover:text-red-500">Clear filters</button></div>';
+  more();
+}
+function more() {
+  $('grid').insertAdjacentHTML('beforeend', filtered.slice(shown, shown + PAGE).map(card).join(''));
+  shown = Math.min(shown + PAGE, filtered.length);
+  $('more').classList.toggle('hidden', shown >= filtered.length);
+}
+let t;
+const stopQueued = () => clearTimeout(t);
+const runSearch = () => { clearTimeout(t); tab === 'mov' ? searchMovies() : tab === 'radio' ? renderRadio() : applyFilter(); };
+const queueFilter = () => { clearTimeout(t); t = setTimeout(runSearch, 250); };
+$('q').oninput = queueFilter;
+$('q').addEventListener('search', queueFilter); // the clear (x) button in Safari / iOS fires "search"
+$('q').addEventListener('change', runSearch);
+$('q').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runSearch();
+  else if (e.key === 'Escape' && $('q').value) { e.stopPropagation(); $('q').value = ''; runSearch(); }
+});
+$('cat').onchange = $('lang').onchange = applyFilter;
+$('more').onclick = more;
+const clickCard = e => { if (e.target.closest('#noRes')) return resetFilters(); const fb = e.target.closest('[data-fav]'); if (fb) return toggleFav(channels[+fb.dataset.fav], fb); if (held) return; const a = e.target.closest('article'); if (a) openWatch(channels[+a.dataset.id]); };
+$('grid').oncontextmenu = e => { if (matchMedia('(pointer: coarse)').matches && e.target.closest('article')) e.preventDefault(); };
+$('grid').onclick = clickCard; $('related').onclick = clickCard;
+
+// ---- Live preview on cards: hover (mouse) or press-and-hold (touch) ----
+let pv = null, hoverArt = null, hoverT = 0, holdT = 0, held = false;
+function stopPreview() { if (!pv) return; if (pv.hls) pv.hls.destroy(); pv.box.remove(); pv = null; }
+function startPreview(art) {
+  stopPreview();
+  const nc = navigator.connection; if (nc && (nc.saveData || /2g/.test(nc.effectiveType))) return; // save data
+  const c = channels[+art.dataset.id]; if (!c || !art.isConnected) return;
+  const box = document.createElement('div');
+  box.className = 'pv absolute inset-0 z-[5] bg-black flex items-center justify-center';
+  box.innerHTML = '<video muted playsinline autoplay class="absolute inset-0 w-full h-full object-contain"></video><div class="w-7 h-7 rounded-full border-4 border-white/25 border-t-red-500 animate-spin"></div>';
+  art.querySelector('.thumb').appendChild(box);
+  const el = box.querySelector('video'), src = url(c.url);
+  el.addEventListener('playing', () => { const sp = box.querySelector('.animate-spin'); if (sp) sp.remove(); });
+  pv = { box, hls: null };
+  if (window.Hls && Hls.isSupported()) {
+    const h = pv.hls = new Hls({ startLevel: 0, capLevelToPlayerSize: true, maxBufferLength: 8 });
+    h.loadSource(src); h.attachMedia(el);
+    h.on(Hls.Events.MANIFEST_PARSED, () => el.play().catch(() => {}));
+    h.on(Hls.Events.ERROR, (_, d) => { if (d.fatal) stopPreview(); });
+  } else if (el.canPlayType('application/vnd.apple.mpegurl')) { el.src = src; el.play().catch(() => {}); }
+}
+const CARD = '#grid article, #related article, #picks article';
+document.addEventListener('pointerover', e => {
+  if (e.pointerType !== 'mouse') return;
+  const a = e.target.closest(CARD);
+  if (a === hoverArt) return;
+  hoverArt = a; clearTimeout(hoverT); stopPreview();
+  if (a) hoverT = setTimeout(() => startPreview(a), 500);
+});
+document.documentElement.addEventListener('mouseleave', () => { hoverArt = null; clearTimeout(hoverT); stopPreview(); });
+document.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'mouse') return;
+  const a = e.target.closest(CARD); if (!a) return;
+  clearTimeout(holdT); holdT = setTimeout(() => { held = true; startPreview(a); }, 450);
+});
+const endHold = () => { clearTimeout(holdT); if (held) { stopPreview(); setTimeout(() => held = false, 350); } };
+['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, endHold));
+
+// ---- Playback ----
+function netMsg(c, d, viaProx) {
+  const code = d.response && d.response.code, hint = proxyList().length ? '' : ' Try turning the Proxy button on.';
+  if (viaProx && code >= 400) return `The proxy reached this channel, but its server answered ${code}. It is probably region-locked, blocking proxies, or offline. You can hide it.`;
+  if (code === 404 || code === 410) return 'This channel is offline (stream not found).';
+  if (code === 401 || code === 403) return `The stream server refused access (${code}).`;
+  if (code >= 500) return `The stream server has a problem (${code}). Try again later.`;
+  if (/^http:/.test(c.url) && location.protocol === 'https:') return 'This stream is HTTP-only (or offline), so it cannot play on an HTTPS site.' + hint;
+  return 'This stream blocks browser playback (CORS) or is offline.' + hint;
+}
+// Tries the direct stream first, then each enabled proxy. With a proxy, the ORIGINAL playlist URL is
+// loaded and every request (playlist + video pieces) is routed through the proxy, so HTTP-only
+// and relative links work too.
+let curVia = 0, proxyFails = 0, startT = 0, vidT = 0;
+function startStream(c, n = 0) {
+  if (n === 0) savePos(); v.onloadedmetadata = null;
+  cur = c; curVia = n; $('err').classList.add('hidden'); spin(true); syncMovieUi();
+  if (hls) { hls.destroy(); hls = null; }
+  renderAudio();
+  const px = proxyList(), via = n > 0 ? px[n - 1] : null, total = px.length + 1;
+  const src = via ? c.url : url(c.url), next = () => n + 1 < total && (startStream(c, n + 1), true);
+  let recov = 0; clearTimeout(startT);
+  startT = setTimeout(() => { // never started playing: move on instead of leaving a black screen
+    if (cur === c && curVia === n && !(v.currentTime > 0) && !next()) giveUp(c, {}, n, 'This channel is taking too long to start. It may be offline or slow. Try Retry or another channel.');
+  }, 15000);
+  if (window.Hls && Hls.isSupported()) {
+    const cfg = { enableWorker: true, lowLatencyMode: true };
+    if (via) cfg.xhrSetup = (xhr, u) => xhr.open('GET', via.wrap(u), true);
+    hls = new Hls(cfg);
+    hls.loadSource(src); hls.attachMedia(v);
+    hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, renderAudio);
+    hls.on(Hls.Events.AUDIO_TRACK_SWITCHED, renderAudio);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => v.play().catch(() => {}));
+    hls.on(Hls.Events.ERROR, (_, d) => {
+      if (!d.fatal) return;
+      if (d.type === Hls.ErrorTypes.NETWORK_ERROR) { if (!next()) giveUp(c, d, n); }
+      else if (d.type === Hls.ErrorTypes.MEDIA_ERROR) { if (++recov <= 2) hls.recoverMediaError(); else if (!next()) fail("This channel's video format can't be played by this browser. Try another browser, or hide the channel."); }
+      else if (!next()) fail('Playback failed. Try another channel.');
+    });
+  } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
+    v.src = via ? via.wrap(c.url) : src; v.play().catch(() => {});
+    v.onerror = () => { if (!next()) giveUp(c, {}, n); };
+  } else fail('HLS is not supported in this browser.');
+}
+async function giveUp(c, d, n, msg) {
+  fail(msg || netMsg(c, d, n > 0));
+  if (n > 0 && ++proxyFails >= 3) { // several proxied failures in a row: is the proxy itself down?
+    proxyFails = 0;
+    const p = proxyList()[0], prev = proxyMode;
+    if (p && !(await proxyHealthy(p))) { setProxy('off'); toast('Proxy seems to be down – turned off', () => setProxy(prev)); }
+  }
+}
+function fail(m) {
+  spin(false);
+  const live = !(cur && cur.isMovie);
+  $('err').innerHTML = `<div class="max-w-sm"><p>${m}</p><div class="flex flex-wrap gap-2 justify-center mt-3"><button id="retry" class="btn !text-white">Retry</button>${live ? `<button id="proxyErr" class="btn !text-white">Proxy: ${PLABEL[proxyMode]}</button><button id="hideCh" class="btn !text-white">Hide channel</button>` : ''}</div></div>`;
+  $('err').classList.remove('hidden');
+}
+$('err').onclick = e => {
+  if (e.target.closest('#retry') && cur) { if (cur.isMovie) openMovie(cur.mid, cur.name); else startStream(cur); }
+  if (e.target.closest('#proxyErr') && cur) { cycleProxy(); startStream(cur); }
+  if (e.target.closest('#hideCh') && cur) { bad.add(cur.url); saveSets(); closePlayer(); if (history.state && history.state.w) history.back(); applyFilter(); }
+};
+
+function setMode(m) {
+  mode = m;
+  const watch = m === 'watch', mini = m === 'mini';
+  $('watch').classList.toggle('hidden', !watch);
+  $('miniSlot').classList.toggle('hidden', !mini);
+  stage.classList.toggle('mini', mini);
+  document.body.style.overflow = watch ? 'hidden' : '';
+  document.title = watch && cur ? `${cur.name} – Watch Live | JMB TV` : BASE_TITLE;
+  if (watch) re($('watch'), 'enter'); if (mini) re($('miniSlot'), 'pop'); stage.classList.remove('idle');
+  (watch ? $('watchSlot') : $('miniSlot')).appendChild(stage);
+  v.play().catch(() => {}); // moving the element can pause it
+}
+const chId = c => c.tvg || 'h' + [...c.url].reduce((h, ch) => (h * 33 + ch.charCodeAt(0)) >>> 0, 5381).toString(36);
+function openWatch(c) {
+  stopPreview(); $('eps').classList.add('hidden'); $('saveBtn').classList.add('hidden'); $('relH').classList.remove('hidden'); $('wDesc').textContent = '';
+  if (mode === 'none' || cur !== c) startStream(c);
+  const link = '?c=' + encodeURIComponent(chId(c));
+  try { if (mode !== 'watch') history.pushState({ w: 1 }, '', link); else history.replaceState(history.state, '', link); } catch (e) {}
+  setMode('watch');
+  $('wTitle').textContent = $('mTitle').textContent = c.name;
+  $('wMeta').textContent = [(c.cats || []).join(' · '), (c.langs || []).join(', ')].filter(Boolean).join(' • ');
+  const rel = channels.filter(x => x !== c && !(hideBad && bad.has(x.url)) && x.cats.some(k => (c.cats || []).includes(k))).slice(0, 12);
+  $('related').innerHTML = rel.map(card).join('');
+  $('watch').scrollTop = 0;
+}
+function minimize() { if (mode === 'watch') setMode('mini'); }
+function closePlayer() {
+  savePos(); v.pause(); if (hls) { hls.destroy(); hls = null; }
+  v.removeAttribute('src'); v.load();
+  $('parking').appendChild(stage); stage.classList.remove('mini');
+  $('watch').classList.add('hidden'); $('miniSlot').classList.add('hidden');
+  document.body.style.overflow = ''; mode = 'none'; cur = null; document.title = BASE_TITLE; syncMovieUi();
+  try { history.replaceState(history.state, '', location.pathname + filterQuery()); } catch (e) {}
+}
+$('back').onclick = () => history.state && history.state.w ? history.back() : minimize();
+window.addEventListener('popstate', minimize);
+window.addEventListener('popstate', () => { if (mode !== 'watch' && tab === 'tv') applyUrlState(); });
+window.addEventListener('pageshow', e => { if (e.persisted && tab === 'tv') applyUrlState(); });
+$('minib').onclick = $('back').onclick;
+$('mOpen').onclick = () => reopen();
+$('mClose').onclick = closePlayer;
+const aboutOpen = () => !$('about').classList.contains('hidden');
+function openAbout() { $('about').classList.remove('hidden'); re($('about'), 'fade'); re($('aboutCard'), 'pop'); document.body.style.overflow = 'hidden'; }
+function closeAbout() { $('about').classList.add('hidden'); document.body.style.overflow = mode === 'watch' ? 'hidden' : ''; }
+$('aboutBtn').onclick = $('aboutLink').onclick = openAbout;
+$('aboutClose').onclick = closeAbout;
+$('about').onclick = e => { if (e.target === $('about')) closeAbout(); };
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!$('age').classList.contains('hidden')) $('ageNo').click();
+  else if (aboutOpen()) closeAbout();
+  else if (mode === 'watch' && !document.fullscreenElement) $('back').onclick();
+});
+
+// ---- Controls ----
+const toggle = () => v.paused ? v.play() : v.pause();
+$('play').onclick = $('mPlay').onclick = $('bigPlay').onclick = toggle;
+// YouTube-style overlay: click/tap only reveals controls (no pause); double-click = fullscreen
+let idleT;
+function hide() { if (!v.paused && mode === 'watch' && !seeking && $('audMenu').classList.contains('hidden') && $('spdMenu').classList.contains('hidden')) stage.classList.add('idle'); }
+function wake() {
+  stage.classList.remove('idle'); clearTimeout(idleT);
+  idleT = setTimeout(hide, 2000);
+}
+stage.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') wake(); });
+stage.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') hide(); });
+$('ctl').addEventListener('input', wake); $('ctl').addEventListener('click', wake);
+v.onclick = e => { // tap shows/hides controls; double-tap sides = skip 10s (movies), middle = fullscreen
+  if (moved || hold2) return;
+  if (mode === 'mini') return reopen();
+  const now = Date.now(), rc = v.getBoundingClientRect(), x = (e.clientX - rc.left) / rc.width;
+  if (now - lastTap < 320) {
+    lastTap = 0; clearTimeout(tapT);
+    if (cur && cur.isMovie && x < .35) seekBy(-10, 'l'); else if (cur && cur.isMovie && x > .65) seekBy(10, 'r'); else $('fs').click();
+    return;
+  }
+  lastTap = now;
+  tapT = setTimeout(() => { stage.classList.contains('idle') || v.paused ? wake() : (clearTimeout(idleT), hide()); }, 260);
+};
+document.addEventListener('keydown', e => {
+  if (mode !== 'watch' || /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName) && document.activeElement.type !== 'range') return;
+  const k = e.key.toLowerCase();
+  if (k === ' ' || k === 'k') { e.preventDefault(); toggle(); }
+  else if (k === 'f') $('fs').click(); else if (k === 'm') $('mute').click(); else if (k === 'a') $('ratio').click();
+  else if (cur && cur.isMovie) {
+    const onRange = document.activeElement.type === 'range';
+    if (k === 'j') seekBy(-10, 'l'); else if (k === 'l') seekBy(10, 'r');
+    else if (e.key === 'ArrowLeft' && !onRange) seekBy(-5, 'l'); else if (e.key === 'ArrowRight' && !onRange) seekBy(5, 'r');
+    else if (/^[0-9]$/.test(k) && isFinite(v.duration)) v.currentTime = v.duration * (+k / 10);
+    else if (e.key === '>') stepSpeed(1); else if (e.key === '<') stepSpeed(-1);
+  }
+});
+function setPlayIcons() { const n = v.paused ? 'play' : 'pause'; setIcon($('play'), n); setIcon($('mPlay'), n); setIcon($('bigPlay'), n, 30); }
+v.onplay = v.onpause = () => { setPlayIcons(); re($('bigPlay'), 'bump'); wake(); };
+v.onwaiting = v.onloadstart = () => spin(true);
+v.addEventListener('playing', () => { // sound but no picture? tell the user why
+  clearTimeout(startT); clearTimeout(vidT);
+  vidT = setTimeout(() => {
+    if (cur && !v.paused && v.currentTime > 0 && v.readyState >= 2 && v.videoWidth === 0)
+      fail("Audio is playing but this channel's video can't be shown. Its video format (often HEVC/H.265) may not be supported by this browser.");
+  }, 4000);
+});
+v.onplaying = v.oncanplay = () => { spin(false); if (curVia > 0) proxyFails = 0; if (cur && !cur.isMovie && bad.delete(cur.url)) saveSets(); if (cur && !cur.isMovie && (!recent[0] || recent[0].url !== cur.url)) addRecent(cur); };
+$('vol').oninput = e => { v.volume = +e.target.value; v.muted = v.volume === 0; };
+$('mute').onclick = () => v.muted = !v.muted;
+v.onvolumechange = () => { setIcon($('mute'), v.muted || v.volume === 0 ? 'mute' : 'volume'); $('vol').value = v.muted ? 0 : v.volume; };
+$('bri').oninput = e => v.style.filter = `brightness(${e.target.value})`;
+const FITS = [['contain', 'Fit'], ['fill', 'Stretch'], ['cover', 'Crop']];
+let fitI = 0; try { fitI = (+localStorage.getItem('jbFit') || 0) % 3; } catch (e) {}
+function applyFit() { v.style.objectFit = FITS[fitI][0]; $('ratio').innerHTML = ic('aspect') + `<span>${FITS[fitI][1]}</span>`; }
+$('ratio').onclick = () => { fitI = (fitI + 1) % 3; try { localStorage.setItem('jbFit', fitI); } catch (e) {} applyFit(); };
+applyFit();
+$('fs').onclick = async () => {
+  if (document.fullscreenElement) return document.exitFullscreen();
+  try {
+    const f = stage.requestFullscreen || stage.webkitRequestFullscreen;
+    if (!f) throw 0; await f.call(stage);
+  } catch (e) { v.webkitEnterFullscreen?.(); } // iPhone Safari: native player, rotates with the device
+};
+if (!document.pictureInPictureEnabled) $('pip').style.display = 'none';
+$('pip').onclick = async () => {
+  try { document.pictureInPictureElement ? await document.exitPictureInPicture() : await v.requestPictureInPicture(); }
+  catch (e) { fail('Picture-in-Picture is unavailable for this stream.'); }
+};
+
+// ---- Audio tracks (HLS.js, or native tracks on Safari) ----
+function trackLabel(t, i) {
+  const lang = (t.lang || t.language || '').toUpperCase(), name = t.name || t.label || '';
+  if (name && lang && !name.toUpperCase().includes(lang)) return `${name} (${lang})`;
+  return name || lang || `Track ${i + 1}`;
+}
+function getTracks() {
+  if (hls) return hls.audioTracks.map((t, i) => ({ label: trackLabel(t, i), active: i === hls.audioTrack }));
+  const at = v.audioTracks;
+  return at && at.length ? [...at].map((t, i) => ({ label: trackLabel(t, i), active: t.enabled })) : [];
+}
+function setTrack(i) {
+  if (hls) hls.audioTrack = i;
+  else for (let k = 0; k < v.audioTracks.length; k++) v.audioTracks[k].enabled = k === i;
+  renderAudio();
+}
+function renderAudio() {
+  const tr = getTracks(), menu = $('audMenu');
+  $('audWrap').classList.toggle('hidden', tr.length < 2);
+  if (tr.length < 2) menu.classList.add('hidden');
+  menu.innerHTML = tr.map((t, i) => `<button data-i="${i}" class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-left hover:bg-white/15 ${t.active ? 'text-red-400 font-semibold' : 'text-white'}"><span>${esc(t.label)}</span>${t.active ? ic('check', 16) : ''}</button>`).join('');
+}
+$('aud').onclick = () => { const m = $('audMenu'); m.classList.toggle('hidden'); if (!m.classList.contains('hidden')) re(m, 'menu-in'); };
+$('audMenu').onclick = e => { const b = e.target.closest('button'); if (b) { setTrack(+b.dataset.i); $('audMenu').classList.add('hidden'); } };
+document.addEventListener('click', e => { if (!e.target.closest('#audWrap')) $('audMenu').classList.add('hidden'); });
+if (v.audioTracks && v.audioTracks.addEventListener) ['addtrack', 'removetrack', 'change'].forEach(ev => v.audioTracks.addEventListener(ev, renderAudio));
+
+// ---- Draggable mini-player (snaps to nearest corner) ----
+const ms = $('miniSlot'); let drag = null, moved = false;
+function snapMini() {
+  if (!ms.style.left) return;
+  const r = ms.getBoundingClientRect(), m = 12;
+  ms.style.left = (r.left + r.width / 2 < innerWidth / 2 ? m : innerWidth - r.width - m) + 'px';
+  ms.style.top = (r.top + r.height / 2 < innerHeight / 2 ? m : innerHeight - r.height - m) + 'px';
+}
+ms.addEventListener('pointerdown', e => {
+  if (e.target.closest('button')) return;
+  const r = ms.getBoundingClientRect(); drag = { x: e.clientX, y: e.clientY, l: r.left, t: r.top, id: e.pointerId };
+});
+window.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  if (!moved && Math.hypot(dx, dy) < 6) return;
+  if (!moved) { moved = true; ms.classList.add('dragging'); try { ms.setPointerCapture(drag.id); } catch (_) {} }
+  ms.style.right = ms.style.bottom = 'auto';
+  ms.style.left = Math.min(Math.max(0, drag.l + dx), innerWidth - ms.offsetWidth) + 'px';
+  ms.style.top = Math.min(Math.max(0, drag.t + dy), innerHeight - ms.offsetHeight) + 'px';
+});
+window.addEventListener('pointerup', () => {
+  if (!drag) return; drag = null;
+  if (moved) { ms.classList.remove('dragging'); snapMini(); setTimeout(() => moved = false, 60); }
+});
+window.addEventListener('resize', snapMini);
+
+// ---- Infinite scroll ----
+const io = new IntersectionObserver(es => {
+  if (es[0].isIntersecting && shown < filtered.length) { more(); io.unobserve($('sentinel')); io.observe($('sentinel')); }
+}, { rootMargin: '600px' });
+io.observe($('sentinel'));
+
+// ---- Button ripple ----
+document.addEventListener('pointerdown', e => {
+  const b = e.target.closest('.btn'); if (!b) return;
+  const r = b.getBoundingClientRect(), d = Math.max(r.width, r.height), sp = document.createElement('span');
+  sp.className = 'ripple';
+  sp.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d / 2}px;top:${e.clientY - r.top - d / 2}px`;
+  b.appendChild(sp); setTimeout(() => sp.remove(), 600);
+});
+
+// ---- Logo ----
+const LOGO = 'data:image/webp;base64,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';
+document.querySelectorAll('[data-logo]').forEach(i => i.src = LOGO);
+
+// ---- Icons init ----
+document.querySelectorAll('[data-ic]').forEach(el => el.insertAdjacentHTML('afterbegin', ic(el.dataset.ic)));
+setIcon($('mute'), 'volume'); setIcon($('fs'), 'fs'); setPlayIcons();
+document.addEventListener('fullscreenchange', () => {
+  const on = !!document.fullscreenElement;
+  setIcon($('fs'), on ? 'fsExit' : 'fs');
+  // On phones/tablets, rotate to landscape in fullscreen and release on exit
+  if (matchMedia('(pointer: coarse)').matches && screen.orientation) {
+    if (on) screen.orientation.lock?.('landscape').catch(() => {});
+    else screen.orientation.unlock?.();
+  }
+});
+
+// ---- Theme ----
+function applyTheme(t) {
+  document.documentElement.classList.toggle('light', t === 'light');
+  setIcon($('theme'), t === 'light' ? 'moon' : 'sun');
+  try { localStorage.setItem('theme', t); } catch (e) {}
+}
+let saved = null; try { saved = localStorage.getItem('theme'); } catch (e) {}
+applyTheme(saved || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+$('theme').onclick = () => { re($('theme'), 'spin-once'); applyTheme(document.documentElement.classList.contains('light') ? 'dark' : 'light'); };
+
+// ---- Share ----
+$('shareBtn').onclick = async () => {
+  if (!cur) return;
+  const u = location.origin + location.pathname + (cur.isMovie ? '?m=' + encodeURIComponent(cur.mid) : '?c=' + encodeURIComponent(chId(cur)));
+  try { if (navigator.share) { await navigator.share({ title: cur.name + ' – JMB TV', text: 'Watch ' + cur.name + ' live on JMB TV', url: u }); return; } }
+  catch (e) { if (e.name === 'AbortError') return; }
+  try { await navigator.clipboard.writeText(u); toast('Link copied'); } catch (e) { prompt('Copy this link', u); }
+};
+
+// ---- Install as an app (PWA) ----
+let installEv = null;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEv = e; $('installBtn').classList.remove('hidden'); re($('installBtn'), 'pop'); });
+$('installBtn').onclick = async () => { if (!installEv) return; installEv.prompt(); await installEv.userChoice; installEv = null; $('installBtn').classList.add('hidden'); };
+addEventListener('appinstalled', () => { $('installBtn').classList.add('hidden'); toast('JMB TV installed'); });
+addEventListener('offline', () => toast("You're offline – channels need internet"));
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+
+buildMovChips(); syncMat();
+const P0 = new URLSearchParams(location.search);
+if (P0.get('tab') === 'radio') setTab('radio'); else if (P0.get('tab') === 'movies' || P0.get('m')) setTab('mov');
+if (P0.get('m')) openMovie(P0.get('m'));
+renderRecent();
+load();
+</script>
+</body>
+</html>
