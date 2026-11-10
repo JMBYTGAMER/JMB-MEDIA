@@ -4,7 +4,7 @@ A mobile-first media discovery hub built as a static GitHub Pages website.
 
 ## Sections
 
-- **JMB TV** — search and filter publicly listed TV channel metadata and public stream links. Streams are provided by third parties; JMB MEDIA does not host them.
+- **JMB TV** — search and filter public channel metadata and play eligible public HTTPS streams in an in-page player. Playback is limited to streams that can be matched to the broadcaster's own domain and do not require hidden access headers; paid or geo-blocked channels are not unlocked. The TV page does not link viewers to external channel websites.
 - **Newspapers** — browse Malayalam, Indian and international newspaper sources and read their latest RSS headlines.
 - **JMB Radio** — search online radio stations by name, country, language and genre using Radio Browser.
 - **JMB Social Media** — a news desk for text headlines, source-linked video channels and audio briefings.
@@ -35,6 +35,7 @@ This project is plain HTML, CSS and JavaScript. Enable **GitHub Pages** for the 
 │   └── js/common.js
 ├── tv/
 │   ├── index.html
+│   ├── tv.css
 │   └── app.js
 ├── newspaper/
 │   ├── index.html
