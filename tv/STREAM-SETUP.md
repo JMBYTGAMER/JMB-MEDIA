@@ -10,7 +10,7 @@ Some HLS providers allow playback only when playlist and media requests have the
 2. Open the Worker used for `jb-proxy.johanbiju15.workers.dev`.
 3. Replace its code with the latest `cors-proxy-worker.js` from this repository and deploy it.
 4. Confirm the Worker keeps the `workers.dev` address configured in `tv/index.html` under `const PROXY`.
-5. Reload `https://media.jmbhost.qzz.io/tv/` and use the in-page Proxy / Test controls in the About or player settings to check it.
+5. Reload `https://media.jmbhost.qzz.io/tv/`, open **More tools**, and use **Test proxy** to check it.
 
 The Worker source now allows the exact site origin `https://media.jmbhost.qzz.io`. Updating this file in GitHub alone does not publish changes to Cloudflare; the Worker must be deployed in Cloudflare.
 
