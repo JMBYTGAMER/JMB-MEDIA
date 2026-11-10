@@ -4,7 +4,7 @@ A mobile-first media discovery hub built as a static GitHub Pages website.
 
 ## Sections
 
-- **JMB TV** — search and filter public channel metadata and play eligible public HTTPS streams in an in-page player. Playback is limited to streams that can be matched to the broadcaster's own domain and do not require hidden access headers; paid or geo-blocked channels are not unlocked. The TV page does not link viewers to external channel websites.
+- **JMB TV** — a single-page media app inspired by the supplied JB TV reference: Live TV, Movies & TV, Radio, daily picks, recent channels, favourites, filters, an in-page player, mini-player, fullscreen and playback controls. TV and radio playback remain inside the site. Streams remain subject to provider availability and rights; the app does not unlock subscriptions, DRM or regional restrictions.
 - **Newspapers** — browse Malayalam, Indian and international newspaper sources and read their latest RSS headlines.
 - **JMB Radio** — search online radio stations by name, country, language and genre using Radio Browser.
 - **JMB Social Media** — a news desk for text headlines, source-linked video channels and audio briefings.
@@ -47,3 +47,9 @@ This project is plain HTML, CSS and JavaScript. Enable **GitHub Pages** for the 
     ├── index.html
     └── app.js
 ```
+
+## JMB TV streaming proxy
+
+The TV page uses the Cloudflare Worker endpoint configured in `tv/index.html` for HLS streams that need a same-origin media proxy. The Worker source is `cors-proxy-worker.js` and its allowed origins include `https://tv.jmbhost.qzz.io`.
+
+After changing the Worker source, deploy it in Cloudflare Workers. The deployed endpoint must match the `PROXY` constant in `tv/index.html` (`https://jb-proxy.johanbiju15.workers.dev/?url=` unless you change it). A GitHub commit does not deploy the Worker to Cloudflare. See `tv/STREAM-SETUP.md`.
