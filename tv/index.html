@@ -626,7 +626,7 @@ async function scanList() {
   };
   await Promise.all(Array.from({ length: 8 }, run));
   saveSets();
-  $('scanTxt').textContent = `${scan.stop ? 'Stopped' : 'Done'}: ${scan.bad.toLocaleString()} broken channel${scan.bad === 1 ? '' : 's'} hidden`;
+  $('scanTxt').textContent = `${scan.stop ? 'Stopped' : 'Done'}: ${scan.bad.toLocaleString()} channel${scan.bad === 1 ? '' : 's'} could not be checked successfully`;
   scan = null; $('scanBtn').disabled = false;
   setTimeout(() => { if (!scan) $('scanProg').classList.add('hidden'); }, 3000);
   applyFilter();
@@ -1164,7 +1164,7 @@ function card(c, i = 0) {
       <span class="text-3xl font-bold text-gray-600">${ini}</span>
       ${c.logo ? `<img src="${esc(c.logo)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onload="this.classList.add('ld')" onerror="this.remove()" class="absolute inset-0 w-full h-full object-contain p-4 t-card transition-transform duration-300 group-hover:scale-110">` : ''}
       <button data-fav="${c.id}" class="heart fv absolute top-1.5 right-1.5 z-10 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-600 ${fav.has(c.url) ? 'saved' : ''}" title="Favorite">${ic('heart', 16)}</button>
-      <span class="absolute bottom-1 right-1 z-10 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1"><i class="dot"></i>LIVE</span>
+      <span class="absolute bottom-1 right-1 z-10 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1"><i class="dot"></i>LISTED</span>
     </div>
     <h3 class="mt-2 text-sm font-medium line2">${esc(c.name)}</h3>
     <p class="text-xs t-muted truncate">${esc([...(c.areas || []).slice(0, 1), ...(c.cats || []).slice(0, 2)].join(' · '))}</p></article>`;
