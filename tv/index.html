@@ -141,7 +141,7 @@
   .line2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 </style>
 
-<link rel="stylesheet" href="jmb-tv-only.css?v=3">
+<link rel="stylesheet" href="jmb-tv-only.css?v=4">
 </head>
 <body>
 <h1 class="sr-only">JMB TV – Watch live TV channels online for free</h1>
@@ -523,7 +523,7 @@ async function load() {
       fetchPlaylistText(AREA_PLAYLIST, false)
     ]);
     channels = combinePlaylists(mainText, categoryText, areaText);
-    if (!channels.length) throw new Error('No public channel streams were found.');
+    if (!channels.length) throw new Error('The public channel lists returned no usable entries. Please retry when the playlist provider is online.');
     const cats = [...new Set(channels.flatMap(c => c.cats))].sort();
     const areas = [...new Set(channels.flatMap(c => c.areas || []))].sort();
     $('cat').length = 1;
@@ -539,7 +539,7 @@ async function load() {
     $('status').classList.add('hidden');
     applyFilter(); loadLangs(langReq); buildHome();
     if (deep) { const ch = channels.find(c => chId(c) === deep); if (ch) openWatch(ch); }
-    $('count').textContent = `${filtered.length.toLocaleString()} channels · ${channels.length.toLocaleString()} unique public streams`;
+    $('count').textContent = `${filtered.length.toLocaleString()} listed channels · ${channels.length.toLocaleString()} directory entries`;
   } catch (e) {
     $('grid').innerHTML = '';
     $('status').innerHTML = `Could not load public playlists (${esc(e.message)}).<br>Check your connection and reload JMB TV.`;
@@ -580,8 +580,8 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 };
 const bad = new Set(store.get('jbBad')), good = new Set(store.get('jbGood'));
-let hideBad = true, scan = null;
-try { hideBad = localStorage.getItem('jbHide') !== '0'; } catch (e) {}
+let hideBad = false, scan = null;
+try { localStorage.setItem('jbHide', '0'); } catch (e) {}
 const saveSets = () => { store.set('jbBad', [...bad]); store.set('jbGood', [...good]); };
 function refreshBar() {
   syncChips(); syncProxyUi();
@@ -644,8 +644,12 @@ const PUBLIC_PROXIES = [ // free third-party proxies: can be slow, rate-limited 
 const PLABEL = { off: 'Off', public: 'Public', worker: 'Your proxy' };
 let proxyMode = PROXY ? 'worker' : 'public';
 try {
-  const m = localStorage.getItem('jbProxy'); if (m === 'off' || m === 'public' || (m === 'worker' && PROXY)) proxyMode = m;
-  if (PROXY && localStorage.getItem('jbProxyUrl') !== PROXY) { proxyMode = 'worker'; localStorage.setItem('jbProxy', 'worker'); localStorage.setItem('jbProxyUrl', PROXY); }
+  const migrated = localStorage.getItem('jbProxyPrefVersion') === '2';
+  const m = localStorage.getItem('jbProxy');
+  if (migrated && (m === 'off' || m === 'public' || (m === 'worker' && PROXY))) proxyMode = m;
+  if (PROXY && !migrated) proxyMode = 'worker';
+  if (PROXY && localStorage.getItem('jbProxyUrl') !== PROXY) proxyMode = 'worker';
+  localStorage.setItem('jbProxy', proxyMode); localStorage.setItem('jbProxyUrl', PROXY); localStorage.setItem('jbProxyPrefVersion', '2');
 } catch (e) {}
 const proxyList = () => proxyMode === 'off' ? [] : proxyMode === 'public' ? PUBLIC_PROXIES
   : [{ name: 'Your proxy', wrap: u => u.startsWith(PROXY) ? u : PROXY + encodeURIComponent(u), ping: PROXY.replace(/\?url=$/, '?ping=1') }];
@@ -1269,7 +1273,7 @@ function netMsg(c, d, viaProx) {
   if (code === 401 || code === 403) return `The stream server refused access (${code}).`;
   if (code >= 500) return `The stream server has a problem (${code}). Try again later.`;
   if (/^http:/.test(c.url) && location.protocol === 'https:') return 'This stream is HTTP-only (or offline), so it cannot play on an HTTPS site.' + hint;
-  return 'This stream blocks browser playback (CORS) or is offline.' + hint;
+  return 'The direct stream could not be reached from this browser. JMB TV will try the configured proxy automatically. If that also fails, the broadcaster may be offline, region-restricted, or may block third-party playback.' + hint;
 }
 // Tries the direct stream first, then each enabled proxy. With a proxy, the ORIGINAL playlist URL is
 // loaded and every request (playlist + video pieces) is routed through the proxy, so HTTP-only
@@ -1316,7 +1320,8 @@ async function giveUp(c, d, n, msg) {
 function fail(m) {
   spin(false);
   const live = !(cur && cur.isMovie);
-  $('err').innerHTML = `<div class="max-w-sm"><p>${m}</p><div class="flex flex-wrap gap-2 justify-center mt-3"><button id="retry" class="btn !text-white">Retry</button>${live ? `<button id="proxyErr" class="btn !text-white">Proxy: ${PLABEL[proxyMode]}</button><button id="hideCh" class="btn !text-white">Hide channel</button>` : ''}</div></div>`;
+  const safe = String(m || 'Playback is unavailable.').replace(/[<>]/g, '');
+  $('err').innerHTML = `<div class="tv-playback-error"><span class="tv-error-mark">!</span><div><strong>We couldn't start this channel</strong><p>${safe}</p><small>Your channel stays in the directory. Try again later or choose another stream.</small></div><div class="tv-error-actions"><button id="retry" class="btn !text-white">Try again</button>${live ? `<button id="proxyErr" class="btn !text-white">Proxy settings</button>` : ''}</div></div>`;
   $('err').classList.remove('hidden');
 }
 $('err').onclick = e => {
