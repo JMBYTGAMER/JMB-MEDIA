@@ -443,7 +443,7 @@ function combinePlaylists(mainText, categoryText, areaText) {
   });
   if (areaText) parseM3U(areaText).forEach(item => {
     const current = map.get(item.url);
-    if (!current) addBase(item);
+    if (!current) map.set(item.url, { ...item, cats: ['Uncategorized'], areas: [...(item.cats || [])] });
     else item.cats.forEach(area => { if (area && area !== 'Uncategorized' && !current.areas.includes(area)) current.areas.push(area); });
   });
   return [...map.values()].filter(validDirectoryChannel).map((c, id) => ({
