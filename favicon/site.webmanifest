@@ -4,8 +4,8 @@
   "start_url": "/tv/",
   "scope": "/tv/",
   "display": "standalone",
-  "background_color": "#0f0f0f",
-  "theme_color": "#dc2626",
+  "background_color": "#0b1222",
+  "theme_color": "#0b1222",
   "icons": [
     {
       "src": "/favicon/favicon.svg",
