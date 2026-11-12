@@ -369,40 +369,15 @@ html.light .tv-search-field{background:#f4ece3!important}
 .tv-brand img{object-fit:contain!important;width:62px!important;height:62px!important}
 @media(max-width:680px){.tv-brand img{width:48px!important;height:48px!important}.tv-brand b{font-size:15px!important}}
 
-/* JMB TV — featured programme discovery */
-.tv-show-feature{position:relative;display:grid;grid-template-columns:minmax(180px,.72fr) minmax(0,1.45fr);gap:clamp(18px,3vw,34px);align-items:stretch;margin:0 0 22px;padding:clamp(16px,2.8vw,28px);overflow:hidden;border:1px solid rgba(255,155,106,.28);border-radius:18px;background:radial-gradient(500px 240px at 0 0,rgba(255,100,75,.17),transparent 72%),linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.02)),var(--tv-panel);box-shadow:var(--tv-shadow)}
-.tv-show-feature:after{content:"";position:absolute;right:-70px;bottom:-130px;width:290px;height:290px;border:1px solid rgba(255,175,125,.15);border-radius:50%;box-shadow:0 0 0 28px rgba(255,175,125,.035),0 0 0 56px rgba(255,175,125,.02);pointer-events:none}
-.tv-show-art{position:relative;isolation:isolate;min-height:190px;display:flex;flex-direction:column;justify-content:space-between;padding:19px;border:1px solid rgba(255,255,255,.16);border-radius:13px;background:radial-gradient(circle at 80% 12%,rgba(255,181,114,.28),transparent 35%),linear-gradient(145deg,#331b27,#151724 78%);color:#fff;overflow:hidden}
-.tv-show-art:before{content:"";position:absolute;z-index:-1;inset:0;background:repeating-linear-gradient(135deg,transparent 0 15px,rgba(255,255,255,.035) 15px 16px)}
-.tv-show-art>span{font:800 9px "DM Sans",sans-serif;letter-spacing:.19em;color:#ffb18c}
-.tv-show-art strong{font:900 clamp(40px,6vw,68px)/.78 "Space Grotesk",sans-serif;letter-spacing:-.1em;color:#fff;text-shadow:0 8px 30px rgba(0,0,0,.38)}
-.tv-show-art em{font:800 10px "DM Sans",sans-serif;letter-spacing:.2em;font-style:normal;color:#ffc69f}
-.tv-show-info{position:relative;z-index:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
-.tv-show-eyebrow{display:flex;align-items:center;gap:8px;font:800 9px "DM Sans",sans-serif;letter-spacing:.18em;color:var(--tv-hot)}
-.tv-show-live{width:7px;height:7px;border-radius:50%;background:#ff8b70;box-shadow:0 0 12px #ff8b70}
-.tv-show-info h2{margin:9px 0 4px;color:var(--tv-text);font:800 clamp(24px,3.6vw,37px)/1.05 "Space Grotesk",sans-serif;letter-spacing:-.065em}
-.tv-show-info h2 span{color:var(--tv-hot)}
-.tv-show-season{margin:5px 0 15px;color:var(--tv-muted);font-size:12px;line-height:1.6}
-.tv-show-schedule{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:15px}
-.tv-show-schedule>div{display:grid;gap:4px;padding:11px 13px;border:1px solid var(--tv-line);border-radius:9px;background:rgba(0,0,0,.12)}
-.tv-show-schedule b{font:800 9px "DM Sans",sans-serif;letter-spacing:.14em;color:var(--tv-cyan)}
-.tv-show-schedule span{font-size:11px;color:var(--tv-text);line-height:1.4}
-.tv-show-actions{display:flex;flex-wrap:wrap;gap:8px}
-.tv-show-actions a{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:40px;padding:0 13px;border-radius:9px;font-size:11px;font-weight:800;transition:transform .18s,border-color .18s,filter .18s}
-.tv-show-actions a:hover{transform:translateY(-2px);filter:brightness(1.08)}
-.tv-show-primary{background:linear-gradient(120deg,#ef5a42,#ff9756);color:#fff!important;box-shadow:0 8px 20px rgba(240,90,66,.18)}
-.tv-show-secondary{border:1px solid var(--tv-line);background:var(--tv-panel2);color:var(--tv-text)!important}
-.tv-show-footnote{margin:11px 0 0;color:var(--tv-muted);font-size:10px;line-height:1.5}
-html.light .tv-show-feature{background:radial-gradient(500px 240px at 0 0,rgba(211,107,85,.12),transparent 72%),linear-gradient(135deg,#fff,#f4f5fa);border-color:rgba(166,91,51,.22)}
-html.light .tv-show-schedule>div{background:#f8f8fb}
-html.light .tv-show-schedule span{color:#243148}
-@media(max-width:680px){
- .tv-show-feature{grid-template-columns:1fr;gap:14px;padding:13px;margin-bottom:18px}
- .tv-show-art{min-height:132px;padding:14px}
- .tv-show-art strong{font-size:48px}
- .tv-show-info h2{font-size:26px}
- .tv-show-schedule{gap:7px}
- .tv-show-schedule>div{padding:10px}
- .tv-show-actions{display:grid;grid-template-columns:1fr 1fr}
- .tv-show-actions a{padding:0 8px;font-size:10px}
-}
+
+/* Contextual show search — hidden until the viewer searches for a programme */
+.tv-show-search-hint{display:flex;align-items:center;gap:13px;margin:0 0 18px;padding:13px 15px;border:1px solid rgba(255,155,106,.24);border-radius:13px;background:linear-gradient(110deg,rgba(240,90,56,.12),rgba(255,255,255,.025));box-shadow:0 8px 26px rgba(0,0,0,.12)}
+.tv-show-search-hint.hidden{display:none!important}
+.tv-show-search-icon{width:39px;height:39px;flex:none;display:grid;place-items:center;border-radius:11px;background:rgba(240,90,56,.15);color:var(--tv-hot);font-size:28px}
+.tv-show-search-copy{display:grid;gap:3px;min-width:0;flex:1}
+.tv-show-search-kicker{font:800 8px "DM Sans",sans-serif;letter-spacing:.18em;color:var(--tv-hot)}
+.tv-show-search-copy strong{font:800 14px "DM Sans",sans-serif;color:var(--tv-text)}
+.tv-show-search-copy p{margin:0;font:11px/1.5 "DM Sans",sans-serif;color:var(--tv-muted)}
+.tv-show-search-hint button{border:1px solid var(--tv-line);background:var(--tv-panel2);color:var(--tv-text);border-radius:8px;padding:9px 11px;font:700 10px "DM Sans",sans-serif;white-space:nowrap}
+.tv-show-search-hint button:active{transform:scale(.97)}
+@media(max-width:480px){.tv-show-search-hint{gap:9px;padding:11px}.tv-show-search-icon{width:32px;height:32px;font-size:23px}.tv-show-search-copy strong{font-size:12px}.tv-show-search-copy p{font-size:10px}.tv-show-search-hint button{font-size:9px;padding:8px}}
