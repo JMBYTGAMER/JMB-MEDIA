@@ -141,7 +141,7 @@
   .line2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 </style>
 
-<link rel="stylesheet" href="jmb-tv-only.css?v=7">
+<link rel="stylesheet" href="jmb-tv-only.css?v=8">
 </head>
 <body>
 <h1 class="sr-only">JMB TV – Watch live TV channels online for free</h1>
@@ -710,7 +710,7 @@ function syncProxyUi() {
 }
 function setProxy(m) { proxyMode = m; try { localStorage.setItem('jbProxy', m); } catch (e) {} syncProxyUi(); }
 function cycleProxy() {
-  const modes = ['off', 'public', ...(PROXY ? ['worker'] : [])];
+  const modes = PROXY ? ['worker', 'public', 'off'] : ['public', 'off'];
   setProxy(modes[(modes.indexOf(proxyMode) + 1) % modes.length]); toast('Proxy: ' + PLABEL[proxyMode]);
 }
 async function proxyHealthy(p) { // fetch a tiny known page through the proxy
@@ -1210,7 +1210,7 @@ document.addEventListener('keydown', e => {
 // ---- Grid ----
 function card(c, i = 0) {
   const ini = esc(c.name.trim().slice(0, 2).toUpperCase());
-  return `<article data-id="${c.id}" class="cursor-pointer group" style="animation-delay:${Math.min(i, 24) * 30}ms">
+  return `<article data-id="${c.id}" tabindex="0" role="button" aria-label="Watch ${esc(c.name)}" class="tv-channel-card cursor-pointer group" style="animation-delay:${Math.min(i, 24) * 30}ms">
     <div class="relative aspect-video rounded-xl t-card flex items-center justify-center overflow-hidden thumb">
       <span class="text-3xl font-bold text-gray-600">${ini}</span>
       ${c.logo ? `<img src="${esc(c.logo)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onload="this.classList.add('ld')" onerror="this.remove()" class="absolute inset-0 w-full h-full object-contain p-4 t-card transition-transform duration-300 group-hover:scale-110">` : ''}
@@ -1218,7 +1218,7 @@ function card(c, i = 0) {
       <span class="absolute bottom-1 right-1 z-10 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1"><i class="dot"></i>LISTED</span>
     </div>
     <h3 class="mt-2 text-sm font-medium line2">${esc(c.name)}</h3>
-    <p class="text-xs t-muted truncate">${esc([...(c.areas || []).slice(0, 1), ...(c.cats || []).slice(0, 2)].join(' · '))}</p></article>`;
+    <p class="text-xs t-muted truncate">${esc([...(c.areas || []).slice(0, 1), ...(c.langs || []).slice(0, 1), ...(c.cats || []).slice(0, 1)].join(' · '))}</p></article>`;
 }
 function normaliseSearch(value) {
   return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
@@ -1283,6 +1283,16 @@ $('more').onclick = more;
 const clickCard = e => { if (e.target.closest('#noRes')) return resetFilters(); const fb = e.target.closest('[data-fav]'); if (fb) return toggleFav(channels[+fb.dataset.fav], fb); if (held) return; const a = e.target.closest('article'); if (a) openWatch(channels[+a.dataset.id]); };
 $('grid').oncontextmenu = e => { if (matchMedia('(pointer: coarse)').matches && e.target.closest('article')) e.preventDefault(); };
 $('grid').onclick = clickCard; $('related').onclick = clickCard;
+const activateChannelCard = e => {
+  if ((e.key !== 'Enter' && e.key !== ' ') || e.target.closest('button,a,input')) return;
+  const cardEl = e.target.closest('article[data-id]');
+  if (!cardEl) return;
+  e.preventDefault();
+  const channel = channels.find(c => c.id === Number(cardEl.dataset.id));
+  if (channel) openWatch(channel);
+};
+$('grid').addEventListener('keydown', activateChannelCard);
+$('related').addEventListener('keydown', activateChannelCard);
 
 // ---- Live preview on cards: hover (mouse) or press-and-hold (touch) ----
 let pv = null, hoverArt = null, hoverT = 0, holdT = 0, held = false;
@@ -1380,10 +1390,20 @@ function fail(m) {
   $('bigPlay').classList.add('hidden');
   const live = !(cur && cur.isMovie);
   const safe = String(m || 'Playback is unavailable.').replace(/[<>]/g, '');
-  $('err').innerHTML = `<div class="tv-playback-error"><span class="tv-error-mark">!</span><div><strong>We couldn't start this channel</strong><p>${safe}</p><small>This channel remains in the directory. Check the proxy, retry once, or choose another channel.</small></div><div class="tv-error-actions"><button id="retry" class="btn !text-white">Try again</button>${live ? `<button id="proxyTestErr" class="btn !text-white">Test proxy</button><button id="proxyErr" class="btn !text-white">Change proxy</button>` : ''}</div></div>`;
+  const isAsianet = cur && normaliseSearch([cur.name, cur.tvg].join(' ')).includes('asianet');
+  const alternatives = live && cur ? channels.filter(x => x.url !== cur.url && (isAsianet
+    ? normaliseSearch([x.name, x.tvg].join(' ')).includes('asianet')
+    : (x.cats || []).some(k => (cur.cats || []).includes(k)))).slice(0, 3) : [];
+  const altMarkup = alternatives.length ? `<div class="tv-alt-wrap"><span class="tv-alt-label">${isAsianet ? 'OTHER ASIANET LISTINGS' : 'TRY ANOTHER CHANNEL'}</span><div class="tv-alt-list">${alternatives.map(x => `<button type="button" class="tv-alt-channel" data-alt-channel="${x.id}"><span>${esc(x.name)}</span><b>PLAY ↗</b></button>`).join('')}</div></div>` : '';
+  $('err').innerHTML = `<div class="tv-playback-error"><span class="tv-error-mark">!</span><div class="tv-error-copy"><strong>We couldn't start this channel</strong><p>${safe}</p><small>This channel stays in your directory. You can retry, test the proxy, or choose another listing.</small></div><div class="tv-error-actions"><button id="retry" class="btn !text-white">Try again</button>${live ? `<button id="proxyTestErr" class="btn !text-white">Test proxy</button><button id="proxyErr" class="btn !text-white">Change proxy</button>` : ''}</div>${altMarkup}</div>`;
   $('err').classList.remove('hidden');
 }
 $('err').onclick = e => {
+  const alternateButton = e.target.closest('[data-alt-channel]');
+  if (alternateButton) {
+    const alternative = channels.find(c => c.id === Number(alternateButton.dataset.altChannel));
+    if (alternative) openWatch(alternative);
+  }
   if (e.target.closest('#retry') && cur) { if (cur.isMovie) openMovie(cur.mid, cur.name); else startStream(cur); }
   if (e.target.closest('#proxyTestErr')) testProxy();
   if (e.target.closest('#proxyErr') && cur) { cycleProxy(); startStream(cur); }
