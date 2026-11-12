@@ -141,7 +141,7 @@
   .line2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 </style>
 
-<link rel="stylesheet" href="jmb-tv-only.css?v=6">
+<link rel="stylesheet" href="jmb-tv-only.css?v=7">
 </head>
 <body>
 <h1 class="sr-only">JMB TV – Watch live TV channels online for free</h1>
@@ -174,24 +174,6 @@
     <div class="tv-mode-tag"><span class="tv-live-dot"></span> CHANNEL DIRECTORY</div>
   </div>
 
-  <section class="tv-show-feature" aria-label="Bigg Boss Malayalam show guide">
-    <div class="tv-show-art" aria-hidden="true"><span>JMB TV / SHOW GUIDE</span><strong>BIGG<br>BOSS</strong><em>MALAYALAM · S08</em></div>
-    <div class="tv-show-info">
-      <div class="tv-show-eyebrow"><span class="tv-show-live"></span> NOW IN FOCUS · MALAYALAM</div>
-      <h2>Bigg Boss <span>Malayalam</span></h2>
-      <p class="tv-show-season">Season 8 · Hosted by Mohanlal · Premiered 6 September 2026</p>
-      <div class="tv-show-schedule">
-        <div><b>ASIANET</b><span>Mon–Fri · 9:30 PM IST</span><span>Sat–Sun · 9:00 PM IST</span></div>
-        <div><b>JIOHOTSTAR</b><span>Official streaming</span><span>24×7 live feed</span></div>
-      </div>
-      <div class="tv-show-actions">
-        <a class="tv-show-primary" href="?q=Asianet">Find Asianet channels <span>↗</span></a>
-        <a class="tv-show-secondary" href="https://www.jiohotstar.com/" target="_blank" rel="noopener noreferrer">Official streaming <span>↗</span></a>
-      </div>
-      <p class="tv-show-footnote">Broadcast schedules may change. Check the official broadcaster and streaming service for the latest details.</p>
-    </div>
-  </section>
-
   <section class="tv-search-panel" aria-label="Find a TV channel">
     <label class="tv-search-field">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
@@ -204,6 +186,16 @@
       <select id="area" autocomplete="off" title="Filter by broadcast area"><option value="">All regions</option></select>
     </div>
   </section>
+
+  <div id="showSearchHint" class="tv-show-search-hint hidden" role="status" aria-live="polite">
+    <div class="tv-show-search-icon">⌕</div>
+    <div class="tv-show-search-copy">
+      <span class="tv-show-search-kicker">SHOW MATCH</span>
+      <strong>Bigg Boss Malayalam</strong>
+      <p>Asianet channels are shown below. Choose an available Asianet listing to check its stream.</p>
+    </div>
+    <button id="showSearchClear" type="button">Clear search</button>
+  </div>
 
   <div class="tv-quick-label">Browse categories</div>
   <div id="chips" class="no-scrollbar flex gap-2 overflow-x-auto pb-3" aria-label="Quick category filters"></div>
@@ -1255,13 +1247,18 @@ function applyUrlState() { // make the controls (and the grid) follow the addres
 }
 function applyFilter() {
   const q = normaliseSearch($('q').value), cat = $('cat').value, lang = $('lang').value, area = $('area').value;
+  // Bigg Boss is a programme, not a channel name. Map this search to its broadcaster's channel listings.
+  const isBiggBossSearch = /\\bbigg?\\s*boss\\b/.test(q);
+  const channelSearch = isBiggBossSearch ? 'asianet' : q;
+  const showHint = $('showSearchHint');
+  if (showHint) showHint.classList.toggle('hidden', !isBiggBossSearch);
   filtered = channels.filter(c => {
     const haystack = normaliseSearch([c.name, c.tvg, ...(c.cats || []), ...(c.langs || []), ...(c.areas || [])].join(' '));
-    return (!hideBad || !bad.has(c.url)) && (!favOnly || fav.has(c.url)) && (!cat || c.cats.includes(cat)) && (!lang || c.langs.includes(lang)) && (!area || (c.areas || []).includes(area)) && (!q || haystack.includes(q));
+    return (!hideBad || !bad.has(c.url)) && (!favOnly || fav.has(c.url)) && (!cat || c.cats.includes(cat)) && (!lang || c.langs.includes(lang)) && (!area || (c.areas || []).includes(area)) && (!channelSearch || haystack.includes(channelSearch));
   });
   stopPreview(); $('grid').innerHTML = ''; shown = 0;
   syncUrl(); refreshBar();
-  if (!filtered.length) $('grid').innerHTML = '<div class="col-span-full text-center t-muted py-16">' + (favOnly && !fav.size ? 'No favorites yet. Tap the heart on any channel.' : 'No channels match.') + ' <button id="noRes" class="underline hover:text-red-500">Clear filters</button></div>';
+  if (!filtered.length) $('grid').innerHTML = '<div class="col-span-full text-center t-muted py-16">' + (favOnly && !fav.size ? 'No favorites yet. Tap the heart on any channel.' : isBiggBossSearch ? 'No Asianet channel entries match the current filters. Clear the filters or try searching Asianet.' : 'No channels match.') + ' <button id="noRes" class="underline hover:text-red-500">Clear filters</button></div>';
   more();
 }
 function more() {
@@ -1274,6 +1271,7 @@ const stopQueued = () => clearTimeout(t);
 const runSearch = () => { clearTimeout(t); tab === 'mov' ? searchMovies() : tab === 'radio' ? renderRadio() : applyFilter(); };
 const queueFilter = () => { clearTimeout(t); t = setTimeout(runSearch, 250); };
 $('q').oninput = queueFilter;
+$('showSearchClear').onclick = () => { $('q').value = ''; applyFilter(); $('q').focus(); };
 $('q').addEventListener('search', queueFilter); // the clear (x) button in Safari / iOS fires "search"
 $('q').addEventListener('change', runSearch);
 $('q').addEventListener('keydown', e => {
@@ -1340,7 +1338,7 @@ function netMsg(c, d, viaProx) {
 let curVia = 0, proxyFails = 0, startT = 0, vidT = 0;
 function startStream(c, n = 0) {
   if (n === 0) savePos(); v.onloadedmetadata = null;
-  cur = c; curVia = n; $('err').classList.add('hidden'); spin(true); syncMovieUi();
+  cur = c; curVia = n; $('err').classList.add('hidden'); $('bigPlay').classList.remove('hidden'); spin(true); syncMovieUi();
   if (hls) { hls.destroy(); hls = null; }
   renderAudio();
   const px = proxyList(), via = n > 0 ? px[n - 1] : null, total = px.length + 1;
@@ -1378,13 +1376,16 @@ async function giveUp(c, d, n, msg) {
 }
 function fail(m) {
   spin(false);
+  v.pause();
+  $('bigPlay').classList.add('hidden');
   const live = !(cur && cur.isMovie);
   const safe = String(m || 'Playback is unavailable.').replace(/[<>]/g, '');
-  $('err').innerHTML = `<div class="tv-playback-error"><span class="tv-error-mark">!</span><div><strong>We couldn't start this channel</strong><p>${safe}</p><small>Your channel stays in the directory. Try again later or choose another stream.</small></div><div class="tv-error-actions"><button id="retry" class="btn !text-white">Try again</button>${live ? `<button id="proxyErr" class="btn !text-white">Proxy settings</button>` : ''}</div></div>`;
+  $('err').innerHTML = `<div class="tv-playback-error"><span class="tv-error-mark">!</span><div><strong>We couldn't start this channel</strong><p>${safe}</p><small>This channel remains in the directory. Check the proxy, retry once, or choose another channel.</small></div><div class="tv-error-actions"><button id="retry" class="btn !text-white">Try again</button>${live ? `<button id="proxyTestErr" class="btn !text-white">Test proxy</button><button id="proxyErr" class="btn !text-white">Change proxy</button>` : ''}</div></div>`;
   $('err').classList.remove('hidden');
 }
 $('err').onclick = e => {
   if (e.target.closest('#retry') && cur) { if (cur.isMovie) openMovie(cur.mid, cur.name); else startStream(cur); }
+  if (e.target.closest('#proxyTestErr')) testProxy();
   if (e.target.closest('#proxyErr') && cur) { cycleProxy(); startStream(cur); }
   if (e.target.closest('#hideCh') && cur) { bad.add(cur.url); saveSets(); closePlayer(); if (history.state && history.state.w) history.back(); applyFilter(); }
 };
