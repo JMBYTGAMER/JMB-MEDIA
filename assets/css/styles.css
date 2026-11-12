@@ -28,3 +28,107 @@
 html.light .reader-panel{background:linear-gradient(145deg,#fff,#f4f5fa);border-color:rgba(240,68,82,.22)}
 html.light .reader-copy{color:#252a36}
 @media(max-width:680px){.news-card{padding:16px}.news-thumb{width:76px;height:68px}.news-headline{font-size:17px}.reader-panel{padding:20px}.reader-actions .btn{flex:1;justify-content:center}}
+
+/* JMB MEDIA — premium shared visual pass */
+:root{--bg:#080b13;--panel:#111725;--panel2:#182236;--line:rgba(214,226,248,.11);--text:#f4f7ff;--muted:#9ba8bd;--shadow:0 24px 70px rgba(0,0,0,.34)}
+body{background:radial-gradient(900px 520px at 85% -160px,rgba(129,104,255,.2),transparent 68%),radial-gradient(720px 500px at -12% 28%,rgba(240,68,82,.12),transparent 65%),var(--bg)}
+.site-header{background:rgba(8,11,19,.88);border-bottom:1px solid var(--line);box-shadow:0 8px 35px rgba(0,0,0,.12)}
+.header-inner{gap:clamp(12px,2vw,28px)}
+.brand-mark{border-radius:15px;box-shadow:0 10px 28px rgba(240,68,82,.32),inset 0 1px rgba(255,255,255,.3)}
+.main-nav a{border:1px solid transparent}
+.main-nav a.active{border-color:var(--line);background:rgba(255,255,255,.075)}
+.icon-btn,.menu-toggle{border-radius:15px;transition:transform .2s,border-color .2s,background .2s}
+.icon-btn:hover,.menu-toggle:hover{transform:translateY(-2px);border-color:rgba(255,154,69,.4)}
+.hero{padding-top:clamp(56px,9vw,100px);padding-bottom:clamp(36px,6vw,72px);overflow:hidden}
+.hero:before{content:"";position:absolute;pointer-events:none;width:min(55vw,620px);aspect-ratio:1;right:-12%;top:-25%;border-radius:50%;border:1px solid rgba(255,255,255,.07);box-shadow:0 0 0 36px rgba(255,255,255,.018),0 0 0 72px rgba(255,255,255,.012);mask-image:linear-gradient(120deg,#000,transparent 65%)}
+.hero .container{position:relative;z-index:1}
+.eyebrow{border-radius:12px;background:rgba(255,255,255,.055);backdrop-filter:blur(12px)}
+h1{letter-spacing:-.065em}
+h1 .gradient{background-image:linear-gradient(100deg,#fff 0%,#ffc18a 42%,#ff637b 88%)}
+.hero-copy{max-width:680px;line-height:1.8}
+.btn{border-radius:13px;min-height:43px}
+.btn:focus-visible,.icon-btn:focus-visible,.menu-toggle:focus-visible,.field:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid #ffad7a;outline-offset:3px}
+.btn.secondary{background:rgba(255,255,255,.055)}
+.service-grid{gap:clamp(12px,1.8vw,20px)}
+.service-card{border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025));box-shadow:0 12px 40px rgba(0,0,0,.12)}
+.service-card:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.22)}
+.service-icon{border-radius:16px;box-shadow:inset 0 1px rgba(255,255,255,.14)}
+.page-hero{padding-top:clamp(34px,6vw,64px);padding-bottom:28px}
+.page-hero h1{letter-spacing:-.065em}
+.toolbar{border-radius:20px;background:linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.02)),var(--panel);box-shadow:0 15px 50px rgba(0,0,0,.16);padding:clamp(12px,2vw,18px)}
+.field{border-radius:13px;min-height:48px}
+.field:focus{border-color:rgba(255,154,69,.75)}
+.media-card,.story-list,.side-panel,.source-tile{border-radius:19px}
+.media-card{box-shadow:0 10px 30px rgba(0,0,0,.1)}
+.media-card:hover{box-shadow:0 18px 45px rgba(0,0,0,.2);border-color:rgba(255,255,255,.2)}
+.avatar{border-radius:14px}.tag{border-radius:8px}
+.notice{border-radius:14px;line-height:1.7}
+.empty-state,.loading-state{border-radius:18px;padding:36px 22px}
+.footer{border-color:var(--line)}
+/* Newspaper reading desk */
+.newspaper-feature{position:relative;overflow:hidden;border-radius:24px;padding:clamp(20px,4vw,32px);background:radial-gradient(520px 260px at 0% 0%,rgba(255,154,69,.17),transparent 70%),linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border-color:rgba(255,154,69,.26);box-shadow:0 18px 50px rgba(0,0,0,.17)}
+.newspaper-feature:after{content:"";position:absolute;right:-45px;top:-80px;width:230px;height:230px;border:1px solid rgba(255,190,140,.13);border-radius:50%;box-shadow:0 0 0 28px rgba(255,190,140,.035),0 0 0 56px rgba(255,190,140,.02);pointer-events:none}
+.newspaper-feature>*{position:relative;z-index:1}
+.newspaper-feature .card-actions{margin-top:20px}
+.news-results-meta{align-items:center;gap:14px}
+.news-results-meta>div{display:grid;gap:5px}
+.news-health{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.news-health:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 10px var(--mint)}
+.news-card{gap:13px;min-height:280px;background:linear-gradient(160deg,rgba(255,255,255,.065),rgba(255,255,255,.018))}
+.news-thumb{width:104px;height:82px;object-fit:cover;border-radius:14px;background:var(--panel2);border:1px solid var(--line);flex:none}
+.news-thumb-placeholder{display:grid;place-items:center;font-size:27px}
+.news-card-meta{display:flex;flex-direction:column;gap:5px;min-width:0}
+.news-date{font-size:10px;color:var(--muted)}
+.news-headline{font-size:clamp(16px,1.7vw,19px);line-height:1.35}
+.news-excerpt{font-size:13px;line-height:1.7;-webkit-line-clamp:4}
+.news-card-footer{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:auto}
+.news-card-footer .btn{flex:0 0 auto}
+.news-empty{display:grid;place-items:center;gap:8px}
+.empty-icon{font-size:34px}
+.news-empty p{max-width:480px;margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+#newsRetry{min-width:106px}
+.article-reader{scroll-margin-top:90px}
+.reader-panel{border-radius:24px;padding:clamp(20px,4vw,42px)}
+.reader-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--muted);font-size:10px;letter-spacing:.15em;font-weight:800;margin:0 52px 14px 0}
+.reader-toolbar button{border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.05);padding:8px 11px;color:var(--text);font:700 11px inherit;letter-spacing:0}
+.reader-image{width:100%;max-height:390px;object-fit:cover;border-radius:17px;margin:8px 0 20px}
+.reader-inline-image{max-width:100%;height:auto;max-height:360px;object-fit:contain;border-radius:14px;margin:14px auto;display:block}
+.reader-article{font-size:15px;line-height:1.9;color:var(--text);overflow-wrap:anywhere}
+.reader-article p{margin:0 0 1.15em}
+.reader-article h2,.reader-article h3{margin:1.5em 0 .6em;line-height:1.3}
+.reader-article blockquote{margin:1.3em 0;padding:12px 18px;border-left:3px solid var(--orange);background:rgba(255,255,255,.04);border-radius:0 12px 12px 0;color:var(--muted)}
+.reader-article a{color:#ffb27f;text-decoration:underline;text-underline-offset:3px}
+.reader-note{border:1px solid var(--line);background:rgba(255,255,255,.035);border-radius:13px}
+.reader-actions .btn{min-height:44px}
+.radio-player{bottom:max(10px,env(safe-area-inset-bottom));border-radius:22px;padding:12px 15px;background:rgba(15,20,32,.95);box-shadow:0 18px 55px rgba(0,0,0,.4);border-color:rgba(255,255,255,.15)}
+.radio-player .play-btn{border-radius:14px;width:46px;height:46px;flex:none}
+.radio-player .icon-btn{width:44px;height:44px}
+.toast{border-radius:13px;box-shadow:0 12px 34px rgba(0,0,0,.28)}
+@media(max-width:680px){
+ .container{width:min(100% - 26px,560px)}
+ .header-inner{gap:10px}
+ .brand{gap:9px}
+ .brand small{font-size:8px;letter-spacing:1.7px}
+ .hero{padding-top:48px}
+ h1{letter-spacing:-.07em}
+ .toolbar{gap:9px}
+ .toolbar .field,.toolbar select{min-height:48px}
+ .card-grid{gap:12px}
+ .media-card{padding:15px}
+ .news-card{min-height:0;padding:14px}
+ .news-thumb{width:76px;height:70px;border-radius:12px}
+ .news-card-footer{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ .news-card-footer .btn{width:100%;font-size:11px;padding:10px 8px}
+ .news-headline{font-size:16px}
+ .news-excerpt{font-size:12px;-webkit-line-clamp:4}
+ .news-results-meta{align-items:flex-start}
+ .news-results-meta>button{white-space:nowrap}
+ .reader-panel{padding:18px;border-radius:19px}
+ .reader-toolbar{margin-right:44px;flex-wrap:wrap}
+ .reader-article{font-size:14px;line-height:1.8}
+ .reader-actions{display:grid;grid-template-columns:1fr}
+ .radio-player{width:calc(100% - 22px);gap:9px;padding:10px 12px}
+ .radio-player .now-playing{min-width:0}
+ .radio-player strong{max-width:38vw}
+}
+@media(prefers-reduced-motion:reduce){.hero:before{display:none}.service-card,.media-card,.icon-btn{transition:none}}
