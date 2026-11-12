@@ -386,7 +386,7 @@
 const PLAYLIST = 'https://iptv-org.github.io/iptv/index.m3u';
 const CATEGORY_PLAYLIST = 'https://iptv-org.github.io/iptv/index.category.m3u';
 const AREA_PLAYLIST = 'https://iptv-org.github.io/iptv/index.country.m3u';
-const FREE_TV_PLAYLIST = 'https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8';
+const FREE_TV_PLAYLIST = 'https://raw.githubusercontent.com/freecasthub/public-iptv/main/playlist.m3u';
 // Optional Cloudflare Worker proxy. Direct public streams are always tried first.
 const PROXY = 'https://jb-proxy.johanbiju15.workers.dev/?url=';
 const LANG_PLAYLIST = 'https://iptv-org.github.io/iptv/index.language.m3u';
@@ -564,7 +564,7 @@ async function load() {
       fetchPlaylistText(FREE_TV_PLAYLIST, false, false)
     ]);
     channels = combinePlaylists(mainText, categoryText, areaText, supplementalText);
-    directorySources = supplementalText ? 'IPTV-org + Free-TV' : 'IPTV-org';
+    directorySources = supplementalText ? 'IPTV-org + public broadcast feed' : 'IPTV-org';
     if (!channels.length) throw new Error('The public channel lists returned no usable entries. Please retry when the playlist provider is online.');
     const cats = [...new Set(channels.flatMap(c => c.cats))].sort();
     const areas = [...new Set(channels.flatMap(c => c.areas || []))].sort();
