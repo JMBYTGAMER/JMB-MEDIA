@@ -4,7 +4,7 @@ A mobile-first media discovery hub built as a static GitHub Pages website.
 
 ## Sections
 
-- **JMB TV** — a dedicated TV-only channel guide with search, category/language/region filters, favourites, recent channels, an in-page player, mini-player, fullscreen and playback controls. Its standalone responsive interface is designed specifically for JMB MEDIA and does not expose the Movies or Radio sections. Streams remain subject to provider availability and rights; the app does not unlock subscriptions, DRM or regional restrictions.
+- **JMB TV** — a dedicated TV-only channel guide with search, category/language/region filters, favourites, recent channels, an in-page player, mini-player, fullscreen and playback controls. Its directory combines IPTV-org with a filtered Free-TV/IPTV public playlist. Supplemental entries are limited to HTTPS HLS streams; YouTube-only, GeoIP-marked, VOD and non-HLS entries are excluded, and matching channel names/regions are deduplicated. Its standalone responsive interface does not expose the Movies or Radio sections. Streams remain subject to provider availability and rights; the app does not unlock subscriptions, DRM or regional restrictions.
 - **Newspapers** — browse Malayalam, Indian and international newspaper sources and read their latest RSS headlines.
 - **JMB Radio** — search online radio stations by name, country, language and genre using Radio Browser.
 - **JMB Social Media** — a news desk for text headlines, source-linked video channels and audio briefings.
@@ -54,3 +54,10 @@ This project is plain HTML, CSS and JavaScript. Enable **GitHub Pages** for the 
 The TV page uses the Cloudflare Worker endpoint configured in `tv/index.html` for HLS streams that need a same-origin media proxy. The Worker source is `cors-proxy-worker.js` and its allowed origins include `https://media.jmbhost.qzz.io`.
 
 After changing the Worker source, deploy it in Cloudflare Workers. The deployed endpoint must match the `PROXY` constant in `tv/index.html` (`https://jb-proxy.johanbiju15.workers.dev/?url=` unless you change it). A GitHub commit does not deploy the Worker to Cloudflare. See `tv/STREAM-SETUP.md`.
+
+
+## TV directory sources
+
+- IPTV-org public worldwide playlist and its category, country and language metadata: https://github.com/iptv-org/iptv
+- Free-TV/IPTV curated free-to-air playlist: https://github.com/Free-TV/IPTV
+- JMB TV filters the supplemental playlist to secure HTTPS HLS stream URLs, excluding entries marked as GeoIP-blocked or YouTube-only and VOD groups. It does not bypass geographic restrictions, subscriptions or DRM. The visible channel count is calculated from the merged, deduplicated catalogue at runtime.
