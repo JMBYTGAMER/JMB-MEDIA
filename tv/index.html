@@ -536,14 +536,14 @@ function combinePlaylists(mainText, categoryText, areaText, supplementalText) {
     areas: c.areas || [], langs: c.langs || []
   }));
 }
-async function fetchPlaylistText(source, required = false) {
+async function fetchPlaylistText(source, required = false, allowProxy = true) {
   const direct = async () => {
     const response = await fetch(url(source), { cache: 'force-cache' });
     if (!response.ok) throw new Error('HTTP ' + response.status);
     return response.text();
   };
   try { return await direct(); } catch (error) {
-    if (PROXY) {
+    if (allowProxy && PROXY) {
       try {
         const response = await fetch(viaProxy(source), { cache: 'force-cache' });
         if (response.ok) return await response.text();
@@ -561,7 +561,7 @@ async function load() {
       fetchPlaylistText(PLAYLIST, true),
       fetchPlaylistText(CATEGORY_PLAYLIST, false),
       fetchPlaylistText(AREA_PLAYLIST, false),
-      fetchPlaylistText(FREE_TV_PLAYLIST, false)
+      fetchPlaylistText(FREE_TV_PLAYLIST, false, false)
     ]);
     channels = combinePlaylists(mainText, categoryText, areaText, supplementalText);
     directorySources = supplementalText ? 'IPTV-org + Free-TV' : 'IPTV-org';
