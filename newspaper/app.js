@@ -28,11 +28,16 @@ function nodeText(node,tag){var n=node.getElementsByTagName(tag)[0];return n?(n.
 function nodeFirst(node,tags){for(var i=0;i<tags.length;i++){var n=node.getElementsByTagName(tags[i])[0];if(n)return n;}return null;}
 function setStatus(message){var el=$("newsStatus");if(el)el.textContent=message;}
 async function timeoutFetch(url,ms){var controller=typeof AbortController!=="undefined"?new AbortController():null;var timer=controller?setTimeout(function(){controller.abort();},ms):null;try{var r=await fetch(url,{cache:"no-store",signal:controller?controller.signal:undefined,headers:{"Accept":"application/rss+xml, application/atom+xml, application/xml, text/xml, */*"}});if(!r.ok)throw new Error("HTTP "+r.status);return await r.text();}finally{if(timer)clearTimeout(timer);}}
-async function fetchFeed(url){
- var failures=[];
- try{return {text:await timeoutFetch(url,7000),via:"publisher"};}catch(e){failures.push("direct: "+(e.message||"blocked"));}
- try{return {text:await timeoutFetch("https://proxy.cors.dev/"+url,14000),via:"feed relay"};}catch(e){failures.push("feed relay: "+(e.message||"failed"));}
- try{return {text:await timeoutFetch("https://api.allorigins.win/raw?url="+encodeURIComponent(url),14000),via:"fallback relay"};}catch(e){failures.push("fallback relay: "+(e.message||"failed"));}
+async function fetchFeed(url,source){
+ var failures=[],attempts=[
+  {url:url,via:"publisher",timeout:7000},
+  {url:"https://proxy.cors.dev/"+url,via:"feed relay",timeout:14000},
+  {url:"https://api.allorigins.win/raw?url="+encodeURIComponent(url),via:"fallback relay",timeout:14000}
+ ];
+ for(var i=0;i<attempts.length;i++){
+  try{var text=await timeoutFetch(attempts[i].url,attempts[i].timeout);var items=parseFeed(text,source);return {text:text,via:attempts[i].via,items:items};}
+  catch(e){failures.push(attempts[i].via+": "+(e.message||"failed"));}
+ }
  throw new Error(failures.join("; "));
 }
 function getAtomLink(node){var links=Array.from(node.getElementsByTagName("link"));var preferred=links.find(function(x){return !x.getAttribute("rel")||x.getAttribute("rel")==="alternate";})||links[0];return preferred?(preferred.getAttribute("href")||preferred.textContent||"").trim():"";}
@@ -49,7 +54,7 @@ function parseFeed(text,source){
   var title=nodeText(n,"title"),link=atom?getAtomLink(n):nodeText(n,"link");if(!safeUrl(link))return null;
   var desc=nodeText(n,atom?"summary":"description"),encoded=nodeFirst(n,["content:encoded","content","encoded"]),body=encoded?(encoded.textContent||"").trim():desc;
   var pub=nodeText(n,"pubDate")||nodeText(n,"published")||nodeText(n,"updated")||nodeText(n,"dc:date");
-  return {title:title,link:safeUrl(link),description:clean(desc,900),content:body.slice(0,14000),date:Date.parse(pub)||0,source:source,image:getFirstImage(n,body+" "+desc),via:""};
+  return {title:title,link:safeUrl(link),description:clean(desc,900),content:body.slice(0,8000),date:Date.parse(pub)||0,source:source,image:getFirstImage(n,body+" "+desc),via:""};
  }).filter(function(x){return x&&x.title;});
 }
 function sanitizeNode(node){
@@ -93,7 +98,7 @@ function renderSources(){$("publisherGrid").innerHTML=sources.map(function(s){re
 function renderHealth(){var ok=Object.keys(feedHealth).filter(function(k){return feedHealth[k].ok;}).length;var el=$("newsHealth");if(el)el.textContent=ok+" of "+sources.length+" feeds updated";}
 async function refreshFeeds(){
  if(loading)return;loading=true;var button=$("newsRetry");if(button){button.disabled=true;button.textContent="Refreshing…";}setStatus("Refreshing newspaper feeds…");
- var settled=await Promise.allSettled(sources.map(async function(s){var result=await fetchFeed(s.feed),items=parseFeed(result.text,s);items.forEach(function(x){x.via=result.via;x.stale=false;});storeFeed(s,items);feedHealth[s.name]={ok:true,via:result.via,count:items.length};return items;}));
+ var settled=await Promise.allSettled(sources.map(async function(s){var result=await fetchFeed(s.feed,s),items=result.items;items.forEach(function(x){x.via=result.via;x.stale=false;});storeFeed(s,items);feedHealth[s.name]={ok:true,via:result.via,count:items.length};return items;}));
  var fresh=[];settled.forEach(function(r,i){if(r.status==="fulfilled")fresh=fresh.concat(r.value);else feedHealth[sources[i].name]={ok:false,error:r.reason&&r.reason.message||"Feed unavailable",count:0};});
  if(fresh.length){var byLink=new Map();fresh.forEach(function(x){byLink.set(x.link,x);});allItems.forEach(function(x){if(!byLink.has(x.link))byLink.set(x.link,x);});var usage={};allItems=Array.from(byLink.values()).sort(function(a,b){return b.date-a.date;}).filter(function(item){if(item.date&&item.date<Date.now()-30*86400000)return false;var key=item.source.name;usage[key]=(usage[key]||0)+1;return usage[key]<=20;});lastUpdated=Date.now();setStatus(fresh.length+" fresh stories · "+Object.keys(feedHealth).filter(function(k){return feedHealth[k].ok;}).length+" feeds connected");}
  else if(allItems.length)setStatus("Showing saved headlines · live feeds are temporarily unavailable");else setStatus("Could not connect to newspaper feeds");
