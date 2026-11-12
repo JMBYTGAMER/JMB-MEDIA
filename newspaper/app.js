@@ -32,7 +32,10 @@ function parseFeed(text,source){
  var doc=new DOMParser().parseFromString(text,"text/xml");if(doc.querySelector("parsererror"))throw new Error("Invalid RSS");
  return Array.from(doc.getElementsByTagName("item")).slice(0,12).map(function(n){
   var enclosure=n.getElementsByTagName("enclosure")[0];var url=enclosure?enclosure.getAttribute("url"):"";
-  return {title:xmlText(n,"title"),link:xmlText(n,"link"),description:clean(xmlText(n,"description")),date:Date.parse(xmlText(n,"pubDate"))||0,source:source,media:url};
+  var mediaNode=n.getElementsByTagName("media:content")[0]||n.getElementsByTagName("media:thumbnail")[0];
+  var thumb=mediaNode?(mediaNode.getAttribute("url")||""):"";
+  if(!thumb&&enclosure&&/image\\//i.test(enclosure.getAttribute("type")||""))thumb=url;
+  return {title:xmlText(n,"title"),link:xmlText(n,"link"),description:clean(xmlText(n,"description")),date:Date.parse(xmlText(n,"pubDate"))||0,source:source,media:url,image:thumb};
  }).filter(function(x){return x.title&&/^https?:\/\//i.test(x.link);});
 }
 function fill(id,values,label){var el=$(id);Array.from(new Set(values)).sort().forEach(function(v){el.insertAdjacentHTML("beforeend",'<option value="'+esc(v)+'">'+esc(v)+'</option>');});}
@@ -44,9 +47,19 @@ function render(){
  if(!rows.length){$("newsGrid").innerHTML='<div class="empty-state">No headlines match your filters. Try another search or open a publisher website below.</div>';return;}
  $("newsGrid").innerHTML=rows.slice(0,90).map(function(x){
   var date=x.date?new Date(x.date).toLocaleString(undefined,{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"Latest update";
-  return '<article class="media-card"><div class="card-top"><div class="avatar">📰</div><div style="min-width:0"><div class="card-title">'+esc(x.source.name)+'</div><div class="muted tiny">'+esc(x.source.region)+' · '+esc(x.source.language)+' · '+esc(date)+'</div></div></div><div class="card-description"><b style="color:#f4f6fa">'+esc(x.title)+'</b><p style="margin:8px 0 0">'+esc(x.description||"Open the original publisher for more details.")+'</p></div><div class="card-actions"><a class="btn small" href="'+esc(x.link)+'" target="_blank" rel="noopener">Read full story ↗</a><a class="btn small ghost" href="'+esc(x.source.site)+'" target="_blank" rel="noopener">Publisher ↗</a></div></article>';
+  var image=x.image&&/^https:\\/\\//i.test(x.image)?'<img class="news-thumb" src="'+esc(x.image)+'" alt="" loading="lazy" onerror="this.remove()">':"";
+  return '<article class="media-card news-card"><div class="news-card-top">'+image+'<div class="news-card-meta"><span class="news-source">'+esc(x.source.name)+'</span><span class="muted tiny">'+esc(x.source.region)+' · '+esc(x.source.language)+' · '+esc(date)+'</span></div></div><h3 class="news-headline">'+esc(x.title)+'</h3><p class="news-excerpt">'+esc(x.description||"Open the on-page reader for the available publisher summary.")+'</p><div class="card-actions"><button class="btn small" data-read="'+allItems.indexOf(x)+'">Read on JMB</button><a class="btn small ghost" href="'+esc(x.link)+'" target="_blank" rel="noopener noreferrer">Official article ↗</a></div></article>';
  }).join("");
 }
+
+function openReader(index){
+ var x=allItems[index];if(!x)return;var panel=$("articleReader");if(!panel)return;
+ var date=x.date?new Date(x.date).toLocaleString(undefined,{dateStyle:"full",timeStyle:"short"}):"Latest update";
+ var image=x.image&&/^https:\/\//i.test(x.image)?'<img class="reader-image" src="'+esc(x.image)+'" alt="" onerror="this.remove()">':"";
+ $("readerContent").innerHTML='<div class="reader-kicker">JMB NEWSPAPER READER</div>'+image+'<div class="reader-source">'+esc(x.source.name)+' · '+esc(x.source.region)+' · '+esc(x.source.language)+'</div><h2>'+esc(x.title)+'</h2><div class="reader-date">'+esc(date)+'</div><div class="reader-copy">'+esc(x.description||"This publisher has not supplied a readable summary for this story. Continue to the official article below.")+'</div><div class="reader-note">This is a publisher-provided headline and short excerpt. The complete article remains on the publisher&#39;s website.</div><div class="reader-actions"><a class="btn small" href="'+esc(x.link)+'" target="_blank" rel="noopener noreferrer">Continue to original article ↗</a><a class="btn small ghost" href="'+esc(x.source.site)+'" target="_blank" rel="noopener noreferrer">Publisher homepage ↗</a></div>';
+ panel.hidden=false;document.body.classList.add("reader-open");$("readerClose").focus();panel.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function closeReader(){var panel=$("articleReader");if(panel){panel.hidden=true;document.body.classList.remove("reader-open");}}
 function renderSources(){
  $("publisherGrid").innerHTML=sources.map(function(s){return '<a class="source-tile" href="'+esc(s.site)+'" target="_blank" rel="noopener"><b>'+(s.featured?"★ ":"")+esc(s.name)+'</b><span>'+esc(s.region)+' · '+esc(s.language)+'<br>Official publication ↗</span></a>';}).join("");
 }
@@ -60,6 +73,11 @@ async function init(){
  render();
  if(!allItems.length){$("newsStatus").textContent="News feeds could not be reached right now."; $("newsGrid").innerHTML='<div class="empty-state">Some publishers block browser-side feed access. Try the official publisher links above, or reload later.</div>';}
 }
+$("newsGrid").addEventListener("click",function(e){var b=e.target.closest("[data-read]");if(b)openReader(Number(b.getAttribute("data-read")));});
+$("readerClose").addEventListener("click",closeReader);
+$("articleReader").addEventListener("click",function(e){if(e.target===this)closeReader();});
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeReader();});
+$("manoramaOnJmb").addEventListener("click",function(){$("publisherFilter").value="Malayala Manorama";render();$("newsGrid").scrollIntoView({behavior:"smooth",block:"start"});});
 ["newsSearch","regionFilter","languageFilter","publisherFilter","sortFilter"].forEach(function(id){$(id).addEventListener(id==="newsSearch"?"input":"change",render);});
 init();
 })();
