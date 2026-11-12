@@ -141,7 +141,7 @@
   .line2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 </style>
 
-<link rel="stylesheet" href="jmb-tv-only.css?v=4">
+<link rel="stylesheet" href="jmb-tv-only.css?v=5">
 </head>
 <body>
 <h1 class="sr-only">JMB TV – Watch live TV channels online for free</h1>
@@ -386,6 +386,7 @@
 const PLAYLIST = 'https://iptv-org.github.io/iptv/index.m3u';
 const CATEGORY_PLAYLIST = 'https://iptv-org.github.io/iptv/index.category.m3u';
 const AREA_PLAYLIST = 'https://iptv-org.github.io/iptv/index.country.m3u';
+const FREE_TV_PLAYLIST = 'https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8';
 // Optional Cloudflare Worker proxy. Direct public streams are always tried first.
 const PROXY = 'https://jb-proxy.johanbiju15.workers.dev/?url=';
 const LANG_PLAYLIST = 'https://iptv-org.github.io/iptv/index.language.m3u';
@@ -432,10 +433,17 @@ function re(el, c) { el.classList.remove(c); void el.offsetWidth; el.classList.a
 const spin = on => $('spin').classList.toggle('hidden', !on);
 
 let channels = [], filtered = [], shown = 0, cur = null, hls = null, mode = 'none';
+let directorySources = 'IPTV-org';
 const v = $('v'), stage = $('stage');
 
 // ---- Playlist ----
 function attr(s, k) { const m = s.match(new RegExp(k + '="([^"]*)"')); return m ? m[1].trim() : ''; }
+const REGION_NAMES = (() => { try { return new Intl.DisplayNames(['en'], { type: 'region' }); } catch (e) { return null; } })();
+function regionLabel(code) {
+  const value = String(code || '').trim().toUpperCase();
+  if (!value) return '';
+  try { return REGION_NAMES ? REGION_NAMES.of(value) : value; } catch (e) { return value; }
+}
 function parseM3U(text) {
   const out = []; let info = null;
   for (const raw of text.split(/\r?\n/)) {
@@ -443,21 +451,38 @@ function parseM3U(text) {
     if (l.startsWith('#EXTINF')) {
       const comma = l.lastIndexOf(',');
       const title = comma >= 0 ? l.slice(comma + 1).trim() : '';
+      const countryCodes = attr(l, 'tvg-country').split(/[;,]/).map(s => s.trim()).filter(Boolean);
+      const areas = countryCodes.map(regionLabel).filter(Boolean);
+      const rawCats = attr(l, 'group-title').split(';').map(s => s.trim()).filter(Boolean);
+      const cats = rawCats.filter(cat => !areas.some(area => area.toLowerCase() === cat.toLowerCase()));
+      const langs = attr(l, 'tvg-language').split(/[;,]/).map(s => s.trim()).filter(Boolean);
       info = {
         name: title || attr(l, 'tvg-name') || 'Unknown',
-        logo: attr(l, 'tvg-logo'), tvg: attr(l, 'tvg-id'), langs: [], areas: [],
-        cats: attr(l, 'group-title').split(';').map(s => s.trim()).filter(Boolean)
+        logo: attr(l, 'tvg-logo'), tvg: attr(l, 'tvg-id'), langs, areas,
+        cats: cats.length ? cats : ['General'],
+        sourceFlags: { sd: /Ⓢ/u.test(title), geo: /Ⓖ/u.test(title), youtube: /Ⓨ/u.test(title) }
       };
-      if (!info.cats.length) info.cats = ['Uncategorized'];
     } else if (info && l && !l.startsWith('#')) {
-      if (/^https?:\/\//i.test(l)) { info.url = l; out.push(info); }
+      if (/^https?:\/\//i.test(l)) {
+        info.url = l;
+        if (/youtube\.com|youtu\.be/i.test(l)) info.sourceFlags.youtube = true;
+        out.push(info);
+      }
       info = null;
     }
   }
   return out;
 }
 function cleanChannelName(name) {
-  return String(name || '').replace(/^\s*[|:;!]+\s*/, '').replace(/\s+/g, ' ').trim();
+  return String(name || '').replace(/\s*[ⓈⒼⓎ]+\s*$/u, '').replace(/^\s*[|:;!]+\s*/, '').replace(/\s+/g, ' ').trim();
+}
+function validSupplementalStream(channel) {
+  if (channel.sourceFlags?.geo || channel.sourceFlags?.youtube) return false;
+  if ((channel.cats || []).some(category => /^vod\b/i.test(category))) return false;
+  try {
+    const stream = new URL(channel.url);
+    return stream.protocol === 'https:' && /\.m3u8$/i.test(stream.pathname);
+  } catch (e) { return false; }
 }
 function validDirectoryChannel(c) {
   const name = cleanChannelName(c.name);
@@ -467,33 +492,48 @@ function validDirectoryChannel(c) {
   if (/(^|[\s_-])(adult|xxx|porn|pornographic|erotic|18\+)([\s_-]|$)/i.test(labels)) return false;
   return true;
 }
-function combinePlaylists(mainText, categoryText, areaText) {
-  const map = new Map();
-  const addBase = item => {
+function combinePlaylists(mainText, categoryText, areaText, supplementalText) {
+  const map = new Map(), names = new Map();
+  const nameKey = item => normaliseSearch(cleanChannelName(item.name));
+  const rememberName = item => {
+    const key = nameKey(item); if (!key) return;
+    const list = names.get(key) || []; list.push(item); names.set(key, list);
+  };
+  const addBase = (item, dedupeName = false) => {
     const key = item.url;
-    if (!map.has(key)) map.set(key, { ...item, cats: [...(item.cats || [])], areas: [...(item.areas || [])] });
-    else {
+    if (map.has(key)) {
       const current = map.get(key);
       if (!current.logo && item.logo) current.logo = item.logo;
       if (!current.tvg && item.tvg) current.tvg = item.tvg;
+      (item.cats || []).forEach(cat => { if (cat && !current.cats.includes(cat)) current.cats.push(cat); });
+      (item.areas || []).forEach(area => { if (area && !current.areas.includes(area)) current.areas.push(area); });
+      (item.langs || []).forEach(lang => { if (lang && !current.langs.includes(lang)) current.langs.push(lang); });
+      return;
     }
+    if (dedupeName) {
+      const prior = names.get(nameKey(item)) || [];
+      const sameChannel = prior.some(existing => !existing.areas.length || !item.areas.length || existing.areas.some(area => item.areas.includes(area)));
+      if (sameChannel) return;
+    }
+    const value = { ...item, cats: [...(item.cats || [])], areas: [...(item.areas || [])], langs: [...(item.langs || [])] };
+    map.set(key, value); rememberName(value);
   };
   parseM3U(mainText).forEach(addBase);
   if (categoryText) parseM3U(categoryText).forEach(item => {
     const current = map.get(item.url);
     if (!current) addBase(item);
-    else {
-      item.cats.forEach(cat => { if (cat && cat !== 'Uncategorized' && !current.cats.includes(cat)) current.cats.push(cat); });
-    }
+    else (item.cats || []).forEach(cat => { if (cat && cat !== 'Uncategorized' && !current.cats.includes(cat)) current.cats.push(cat); });
   });
   if (areaText) parseM3U(areaText).forEach(item => {
     const current = map.get(item.url);
     if (!current) map.set(item.url, { ...item, cats: ['Uncategorized'], areas: [...(item.cats || [])] });
-    else item.cats.forEach(area => { if (area && area !== 'Uncategorized' && !current.areas.includes(area)) current.areas.push(area); });
+    else (item.cats || []).forEach(area => { if (area && area !== 'Uncategorized' && !current.areas.includes(area)) current.areas.push(area); });
   });
+  if (supplementalText) parseM3U(supplementalText).filter(validSupplementalStream).forEach(item => addBase(item, true));
   return [...map.values()].filter(validDirectoryChannel).map((c, id) => ({
-    ...c, name: cleanChannelName(c.name), id, cats: c.cats.filter(x => x !== 'Uncategorized').length ? c.cats.filter(x => x !== 'Uncategorized') : ['Uncategorized'],
-    areas: c.areas || []
+    ...c, name: cleanChannelName(c.name), id,
+    cats: c.cats.filter(x => x !== 'Uncategorized').length ? c.cats.filter(x => x !== 'Uncategorized') : ['Uncategorized'],
+    areas: c.areas || [], langs: c.langs || []
   }));
 }
 async function fetchPlaylistText(source, required = false) {
@@ -517,12 +557,14 @@ async function load() {
   try {
     $('grid').innerHTML = SKEL.repeat(12);
     const langReq = fetchLangText();
-    const [mainText, categoryText, areaText] = await Promise.all([
+    const [mainText, categoryText, areaText, supplementalText] = await Promise.all([
       fetchPlaylistText(PLAYLIST, true),
       fetchPlaylistText(CATEGORY_PLAYLIST, false),
-      fetchPlaylistText(AREA_PLAYLIST, false)
+      fetchPlaylistText(AREA_PLAYLIST, false),
+      fetchPlaylistText(FREE_TV_PLAYLIST, false)
     ]);
-    channels = combinePlaylists(mainText, categoryText, areaText);
+    channels = combinePlaylists(mainText, categoryText, areaText, supplementalText);
+    directorySources = supplementalText ? 'IPTV-org + Free-TV' : 'IPTV-org';
     if (!channels.length) throw new Error('The public channel lists returned no usable entries. Please retry when the playlist provider is online.');
     const cats = [...new Set(channels.flatMap(c => c.cats))].sort();
     const areas = [...new Set(channels.flatMap(c => c.areas || []))].sort();
@@ -539,7 +581,6 @@ async function load() {
     $('status').classList.add('hidden');
     applyFilter(); loadLangs(langReq); buildHome();
     if (deep) { const ch = channels.find(c => chId(c) === deep); if (ch) openWatch(ch); }
-    $('count').textContent = `${filtered.length.toLocaleString()} listed channels · ${channels.length.toLocaleString()} directory entries`;
   } catch (e) {
     $('grid').innerHTML = '';
     $('status').innerHTML = `Could not load public playlists (${esc(e.message)}).<br>Check your connection and reload JMB TV.`;
@@ -590,7 +631,7 @@ function refreshBar() {
   $('hero').classList.toggle('hidden', fOn); $('picksWrap').classList.toggle('hidden', fOn || !$('picks').children.length);
   $('bar').classList.remove('hidden');
   const n = channels.reduce((a, c) => a + (bad.has(c.url) ? 1 : 0), 0);
-  $('count').textContent = `${filtered.length.toLocaleString()} channels` + (hideBad && n ? ` · ${n.toLocaleString()} hidden` : '');
+  $('count').textContent = `${filtered.length.toLocaleString()} shown · ${channels.length.toLocaleString()} total · ${directorySources}` + (hideBad && n ? ` · ${n.toLocaleString()} scan-hidden` : '');
   $('hideBtn').textContent = `Hide broken: ${hideBad ? 'On' : 'Off'}`;
   $('hideBtn').classList.toggle('!bg-red-600', hideBad); $('hideBtn').classList.toggle('!text-white', hideBad);
   $('resetBtn').classList.toggle('hidden', !bad.size && !good.size);
@@ -1525,7 +1566,7 @@ document.addEventListener('pointerdown', e => {
 });
 
 // ---- Logo ----
-const LOGO = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7398ff"/><stop offset="1" stop-color="#53dfd2"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity=".28"/></filter></defs><rect x="3" y="3" width="94" height="94" rx="25" fill="#101a30" stroke="url(#g)" stroke-width="4" filter="url(#s)"/><path d="M25 24h11v37c0 10-6 16-16 16-5 0-9-1-13-4l6-9c2 2 4 3 7 3 4 0 5-2 5-7V24z" fill="#fff"/><path d="M45 24h22c12 0 19 6 19 15 0 6-3 10-8 12 7 2 11 7 11 14 0 11-8 18-21 18H45V24zm13 11v12h8c4 0 7-2 7-6s-3-6-7-6h-8zm0 23v14h9c5 0 8-2 8-7 0-4-3-7-8-7h-9z" fill="#fff"/></svg>')
+const LOGO = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff9a62"/><stop offset="1" stop-color="#ef4053"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity=".28"/></filter></defs><rect x="3" y="3" width="94" height="94" rx="24" fill="#171419" stroke="url(#g)" stroke-width="4" filter="url(#s)"/><text x="50" y="63" text-anchor="middle" fill="#fff" font-family="Arial,Helvetica,sans-serif" font-size="29" font-weight="900" letter-spacing="-1.8">JMB</text></svg>');
 document.querySelectorAll('[data-logo]').forEach(i => i.src = LOGO);
 
 // ---- Icons init ----
