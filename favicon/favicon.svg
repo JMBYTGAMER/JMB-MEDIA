@@ -1,1 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ef3340"/><stop offset="1" stop-color="#ff8a35"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity=".28"/></filter></defs><rect x="3" y="3" width="94" height="94" rx="25" fill="url(#g)" filter="url(#s)"/><path d="M25 24h11v37c0 10-6 16-16 16-5 0-9-1-13-4l6-9c2 2 4 3 7 3 4 0 5-2 5-7V24z" fill="#fff"/><path d="M45 24h22c12 0 19 6 19 15 0 6-3 10-8 12 7 2 11 7 11 14 0 11-8 18-21 18H45V24zm13 11v12h8c4 0 7-2 7-6s-3-6-7-6h-8zm0 23v14h9c5 0 8-2 8-7 0-4-3-7-8-7h-9z" fill="#fff"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="JMB">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ef3340"/><stop offset="1" stop-color="#ff8a35"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity=".28"/></filter></defs>
+<rect x="3" y="3" width="94" height="94" rx="25" fill="url(#g)" filter="url(#s)"/>
+<text x="50" y="63" text-anchor="middle" fill="#fff" font-family="Arial,Helvetica,sans-serif" font-size="31" font-weight="900" letter-spacing="-1.7">JMB</text>
+</svg>
