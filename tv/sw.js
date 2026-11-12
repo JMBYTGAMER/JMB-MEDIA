@@ -1,9 +1,9 @@
 // JMB TV service worker: app shell + playlist caching. Streams (video) are never touched.
-const V = 'jmbtv-v5';
+const V = 'jmbtv-v6';
 const SHELL = ['./'];
 const CDN = ['cdnjs.cloudflare.com', 'cdn.tailwindcss.com'];
 const LISTS = ['/iptv/index.m3u', '/iptv/index.category.m3u', '/iptv/index.country.m3u', '/iptv/index.language.m3u'];
-const SUPPLEMENTAL = '/Free-TV/IPTV/master/playlist.m3u8';
+const SUPPLEMENTAL = '/freecasthub/public-iptv/main/playlist.m3u';
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => {})))).then(() => self.skipWaiting()));
