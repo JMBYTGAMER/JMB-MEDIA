@@ -5,7 +5,7 @@ A mobile-first media discovery hub built as a static GitHub Pages website.
 ## Sections
 
 - **JMB TV** — a dedicated TV-only channel guide with search, category/language/region filters, favourites, recent channels, an in-page player, mini-player, fullscreen and playback controls. Its directory combines IPTV-org with a filtered freecasthub public-broadcaster playlist. Supplemental entries are limited to HTTPS HLS streams; YouTube-only, GeoIP-marked, VOD and non-HLS entries are excluded, and matching channel names/regions are deduplicated. Its standalone responsive interface does not expose the Movies or Radio sections. Streams remain subject to provider availability and rights; the app does not unlock subscriptions, DRM or regional restrictions.
-- **Newspapers** — browse Malayalam, Indian and international newspaper sources and read their latest RSS headlines.
+- **Newspapers** — browse Malayalam, Indian and international publishers, read available RSS/Atom-syndicated article content inside JMB, and open the official publisher page for the complete report. Feed loading tries the publisher first, then a CORS relay and a fallback relay; successful editions are cached locally for offline/temporary-outage reading. Full articles are shown only where the publisher includes them in its feed.
 - **JMB Radio** — search online radio stations by name, country, language and genre using Radio Browser.
 - **JMB Social Media** — a news desk for text headlines, source-linked video channels and audio briefings.
 
