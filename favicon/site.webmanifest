@@ -1,17 +1,29 @@
 {
   "name": "JMB TV",
   "short_name": "JMB TV",
-  "start_url": "/tv/",
+  "description": "JMB TV — live public television directory",
+  "start_url": "/tv/?source=pwa",
   "scope": "/tv/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#0b1222",
   "theme_color": "#0b1222",
+  "categories": [
+    "entertainment",
+    "video"
+  ],
   "icons": [
     {
-      "src": "/favicon/favicon.svg",
-      "sizes": "any",
+      "src": "/favicon/jmb-app-icon.svg?v=5",
+      "sizes": "512x512",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon/jmb-maskable-icon.svg?v=5",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ]
 }
