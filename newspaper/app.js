@@ -15,7 +15,7 @@ var sources=[
 {name:"BBC News Malayalam",domain:"bbc.com/malayalam",region:"World",language:"Malayalam",lang:"ml",gl:"IN",site:"https://www.bbc.com/malayalam",feed:"https://feeds.bbci.co.uk/malayalam/rss.xml"},
 {name:"BBC News",domain:"bbc.co.uk",region:"World",language:"English",lang:"en",gl:"US",site:"https://www.bbc.com/news",feed:"https://feeds.bbci.co.uk/news/rss.xml"},
 {name:"Al Jazeera",domain:"aljazeera.com",region:"World",language:"English",lang:"en",gl:"US",site:"https://www.aljazeera.com/",feed:"https://www.aljazeera.com/xml/rss/all.xml"},
-{name:name="The Guardian",domain:"theguardian.com",region:"World",language:"English",lang:"en",gl:"US",site:"https://www.theguardian.com/international",feed:"https://www.theguardian.com/world/rss"},
+{name:"The Guardian",domain:"theguardian.com",region:"World",language:"English",lang:"en",gl:"US",site:"https://www.theguardian.com/international",feed:"https://www.theguardian.com/world/rss"},
 {name:"Deutsche Welle",domain:"dw.com",region:"World",language:"English",lang:"en",gl:"US",site:"https://www.dw.com/en/top-stories/s-9097",feed:googleFeed("dw.com","en","US")},
 {name:"NPR",domain:"npr.org",region:"World",language:"English",lang:"en",gl:"US",site:"https://www.npr.org/sections/news/",feed:"https://feeds.npr.org/1001/rss.xml"}
 ];
