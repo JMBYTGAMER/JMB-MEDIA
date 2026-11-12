@@ -1248,7 +1248,7 @@ function applyUrlState() { // make the controls (and the grid) follow the addres
 function applyFilter() {
   const q = normaliseSearch($('q').value), cat = $('cat').value, lang = $('lang').value, area = $('area').value;
   // Bigg Boss is a programme, not a channel name. Map this search to its broadcaster's channel listings.
-  const isBiggBossSearch = /\\bbigg?\\s*boss\\b/.test(q);
+  const isBiggBossSearch = /\bbigg?\s*boss\b/.test(q);
   const channelSearch = isBiggBossSearch ? 'asianet' : q;
   const showHint = $('showSearchHint');
   if (showHint) showHint.classList.toggle('hidden', !isBiggBossSearch);
