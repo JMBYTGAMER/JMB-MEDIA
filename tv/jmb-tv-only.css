@@ -364,3 +364,7 @@ html.light .tv-search-field{background:#f4ece3!important}
  .tv-playback-error small{font-size:11px}
 }
 @media(prefers-reduced-motion:reduce){body:before{display:none}}
+
+/* JMB monogram and source-aware directory refinements */
+.tv-brand img{object-fit:contain!important;width:62px!important;height:62px!important}
+@media(max-width:680px){.tv-brand img{width:48px!important;height:48px!important}.tv-brand b{font-size:15px!important}}
