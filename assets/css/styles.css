@@ -4,3 +4,27 @@
 @media(max-width:920px){.service-grid{grid-template-columns:repeat(2,1fr)}.main-nav{gap:0}.main-nav a{padding:9px 8px;font-size:12px}.header-inner{gap:14px}.source-shelf{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:680px){.container{width:min(100% - 28px,560px)}.header-inner{height:66px}.brand{font-size:17px}.brand-mark{width:44px;height:38px;font-size:13px}.main-nav{display:none}.header-actions{margin-left:auto}.menu-toggle{display:grid}.mobile-nav{position:absolute;top:66px;left:0;right:0;padding:12px 14px 18px;background:rgba(9,11,18,.97);border-bottom:1px solid var(--line);display:none;grid-template-columns:repeat(2,1fr);gap:8px}.mobile-nav.open{display:grid}.mobile-nav a{padding:13px;border-radius:12px;background:rgba(255,255,255,.05);font-weight:700;font-size:13px;color:#e9edf5}.hero{padding:50px 0 30px}h1{letter-spacing:-2.1px}.hero-copy{font-size:14px}.hero-actions .btn{flex:1}.service-grid{gap:10px}.service-card{padding:16px;min-height:225px}.service-icon{width:46px;height:46px}.service-card h3{font-size:16px;margin-top:15px}.service-card p{font-size:12px}.section{padding:27px 0 38px}.section-head{align-items:start}.section-link{font-size:11px}.feature-band{padding:20px;align-items:flex-start;flex-direction:column}.quick-search{width:100%}.page-hero{padding:34px 0 16px}.page-hero h1{letter-spacing:-1.6px}.toolbar{padding:12px}.toolbar .field,.toolbar select{width:100%;min-width:0}.search-field{min-width:0}.card-grid{grid-template-columns:1fr}.program-grid{grid-template-columns:1fr}.source-shelf{grid-template-columns:1fr 1fr}.social-layout{grid-template-columns:1fr}.results-meta{align-items:flex-start;gap:12px;flex-direction:column}.radio-player{gap:8px;padding:10px}.radio-player input[type=range]{width:65px}.footer-inner{flex-direction:column}.header-actions .icon-btn{display:none}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* JMB newspaper reader */
+.news-card{padding:18px;overflow:hidden;display:flex;flex-direction:column;gap:12px}
+.news-card-top{display:flex;align-items:center;gap:13px;min-width:0}
+.news-thumb{width:92px;height:76px;object-fit:cover;border-radius:15px;background:var(--panel2);border:1px solid var(--line);flex:none}
+.news-card-meta{display:flex;flex-direction:column;gap:5px;min-width:0}
+.news-source{font:800 14px Manrope,sans-serif;color:var(--orange)}
+.news-headline{font:800 19px/1.35 Manrope,sans-serif;letter-spacing:-.35px;margin:0}
+.news-excerpt{font-size:14px;line-height:1.65;color:var(--muted);margin:0;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.news-card .card-actions{margin-top:auto;display:flex;flex-wrap:wrap;gap:9px}
+.article-reader{position:relative;margin:28px 0;padding:0}.article-reader[hidden]{display:none}
+.reader-panel{position:relative;border:1px solid rgba(255,154,69,.3);border-radius:26px;padding:clamp(20px,4vw,38px);background:radial-gradient(600px 240px at 0 0,rgba(240,68,82,.12),transparent 70%),linear-gradient(145deg,#171925,#10131d);box-shadow:var(--shadow)}
+.reader-close{position:absolute;right:15px;top:15px;width:42px;height:42px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:20px}
+.reader-kicker{font-size:11px;letter-spacing:2px;font-weight:800;color:var(--orange);margin-bottom:14px}
+.reader-image{width:100%;max-height:320px;object-fit:cover;border-radius:18px;margin:8px 0 20px}
+.reader-source{font-size:13px;color:var(--orange);font-weight:800;margin:8px 0}
+.reader-panel h2{font:800 clamp(24px,4vw,36px)/1.2 Manrope,sans-serif;letter-spacing:-1px;margin:8px 48px 10px 0}
+.reader-date{font-size:12px;color:var(--muted);margin-bottom:20px}
+.reader-copy{font-size:16px;line-height:1.85;color:var(--text);white-space:pre-line}
+.reader-note{font-size:12px;line-height:1.6;color:var(--muted);padding:13px 15px;border-radius:14px;background:rgba(255,255,255,.045);margin-top:20px}
+.reader-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+html.light .reader-panel{background:linear-gradient(145deg,#fff,#f4f5fa);border-color:rgba(240,68,82,.22)}
+html.light .reader-copy{color:#252a36}
+@media(max-width:680px){.news-card{padding:16px}.news-thumb{width:76px;height:68px}.news-headline{font-size:17px}.reader-panel{padding:20px}.reader-actions .btn{flex:1;justify-content:center}}
