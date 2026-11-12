@@ -32,3 +32,10 @@ The Worker source now allows the exact site origin `https://media.jmbhost.qzz.io
 ## Supplemental public broadcaster directory
 
 JMB TV also reads the optional playlist at https://raw.githubusercontent.com/freecasthub/public-iptv/main/playlist.m3u. The app accepts only HTTPS HLS (.m3u8) entries from this source, and skips YouTube-only entries, GeoIP-marked entries, and VOD groups. Duplicate channel names are checked against the existing directory before insertion. This is a public directory, not a guarantee that every upstream stream is online or available in every region.
+
+
+## Diagnosing a stream error
+
+If JMB TV shows a playback error, open **More tools → Test proxy**. The test checks both the Worker health endpoint and a public HLS test playlist. A green result means the proxy is reachable; it does not guarantee that a particular broadcaster stream is online or permits third-party playback.
+
+If the Worker test fails, deploy the current `cors-proxy-worker.js` in Cloudflare. This is a separate deployment from GitHub Pages. If the Worker test passes but one channel still fails, the provider may be offline, region-limited, or blocking third-party playback; try another listing from the same broadcaster.
