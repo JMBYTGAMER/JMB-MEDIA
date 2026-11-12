@@ -21,6 +21,7 @@ var sources=[
 ];
 var allItems=[];
 function esc(s){return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function safeImage(s){try{var u=new URL(s);return u.protocol==="https:";}catch(e){return false;}}
 function clean(s){var d=document.createElement("div");d.innerHTML=String(s||"");return (d.textContent||d.innerText||"").replace(/\s+/g," ").trim().slice(0,230);}
 function xmlText(node,tag){var n=node.getElementsByTagName(tag)[0];return n?(n.textContent||"").trim():"";}
 async function fetchFeed(url){
@@ -34,7 +35,7 @@ function parseFeed(text,source){
   var enclosure=n.getElementsByTagName("enclosure")[0];var url=enclosure?enclosure.getAttribute("url"):"";
   var mediaNode=n.getElementsByTagName("media:content")[0]||n.getElementsByTagName("media:thumbnail")[0];
   var thumb=mediaNode?(mediaNode.getAttribute("url")||""):"";
-  if(!thumb&&enclosure&&/image\\//i.test(enclosure.getAttribute("type")||""))thumb=url;
+  if(!thumb&&enclosure&&(enclosure.getAttribute("type")||"").indexOf("image/")===0)thumb=url;
   return {title:xmlText(n,"title"),link:xmlText(n,"link"),description:clean(xmlText(n,"description")),date:Date.parse(xmlText(n,"pubDate"))||0,source:source,media:url,image:thumb};
  }).filter(function(x){return x.title&&/^https?:\/\//i.test(x.link);});
 }
@@ -47,7 +48,7 @@ function render(){
  if(!rows.length){$("newsGrid").innerHTML='<div class="empty-state">No headlines match your filters. Try another search or open a publisher website below.</div>';return;}
  $("newsGrid").innerHTML=rows.slice(0,90).map(function(x){
   var date=x.date?new Date(x.date).toLocaleString(undefined,{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"Latest update";
-  var image=x.image&&/^https:\\/\\//i.test(x.image)?'<img class="news-thumb" src="'+esc(x.image)+'" alt="" loading="lazy" onerror="this.remove()">':"";
+  var image=x.image&&safeImage(x.image)?'<img class="news-thumb" src="'+esc(x.image)+'" alt="" loading="lazy" onerror="this.remove()">':"";
   return '<article class="media-card news-card"><div class="news-card-top">'+image+'<div class="news-card-meta"><span class="news-source">'+esc(x.source.name)+'</span><span class="muted tiny">'+esc(x.source.region)+' · '+esc(x.source.language)+' · '+esc(date)+'</span></div></div><h3 class="news-headline">'+esc(x.title)+'</h3><p class="news-excerpt">'+esc(x.description||"Open the on-page reader for the available publisher summary.")+'</p><div class="card-actions"><button class="btn small" data-read="'+allItems.indexOf(x)+'">Read on JMB</button><a class="btn small ghost" href="'+esc(x.link)+'" target="_blank" rel="noopener noreferrer">Official article ↗</a></div></article>';
  }).join("");
 }
@@ -55,7 +56,7 @@ function render(){
 function openReader(index){
  var x=allItems[index];if(!x)return;var panel=$("articleReader");if(!panel)return;
  var date=x.date?new Date(x.date).toLocaleString(undefined,{dateStyle:"full",timeStyle:"short"}):"Latest update";
- var image=x.image&&/^https:\/\//i.test(x.image)?'<img class="reader-image" src="'+esc(x.image)+'" alt="" onerror="this.remove()">':"";
+  var image=x.image&&safeImage(x.image)?'<img class="news-thumb" src="'+esc(x.image)+'" alt="" loading="lazy" onerror="this.remove()">':"";
  $("readerContent").innerHTML='<div class="reader-kicker">JMB NEWSPAPER READER</div>'+image+'<div class="reader-source">'+esc(x.source.name)+' · '+esc(x.source.region)+' · '+esc(x.source.language)+'</div><h2>'+esc(x.title)+'</h2><div class="reader-date">'+esc(date)+'</div><div class="reader-copy">'+esc(x.description||"This publisher has not supplied a readable summary for this story. Continue to the official article below.")+'</div><div class="reader-note">This is a publisher-provided headline and short excerpt. The complete article remains on the publisher&#39;s website.</div><div class="reader-actions"><a class="btn small" href="'+esc(x.link)+'" target="_blank" rel="noopener noreferrer">Continue to original article ↗</a><a class="btn small ghost" href="'+esc(x.source.site)+'" target="_blank" rel="noopener noreferrer">Publisher homepage ↗</a></div>';
  panel.hidden=false;document.body.classList.add("reader-open");$("readerClose").focus();panel.scrollIntoView({behavior:"smooth",block:"start"});
 }
