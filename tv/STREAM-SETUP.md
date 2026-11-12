@@ -27,3 +27,8 @@ The Worker source now allows the exact site origin `https://media.jmbhost.qzz.io
 - Language playlist: `https://iptv-org.github.io/iptv/index.language.m3u`
 - Worker URL: `https://jb-proxy.johanbiju15.workers.dev/?url=`
 - Allowed site origin: `https://media.jmbhost.qzz.io`
+
+
+## Supplemental public broadcaster directory
+
+JMB TV also reads the optional playlist at https://raw.githubusercontent.com/freecasthub/public-iptv/main/playlist.m3u. The app accepts only HTTPS HLS (.m3u8) entries from this source, and skips YouTube-only entries, GeoIP-marked entries, and VOD groups. Duplicate channel names are checked against the existing directory before insertion. This is a public directory, not a guarantee that every upstream stream is online or available in every region.
