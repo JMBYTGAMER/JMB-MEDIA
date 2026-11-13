@@ -49,7 +49,7 @@ function checkHtml(file) {
   if (!/<meta\b[^>]*property=["']og:image["']/i.test(source)) fail(relative(file) + ": missing Open Graph preview image");
   if (!/<meta\b[^>]*name=["']twitter:card["']/i.test(source)) fail(relative(file) + ": missing Twitter card metadata");
 
-        source = source.replace("export default", "const workerModule =");
+
   const seen = new Set();
   for (const match of markup.matchAll(/\bid=["']([^"']+)["']/gi)) {
     const id = match[1];
@@ -89,7 +89,7 @@ for (const file of files) {
     try {
       let source = fs.readFileSync(file, "utf8");
       if (path.basename(file) === "cors-proxy-worker.js") {
-        source = source.replace(/^export\\s+default\\s+/m, "const workerModule = ");
+        source = source.replace("export default", "const workerModule =");
       }
       new vm.Script(source, { filename: relative(file) });
     } catch (error) {
