@@ -36,4 +36,5 @@ async function load(){if(loading)return;loading=true;$("directoryRefresh").disab
 }
 $("channelSearch").addEventListener("input",function(){visible=60;render();});["countryFilter","categoryFilter","sortFilter"].forEach(function(id){$(id).addEventListener("change",function(){visible=60;render();});});$("loadMoreChannels").addEventListener("click",function(){visible+=60;render();});$("directoryRefresh").addEventListener("click",load);
 var initial=new URLSearchParams(location.search).get("q");if(initial)$("channelSearch").value=initial;load();
+if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
 })();
