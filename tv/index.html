@@ -698,7 +698,7 @@ const store = {
 };
 const bad = new Set(store.get('jbBad')), good = new Set(store.get('jbGood'));
 let hideBad = false, scan = null;
-try { localStorage.setItem('jbHide', '0'); } catch (e) {}
+try { hideBad = localStorage.getItem('jbHide') === '1'; } catch (e) {}
 const saveSets = () => { store.set('jbBad', [...bad]); store.set('jbGood', [...good]); };
 function refreshBar() {
   syncChips(); syncProxyUi();
