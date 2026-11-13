@@ -1,9 +1,9 @@
 // JMB TV channel directory: caches only the app shell and its own static assets.
-const VERSION = "jmbtv-directory-v13";
+const VERSION = "jmbtv-directory-v14";
 const SHELL = [
   "./",
   "./index.html",
-  "./app.js?v=13",
+  "./app.js?v=14",
   "./directory.css",
   "/assets/css/styles.css",
   "/assets/css/theme.css",
