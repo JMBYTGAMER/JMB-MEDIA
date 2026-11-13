@@ -1,55 +1,110 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>JMB TV — Worldwide Channels</title>
-<meta name="description" content="Explore television channels from around the world and watch selected official live players inside JMB TV.">
-<meta name="theme-color" content="#070d1a">
-<link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg?v=5"><link rel="manifest" href="/favicon/site.webmanifest?v=6">
-<link rel="stylesheet" href="../assets/css/styles.css"><link rel="stylesheet" href="../assets/css/theme.css"><link rel="stylesheet" href="../assets/css/premium.css"><link rel="stylesheet" href="directory.css">
-<meta property="og:type" content="website"><meta property="og:site_name" content="JMB TV">
-<meta property="og:title" content="JMB TV — Worldwide Channels">
-<meta property="og:description" content="A worldwide TV channel catalogue with selected official live players built into JMB TV.">
-<meta property="og:url" content="https://media.jmbhost.qzz.io/tv/">
-<meta property="og:image" content="https://media.jmbhost.qzz.io/assets/branding/jmb-tv-share.jpg?v=4"><meta property="og:image:secure_url" content="https://media.jmbhost.qzz.io/assets/branding/jmb-tv-share.jpg?v=4"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="JMB TV worldwide channel catalogue">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="JMB TV — Worldwide Channels"><meta name="twitter:description" content="Find channels around the world and watch approved official players in JMB TV."><meta name="twitter:image" content="https://media.jmbhost.qzz.io/assets/branding/jmb-tv-share.jpg?v=4">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"JMB TV","url":"https://media.jmbhost.qzz.io/tv/","description":"Worldwide television channel directory with selected official platform embeds.","applicationCategory":"EntertainmentApplication","operatingSystem":"Any"}</script>
-</head><body>
-<header class="site-header"><div class="container header-inner">
-<a class="brand" href="../" aria-label="JMB TV home"><span class="brand-mark"><img src="/assets/branding/jmb-tv-logo.svg?v=1" alt="JMB TV logo"></span><span>JMB TV<small>MEDIA HUB · WATCH · READ · LISTEN</small></span></a>
-<nav class="main-nav" aria-label="Main navigation"><a data-nav="tv" href="../tv/">JMB TV</a><a data-nav="newspaper" href="../newspaper/">Newspapers</a><a data-nav="radio" href="../radio/">Radio</a><a data-nav="social" href="../social/">World News</a></nav>
-<div class="header-actions"><button class="icon-btn" data-share-site aria-label="Share JMB TV">↗</button><button class="icon-btn" data-theme-toggle aria-label="Switch theme">☼</button><button class="menu-toggle" data-menu-toggle aria-label="Open menu" aria-expanded="false">☰</button></div></div>
-<nav class="mobile-nav" data-mobile-nav><a href="../">⌂ JMB TV Home</a><a href="../newspaper/">📰 Newspapers</a><a href="../radio/">📻 JMB Radio</a><a href="../social/">🌍 World News</a></nav></header>
-<main class="container tv-main">
-<section class="tv-hero"><div class="tv-hero-copy"><span class="eyebrow"><i></i> JMB TV · WORLDWIDE TV</span><h1>One world.<br><span class="gradient">Every channel.</span></h1><p class="hero-copy">Explore a growing catalogue of television channels from countries around the world. Tap a channel to load its in-page player when an approved official live source is available.</p><div class="tv-hero-pills"><span>🌍 Worldwide directory</span><span>▶ In-page player</span><span>📱 Mobile friendly</span></div></div><div class="tv-hero-logo"><img src="/assets/branding/jmb-tv-logo.svg?v=1" alt="JMB TV logo"></div></section>
-<section class="tv-notice" role="note"><span>ⓘ</span><div><strong>Independent TV directory</strong><p>JMB TV is an independent project and is not affiliated with the channels listed. Selected live players use the original platform's official embed. Availability, ads, region limits and embedding settings are controlled by each broadcaster and platform. JMB does not host or proxy broadcast files.</p></div></section>
-<section class="tv-watch-layout">
-<div class="tv-player-column">
- <div class="tv-player-card">
-  <div class="tv-player-top"><div><span class="tv-live-dot"></span><span id="playerState">READY TO WATCH</span></div><span id="playerQuality">SELECT A CHANNEL</span></div>
-  <div class="tv-player-stage" id="playerStage">
-   <div class="tv-player-placeholder" id="playerPlaceholder"><div class="tv-placeholder-icon">📺</div><b>Choose any channel to explore</b><p>Tap an approved playable channel to watch here.</p></div>
-   <iframe id="officialPlayer" title="JMB TV in-page channel player" hidden loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>JMB TV — Watch Worldwide Live Channels</title>
+  <meta name="description" content="Explore a worldwide directory of publicly listed TV channels and play available live streams inside JMB TV.">
+  <meta name="theme-color" content="#111113">
+  <link rel="canonical" href="https://media.jmbhost.qzz.io/tv/">
+  <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg?v=6">
+  <link rel="manifest" href="/favicon/media.webmanifest?v=2">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JMB TV">
+  <meta property="og:title" content="JMB TV — Watch Worldwide Live Channels">
+  <meta property="og:description" content="Search channels by country, language and category. Play available live streams inside JMB TV.">
+  <meta property="og:url" content="https://media.jmbhost.qzz.io/tv/">
+  <meta property="og:image" content="https://media.jmbhost.qzz.io/assets/branding/jmb-tv-share.jpg?v=5">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="JMB TV — Worldwide Live Channels">
+  <meta name="twitter:description" content="A worldwide channel directory with an in-page live player.">
+  <meta name="twitter:image" content="https://media.jmbhost.qzz.io/assets/branding/jmb-tv-share.jpg?v=5">
+  <link rel="preconnect" href="https://iptv-org.github.io" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="stylesheet" href="./directory.css?v=17">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js" defer></script>
+  <script src="./app.js?v=17" defer></script>
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Back to JMB MEDIA">
+        <img src="/assets/branding/jmb-tv-logo.svg?v=2" alt="JMB TV">
+        <span class="brand-copy"><strong>JMB TV</strong><small>WORLDWIDE LIVE CHANNELS</small></span>
+      </a>
+      <div class="top-actions">
+        <a class="home-link" href="/">← <span>JMB MEDIA</span></a>
+        <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch theme" title="Switch theme">☼</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="pulse-dot"></span> LIVE TELEVISION · AROUND THE WORLD</div>
+          <h1>The world<br><span>is live.</span></h1>
+          <p>Explore channels from different countries, find your language and press play. The stream opens right here in JMB TV.</p>
+          <div class="hero-actions">
+            <button class="primary-btn" id="surpriseBtn" type="button">▶ <span>Surprise me</span></button>
+            <button class="soft-btn" id="favouritesBtn" type="button">♡ <span>My favourites</span></button>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-card"><strong id="channelCount">—</strong><span>CHANNELS</span></div>
+          <div class="stat-card"><strong id="countryCount">—</strong><span>COUNTRIES</span></div>
+          <div class="stat-card"><strong id="categoryCount">—</strong><span>CATEGORIES</span></div>
+          <div class="stat-note">A live catalogue<br>that updates from its source</div>
+        </div>
+        <div class="hero-orbit" aria-hidden="true"><span class="orbit-ring ring-a"></span><span class="orbit-ring ring-b"></span><span class="orbit-core">JMB<br><b>TV</b></span><i class="orbit-satellite sat-a"></i><i class="orbit-satellite sat-b"></i><i class="orbit-satellite sat-c"></i></div>
+      </section>
+
+      <section class="directory-section" aria-label="TV channel directory">
+        <div class="section-heading">
+          <div><span class="section-kicker">CHANNEL GUIDE</span><h2>Explore channels</h2><p>Tap any channel card to start its available live stream.</p></div>
+          <button class="refresh-btn" id="refreshBtn" type="button" title="Reload the channel catalogue">↻ <span>Refresh</span></button>
+        </div>
+        <div class="filters">
+          <label class="search-wrap"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Search channels, networks..." autocomplete="off" aria-label="Search channels"><kbd>/</kbd></label>
+          <select id="countryFilter" aria-label="Filter by country"><option value="">All countries</option></select>
+          <select id="categoryFilter" aria-label="Filter by category"><option value="">All categories</option></select>
+          <select id="languageFilter" aria-label="Filter by language"><option value="">All languages</option></select>
+          <button class="clear-btn" id="clearBtn" type="button">Clear</button>
+        </div>
+        <div class="directory-meta"><p id="resultsText">Loading worldwide channel list…</p><p id="sourceText">Loading catalogue data</p></div>
+        <div class="channel-grid" id="channelGrid" aria-live="polite">
+          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+        </div>
+        <div class="load-more-wrap"><button class="load-more" id="loadMoreBtn" type="button" hidden>Load more channels</button></div>
+        <div class="empty-state" id="emptyState" hidden><span>⌕</span><h3>No channels found</h3><p>Try another search or clear your filters.</p><button class="soft-btn" id="emptyClearBtn" type="button">Clear filters</button></div>
+        <div class="source-note"><span>ⓘ</span><p>Channel listings and stream addresses are supplied by a public community directory. Streams can be offline, region-limited or unavailable in some browsers. JMB TV connects directly to the listed stream; it does not host or relay video.</p></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-brand"><img src="/assets/branding/jmb-tv-logo.svg?v=2" alt=""><strong>JMB TV</strong><span>Part of JMB MEDIA</span></div>
+      <div class="footer-links"><a href="/">Home</a><a href="/legal/">Copyright &amp; Policies</a><a href="https://github.com/iptv-org/iptv" target="_blank" rel="noopener noreferrer">Directory source</a></div>
+      <p>© <span id="year"></span> JMB TV. Channel names, logos and broadcasts remain with their respective owners.</p>
+    </footer>
   </div>
-  <div class="tv-now-playing"><div><span class="tv-now-label">NOW SELECTED</span><strong id="nowChannel">No channel selected</strong><small id="nowSource">Select a channel card below.</small></div><button id="stopPlayer" class="btn small ghost" type="button" disabled>Stop</button></div>
-  <div id="playerMessage" class="tv-player-message" role="status" aria-live="polite">Choose a channel from the directory.</div>
- </div>
- <div class="tv-player-help"><span>ⓘ</span><span>Channels without an approved live source remain in the world directory. Their cards still show country, language and quality information, but JMB will not invent a stream or force a blocked player to work.</span></div>
-</div>
-<aside class="tv-channel-sidebar"><div class="tv-sidebar-heading"><div><span class="page-kicker">QUICK ACCESS</span><h2>Featured channels</h2></div><span class="tv-count" id="featuredCount">00</span></div><div id="featuredChannels" class="tv-featured-list"></div></aside>
-</section>
-<section id="allChannels" class="tv-directory-section">
- <div class="section-head"><div><span class="page-kicker">WORLD CATALOGUE</span><h2>Explore channels</h2><p>Channel logos, countries, categories, languages and available format details.</p></div></div>
- <div class="tv-directory-tools">
-  <label class="field-wrap"><span>⌕</span><input id="channelSearch" class="field" type="search" placeholder="Search Asianet, BBC, sports, movies…" aria-label="Search worldwide TV channels"></label>
-  <select id="countryFilter" class="field" aria-label="Filter by country"><option value="">All countries</option></select>
-  <select id="categoryFilter" class="field" aria-label="Filter by category"><option value="">All categories</option></select>
-  <select id="languageFilter" class="field" aria-label="Filter by language"><option value="">All languages</option></select>
- </div>
- <div class="tv-directory-meta"><span id="directoryStatus" role="status" aria-live="polite">Loading worldwide channel catalogue…</span><div class="tv-directory-actions"><button id="directoryRefresh" type="button" class="btn small secondary">↻ Refresh</button><button id="clearFilters" type="button" class="btn small ghost">Clear</button></div></div>
- <div id="channelGrid" class="tv-channel-grid"><div class="loading-state">Loading worldwide channels <span class="loading-dot"></span></div></div>
- <button id="loadMoreChannels" class="btn secondary tv-load-more" type="button" hidden>Load more channels</button>
-</section>
-<section class="tv-policy-foot"><strong>About the channel catalogue</strong><p>The channel catalogue is community-maintained directory metadata. It is not a guarantee that every broadcaster supplies an active stream or permits third-party embedding. The in-page player is enabled only for selected official platform sources. JMB does not bypass a broadcaster's restrictions.</p><a href="../legal/">Read JMB's content and copyright policy ↗</a></section>
-</main>
-<footer class="footer"><div class="container footer-inner"><div>© <span data-year></span> JMB TV · Worldwide channels</div><div class="footer-links"><a href="../">Home</a><a href="../newspaper/">Newspapers</a><a href="../radio/">Radio</a><a href="../social/">World News</a><a href="../legal/">Copyright & privacy</a></div></div></footer>
-<script src="../assets/js/common.js"></script><script src="app.js?v=16"></script></body></html>
+
+  <section class="player-overlay" id="playerOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="playerTitle">
+    <div class="player-topbar">
+      <button class="back-btn" id="closePlayer" type="button">← <span>Back to channels</span></button>
+      <div class="player-brand"><img src="/assets/branding/jmb-tv-logo.svg?v=2" alt=""><b>JMB TV</b></div>
+    </div>
+    <div class="player-content">
+      <div class="player-heading"><div><span class="live-label"><i></i> LIVE PLAYER</span><h2 id="playerTitle">Channel</h2><p id="playerMeta">Loading stream information…</p></div><button class="fullscreen-btn" id="fullscreenBtn" type="button">⛶ <span>Fullscreen</span></button></div>
+      <div class="video-frame" id="videoFrame">
+        <video id="liveVideo" controls playsinline preload="none" crossorigin="anonymous"></video>
+        <div class="video-loading" id="videoLoading"><span class="loader"></span><b>Connecting to channel…</b><small>The stream is loaded directly from its listed source.</small></div>
+        <div class="video-error" id="videoError" hidden><span>!</span><h3>Stream unavailable</h3><p id="videoErrorText">This channel could not start in your browser.</p><button id="retryBtn" type="button">Try again</button></div>
+      </div>
+      <div class="player-footnote"><span>JMB TV PLAYER</span><p>Playback is provided by the channel's listed stream host. Some channels may not permit browser playback or may only be available in certain regions.</p></div>
+    </div>
+  </section>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
