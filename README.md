@@ -1,6 +1,6 @@
 # JMB MEDIA
 
-A mobile-first media discovery hub built as a static GitHub Pages website.
+A mobile-first media hub with a unified JMB TV identity, responsive section layouts, installable app experience, and a source-linked TV, newspaper, radio and news directory.
 
 ## Sections
 
@@ -8,6 +8,14 @@ A mobile-first media discovery hub built as a static GitHub Pages website.
 - **Newspapers** — browse Malayalam, Indian and international publishers, read available RSS/Atom-syndicated article content inside JMB, and open the official publisher page for the complete report. Feed loading tries the publisher first, then a CORS relay and a fallback relay; successful editions are cached locally for offline/temporary-outage reading. Full articles are shown only where the publisher includes them in its feed.
 - **JMB Radio** — search online radio stations by name, country, language and genre using Radio Browser.
 - **JMB Social Media** — a news desk for text headlines, source-linked video channels and audio briefings.
+
+## Experience and reliability
+
+- The main JMB TV hub has a standalone home-screen manifest and a lightweight offline app shell. Its TV section keeps a separate player-focused PWA manifest and service worker.
+- The shared mobile navigation, light/dark theme, website sharing action and TV quick-search are handled by `assets/js/common.js`.
+- Newspaper and world-news editions save previously loaded headlines locally. Radio stores the latest station directory and favourites in local browser storage.
+- The normal share address is `https://media.jmbhost.qzz.io/`. Its Open Graph and Twitter metadata point to the branded 1200 × 630 JPEG in `assets/branding/jmb-tv-share.jpg`. Messaging apps decide when to refresh cached link previews.
+- `scripts/check-site.mjs` and the Site Quality workflow perform static checks for JavaScript syntax, local HTML assets, duplicate IDs, page metadata and CSS brace balance.
 
 ## Rights and availability
 
