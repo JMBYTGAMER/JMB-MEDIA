@@ -598,3 +598,5 @@ html.light .tv-alt-channel b{color:#a84d39!important}
 html.light .tv-stream-diagnostic{color:#35445b;background:rgba(8,127,130,.055);border-color:rgba(8,127,130,.18)}
 html.light .tv-stream-diagnostic:before{color:#087f82}
 @media(max-width:680px){.tv-stream-diagnostic{grid-column:2;font-size:9px;padding:8px 9px}}
+
+@media(max-width:680px){#shareSiteBtn{display:none!important}}
