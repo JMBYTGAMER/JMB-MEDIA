@@ -160,7 +160,6 @@ if (fs.existsSync(tvAppPath)) {
   if (embedUrls.some(value => !value.startsWith("https://www.youtube-nocookie.com/embed/"))) {
     fail("tv/app.js: embedded media host is not on the approved YouTube embed domain");
   }
-  }
 }
 
 const retiredWorkerPath = path.join(root, "cors-proxy-worker.js");
