@@ -581,3 +581,13 @@ html.light .tv-alt-channel b{color:#a84d39!important}
  #ctl{padding-bottom:max(10px,env(safe-area-inset-bottom))!important}
 }
 @media(prefers-reduced-motion:reduce){#status:after{animation:none!important}#grid article .thumb img{will-change:auto}}
+
+/* Reliable startup / network feedback */
+.tv-load-error{width:min(100%,560px);margin:0 auto;display:grid;justify-items:center;gap:10px;padding:24px 18px}
+.tv-load-error .tv-error-mark{margin-bottom:2px}
+.tv-load-error strong{font:800 18px "Space Grotesk",sans-serif;color:var(--tv-text);letter-spacing:-.03em}
+.tv-load-error p{margin:0;color:var(--tv-hot);font-size:12px;line-height:1.55;overflow-wrap:anywhere}
+.tv-load-error small{max-width:430px;color:var(--tv-muted);font-size:11px;line-height:1.65}
+.tv-load-error .btn{margin-top:6px;min-height:42px;padding:0 18px!important;border-radius:10px!important;background:linear-gradient(120deg,var(--tv-blue),#8b70ff)!important;color:#fff!important;font-size:12px!important;font-weight:800!important}
+.tv-load-error .btn:active{transform:scale(.98)}
+@media(max-width:680px){.tv-load-error{padding:18px 12px}.tv-load-error strong{font-size:15px}.tv-load-error p{font-size:11px}}
