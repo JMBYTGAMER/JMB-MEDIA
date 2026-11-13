@@ -124,7 +124,7 @@ if (!fs.existsSync(shareImage) || fs.statSync(shareImage).size < 30000) {
 
 
 const complianceRules = [
-  { file: "tv/index.html", forbidden: ["<video", "<audio", "<iframe", "hls.js", ".m3u8"] },
+  { file: "tv/index.html", forbidden: ["<video", "<audio", "hls.js", ".m3u8", "streams.json"] },
   { file: "tv/app.js", forbidden: ["streams.json", "url_resolved", ".m3u8", "new Hls"] },
   { file: "radio/index.html", forbidden: ["<audio", "<iframe", "url_resolved"] },
   { file: "radio/app.js", forbidden: ["url_resolved", "streamUrl", "audio.play", "new Audio"] },
@@ -146,6 +146,21 @@ for (const rule of complianceRules) {
     }
   }
 }
+
+const tvAppPath = path.join(root, "tv/app.js");
+if (fs.existsSync(tvAppPath)) {
+  const tvApp = fs.readFileSync(tvAppPath, "utf8");
+  if (!tvApp.includes("https://www.youtube-nocookie.com/embed/live_stream")) {
+    fail("tv/app.js: in-page player must use the official YouTube privacy-enhanced embed host");
+  }
+  if (!tvApp.includes("channelId") || !tvApp.includes("featured =")) {
+    fail("tv/app.js: player sources must come from the manually approved channel allowlist");
+  }
+  if (/https?:\\/\\/(?!www\\.youtube-nocookie\\.com)[^"'\\s]+\\/embed/i.test(tvApp)) {
+    fail("tv/app.js: embedded media host is not on the approved YouTube embed domain");
+  }
+}
+
 const retiredWorkerPath = path.join(root, "cors-proxy-worker.js");
 if (fs.existsSync(retiredWorkerPath)) {
   const worker = fs.readFileSync(retiredWorkerPath, "utf8");
