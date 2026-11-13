@@ -141,7 +141,7 @@
   .line2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 </style>
 
-<link rel="stylesheet" href="jmb-tv-only.css?v=10">
+<link rel="stylesheet" href="jmb-tv-only.css?v=11">
 </head>
 <body>
 <h1 class="sr-only">JMB TV – Watch live TV channels online for free</h1>
@@ -1424,8 +1424,13 @@ function startStream(c, n = 0) {
     if (cur === c && curVia === n && !(v.currentTime > 0) && !next()) giveUp(c, {}, n, 'This channel is taking too long to start. It may be offline or slow. Try Retry or another channel.');
   }, 15000);
   if (window.Hls && Hls.isSupported()) {
-    const cfg = { enableWorker: true, lowLatencyMode: true };
-    if (via) cfg.xhrSetup = (xhr, u) => xhr.open('GET', via.wrap(u), true);
+    const cfg = { enableWorker: true, lowLatencyMode: false, backBufferLength: 30, maxBufferLength: 20 };
+    if (via) {
+      const routeMediaRequest = requestUrl => via.wrap(requestUrl);
+      // Cover both the default XHR loader and any Fetch-based loader selected by HLS.js.
+      cfg.xhrSetup = (xhr, requestUrl) => xhr.open('GET', routeMediaRequest(requestUrl), true);
+      cfg.fetchSetup = (context, initParams) => new Request(routeMediaRequest(context.url), initParams);
+    }
     hls = new Hls(cfg);
     hls.loadSource(src); hls.attachMedia(v);
     hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, renderAudio);
@@ -1442,8 +1447,79 @@ function startStream(c, n = 0) {
     v.onerror = () => { if (!next()) giveUp(c, {}, n); };
   } else fail('HLS is not supported in this browser.');
 }
+async function diagnosticRequest(target, options = {}, timeoutMs = 9000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try { return await fetch(target, { ...options, signal: controller.signal, cache: 'no-store' }); }
+  finally { clearTimeout(timer); }
+}
+function diagnosticMessage(message) {
+  const box = $('streamDiag');
+  if (box) box.textContent = message;
+}
+async function diagnoseCurrentChannel(channel) {
+  if (!channel || !PROXY) { diagnosticMessage('No personal Cloudflare Worker is configured.'); return; }
+  diagnosticMessage('Checking your Cloudflare Worker…');
+  const pingUrl = PROXY.replace(/\\?url=$/, '?ping=1');
+  try {
+    const ping = await diagnosticRequest(pingUrl);
+    const pong = await ping.text();
+    if (!ping.ok || !pong.includes('jb-proxy-ok')) {
+      diagnosticMessage(ping.status === 403
+        ? 'Cloudflare rejected this website origin. The Worker must allow https://media.jmbhost.qzz.io and be redeployed.'
+        : 'The Cloudflare Worker answered HTTP ' + ping.status + '. Check that the latest Worker code is deployed.');
+      return;
+    }
+  } catch (error) {
+    diagnosticMessage('The Cloudflare Worker cannot be reached from this page. Check its workers.dev URL, deployment and allowed website origin.');
+    return;
+  }
+  diagnosticMessage('Worker is online. Checking this channel playlist…');
+  try {
+    let playlistUrl = viaProxy(channel.url), playlistText = '';
+    for (let depth = 0; depth < 3; depth++) {
+      const response = await diagnosticRequest(playlistUrl);
+      if (!response.ok) {
+        diagnosticMessage('Worker is online, but this channel server returned HTTP ' + response.status + '. The source may be offline or refuse proxy access.');
+        return;
+      }
+      playlistText = await response.text();
+      if (!playlistText.replace(/^\\uFEFF/, '').trimStart().startsWith('#EXTM3U')) {
+        diagnosticMessage('Worker is online, but the channel did not return a valid HLS playlist. The stream URL may have expired or may not be a browser-compatible HLS source.');
+        return;
+      }
+      const nextLine = playlistText.split(/\\r?\\n/).map(line => line.trim()).find(line => line && !line.startsWith('#'));
+      if (!nextLine) {
+        diagnosticMessage('The playlist loaded, but it contains no video segments to play.');
+        return;
+      }
+      const nextUrl = new URL(nextLine, playlistUrl).href;
+      const wrapped = new URL(nextUrl);
+      const original = wrapped.hostname === new URL(PROXY).hostname ? wrapped.searchParams.get('url') || nextUrl : nextUrl;
+      if (/\\.m3u8?(?:$|[?#])/i.test(original) && depth < 2) {
+        playlistUrl = nextUrl.startsWith(PROXY) ? nextUrl : viaProxy(nextUrl);
+        continue;
+      }
+      const segmentUrl = nextUrl.startsWith(PROXY) ? nextUrl : viaProxy(nextUrl);
+      const segment = await diagnosticRequest(segmentUrl, { headers: { Range: 'bytes=0-0' } }, 12000);
+      if (!segment.ok) {
+        diagnosticMessage('The playlist loaded, but its first video segment returned HTTP ' + segment.status + '. This broadcaster stream is not currently delivering playable media.');
+        return;
+      }
+      const reader = segment.body && segment.body.getReader();
+      if (reader) { await reader.read(); await reader.cancel(); }
+      diagnosticMessage('Worker, playlist and first video segment are reachable. If playback still fails, the stream may use an unsupported codec or have a later segment/DRM restriction.');
+      return;
+    }
+    diagnosticMessage('The playlist loaded, but its nested playlist structure could not be checked completely.');
+  } catch (error) {
+    diagnosticMessage('Worker is online, but this channel playlist or video segment could not be fetched. The source may block proxy delivery or be temporarily unavailable.');
+  }
+}
 async function giveUp(c, d, n, msg) {
   fail(msg || netMsg(c, d, n > 0));
+  const failedChannel = c;
+  diagnoseCurrentChannel(failedChannel);
   if (n > 0 && ++proxyFails >= 3) { // several proxied failures in a row: is the proxy itself down?
     proxyFails = 0;
     const p = proxyList()[0], prev = proxyMode;
@@ -1461,7 +1537,7 @@ function fail(m) {
     ? normaliseSearch([x.name, x.tvg].join(' ')).includes('asianet')
     : (x.cats || []).some(k => (cur.cats || []).includes(k)))).slice(0, 3) : [];
   const altMarkup = alternatives.length ? `<div class="tv-alt-wrap"><span class="tv-alt-label">${isAsianet ? 'OTHER ASIANET LISTINGS' : 'TRY ANOTHER CHANNEL'}</span><div class="tv-alt-list">${alternatives.map(x => `<button type="button" class="tv-alt-channel" data-alt-channel="${x.id}"><span>${esc(x.name)}</span><b>PLAY ↗</b></button>`).join('')}</div></div>` : '';
-  $('err').innerHTML = `<div class="tv-playback-error"><span class="tv-error-mark">!</span><div class="tv-error-copy"><strong>We couldn't start this channel</strong><p>${safe}</p><small>This channel stays in your directory. You can retry, test the proxy, or choose another listing.</small></div><div class="tv-error-actions"><button id="retry" class="btn !text-white">Try again</button>${live ? `<button id="proxyTestErr" class="btn !text-white">Test proxy</button><button id="proxyErr" class="btn !text-white">Change proxy</button>` : ''}</div>${altMarkup}</div>`;
+  $('err').innerHTML = `<div class="tv-playback-error"><span class="tv-error-mark">!</span><div class="tv-error-copy"><strong>We couldn't start this channel</strong><p>${safe}</p><small>This channel stays in your directory. You can retry, test the proxy, or choose another listing.</small></div><div class="tv-error-actions"><button id="retry" class="btn !text-white">Try again</button>${live ? `<button id="proxyTestErr" class="btn !text-white">Test proxy</button><button id="proxyErr" class="btn !text-white">Change proxy</button>` : ''}</div><div id="streamDiag" class="tv-stream-diagnostic" role="status" aria-live="polite">Waiting for stream diagnostics…</div>${altMarkup}</div>`;
   $('err').classList.remove('hidden');
 }
 $('err').onclick = e => {
