@@ -591,3 +591,10 @@ html.light .tv-alt-channel b{color:#a84d39!important}
 .tv-load-error .btn{margin-top:6px;min-height:42px;padding:0 18px!important;border-radius:10px!important;background:linear-gradient(120deg,var(--tv-blue),#8b70ff)!important;color:#fff!important;font-size:12px!important;font-weight:800!important}
 .tv-load-error .btn:active{transform:scale(.98)}
 @media(max-width:680px){.tv-load-error{padding:18px 12px}.tv-load-error strong{font-size:15px}.tv-load-error p{font-size:11px}}
+
+/* Stream-specific diagnostics */
+.tv-stream-diagnostic{grid-column:2;min-width:0;margin-top:2px;padding:10px 12px;border:1px solid rgba(103,228,212,.18);border-radius:10px;background:rgba(103,228,212,.055);color:#c3d4e4;font:500 11px/1.6 "DM Sans",sans-serif;overflow-wrap:anywhere}
+.tv-stream-diagnostic:before{content:"DIAGNOSTICS  /  ";font-weight:800;letter-spacing:.12em;color:#67e4d4;font-size:8px}
+html.light .tv-stream-diagnostic{color:#35445b;background:rgba(8,127,130,.055);border-color:rgba(8,127,130,.18)}
+html.light .tv-stream-diagnostic:before{color:#087f82}
+@media(max-width:680px){.tv-stream-diagnostic{grid-column:2;font-size:9px;padding:8px 9px}}
