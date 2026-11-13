@@ -141,7 +141,7 @@
   .line2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 </style>
 
-<link rel="stylesheet" href="jmb-tv-only.css?v=8">
+<link rel="stylesheet" href="jmb-tv-only.css?v=9">
 </head>
 <body>
 <h1 class="sr-only">JMB TV – Watch live TV channels online for free</h1>
@@ -563,37 +563,95 @@ async function fetchPlaylistText(source, required = false, allowProxy = true) {
     return '';
   }
 }
+const DIRECTORY_DB = 'jmb-tv-directory-v1';
+function openDirectoryDB() {
+  return new Promise((resolve, reject) => {
+    if (!('indexedDB' in window)) return reject(new Error('IndexedDB unavailable'));
+    const req = indexedDB.open(DIRECTORY_DB, 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains('cache')) db.createObjectStore('cache');
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error || new Error('Could not open directory cache'));
+  });
+}
+async function saveDirectoryCache(list) {
+  const db = await openDirectoryDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('cache', 'readwrite');
+    const snapshot = list.map((c, id) => ({
+      id, name: c.name, url: c.url, logo: c.logo || '', tvg: c.tvg || '',
+      cats: Array.isArray(c.cats) ? c.cats : [],
+      areas: Array.isArray(c.areas) ? c.areas : [],
+      langs: Array.isArray(c.langs) ? c.langs : []
+    }));
+    tx.objectStore('cache').put({ savedAt: Date.now(), channels: snapshot }, 'directory');
+    tx.oncomplete = () => { db.close(); resolve(true); };
+    tx.onerror = () => { const error = tx.error || new Error('Could not save directory'); db.close(); reject(error); };
+    tx.onabort = () => { const error = tx.error || new Error('Directory cache write aborted'); db.close(); reject(error); };
+  });
+}
+async function readDirectoryCache() {
+  const db = await openDirectoryDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('cache', 'readonly');
+    const req = tx.objectStore('cache').get('directory');
+    req.onsuccess = () => { db.close(); resolve(req.result || null); };
+    req.onerror = () => { const error = req.error || new Error('Could not read saved directory'); db.close(); reject(error); };
+  });
+}
+function finishDirectoryLoad(langReq, deep, fromCache = false) {
+  const cats = [...new Set(channels.flatMap(c => c.cats || []))].sort();
+  const areas = [...new Set(channels.flatMap(c => c.areas || []))].sort();
+  $('cat').length = 1;
+  $('cat').insertAdjacentHTML('beforeend', cats.map(c => `<option>${esc(c)}</option>`).join(''));
+  $('area').length = 1;
+  $('area').insertAdjacentHTML('beforeend', areas.map(a => `<option>${esc(a)}</option>`).join(''));
+  buildChips();
+  const P = new URLSearchParams(location.search);
+  wantLang = P.get('lang') || '';
+  if (P.get('q')) $('q').value = P.get('q');
+  if (cats.includes(P.get('cat'))) $('cat').value = P.get('cat');
+  if (areas.includes(P.get('area'))) $('area').value = P.get('area');
+  $('status').classList.add('hidden');
+  if (fromCache) {
+    $('count').textContent = `Showing ${channels.length.toLocaleString()} saved channels · live catalogue unavailable`;
+    toast('Showing your saved channel directory');
+  }
+  applyFilter(); loadLangs(langReq); buildHome();
+  if (deep) { const ch = channels.find(c => chId(c) === deep); if (ch) openWatch(ch); }
+}
 async function load() {
+  $('grid').innerHTML = SKEL.repeat(12);
+  const langReq = fetchLangText();
+  const P = new URLSearchParams(location.search), deep = P.get('c');
   try {
-    $('grid').innerHTML = SKEL.repeat(12);
-    const langReq = fetchLangText();
     const [mainText, categoryText, areaText, supplementalText] = await Promise.all([
       fetchPlaylistText(PLAYLIST, true),
       fetchPlaylistText(CATEGORY_PLAYLIST, false),
       fetchPlaylistText(AREA_PLAYLIST, false),
       fetchPlaylistText(FREE_TV_PLAYLIST, false, false)
     ]);
-    channels = combinePlaylists(mainText, categoryText, areaText, supplementalText);
+    const freshChannels = combinePlaylists(mainText, categoryText, areaText, supplementalText);
+    if (!freshChannels.length) throw new Error('The public channel lists returned no usable entries.');
+    channels = freshChannels;
     directorySources = supplementalText ? 'IPTV-org + public broadcast feed' : 'IPTV-org';
-    if (!channels.length) throw new Error('The public channel lists returned no usable entries. Please retry when the playlist provider is online.');
-    const cats = [...new Set(channels.flatMap(c => c.cats))].sort();
-    const areas = [...new Set(channels.flatMap(c => c.areas || []))].sort();
-    $('cat').length = 1;
-    $('cat').insertAdjacentHTML('beforeend', cats.map(c => `<option>${esc(c)}</option>`).join(''));
-    $('area').length = 1;
-    $('area').insertAdjacentHTML('beforeend', areas.map(a => `<option>${esc(a)}</option>`).join(''));
-    buildChips();
-    const P = new URLSearchParams(location.search), deep = P.get('c');
-    wantLang = P.get('lang') || '';
-    if (P.get('q')) $('q').value = P.get('q');
-    if (cats.includes(P.get('cat'))) $('cat').value = P.get('cat');
-    if (areas.includes(P.get('area'))) $('area').value = P.get('area');
-    $('status').classList.add('hidden');
-    applyFilter(); loadLangs(langReq); buildHome();
-    if (deep) { const ch = channels.find(c => chId(c) === deep); if (ch) openWatch(ch); }
-  } catch (e) {
+    saveDirectoryCache(channels).catch(() => {});
+    finishDirectoryLoad(langReq, deep, false);
+  } catch (error) {
+    let saved = null;
+    try { saved = await readDirectoryCache(); } catch (e) {}
+    if (saved && Array.isArray(saved.channels) && saved.channels.length) {
+      channels = saved.channels.filter(c => validDirectoryChannel(c)).map((c, id) => ({ ...c, id }));
+      directorySources = 'Saved directory';
+      finishDirectoryLoad(langReq, deep, true);
+      const age = saved.savedAt ? Math.max(1, Math.round((Date.now() - saved.savedAt) / 3600000)) : 0;
+      $('count').textContent += age ? ` · saved ${age}h ago` : '';
+      return;
+    }
     $('grid').innerHTML = '';
-    $('status').innerHTML = `Could not load public playlists (${esc(e.message)}).<br>Check your connection and reload JMB TV.`;
+    $('status').innerHTML = `Could not load public playlists (${esc(error.message)}).<br>Check your connection and reload JMB TV.`;
   }
 }
 
