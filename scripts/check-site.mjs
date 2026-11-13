@@ -49,7 +49,7 @@ function checkHtml(file) {
   if (!/<meta\b[^>]*property=["']og:image["']/i.test(source)) fail(relative(file) + ": missing Open Graph preview image");
   if (!/<meta\b[^>]*name=["']twitter:card["']/i.test(source)) fail(relative(file) + ": missing Twitter card metadata");
 
-
+  const markup = source.replace(/<script\b[\s\S]*?<\/script>/gi, "").replace(/<style\b[\s\S]*?<\/style>/gi, "");
   const seen = new Set();
   for (const match of markup.matchAll(/\bid=["']([^"']+)["']/gi)) {
     const id = match[1];
