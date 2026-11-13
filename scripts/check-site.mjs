@@ -156,8 +156,10 @@ if (fs.existsSync(tvAppPath)) {
   if (!tvApp.includes("channelId") || !tvApp.includes("featured =")) {
     fail("tv/app.js: player sources must come from the manually approved channel allowlist");
   }
-  if (/https?:\\/\\/(?!www\\.youtube-nocookie\\.com)[^"'\\s]+\\/embed/i.test(tvApp)) {
+  const embedUrls = tvApp.split("\"").concat(tvApp.split("\'")).filter(value => value.startsWith("https://") && value.includes("/embed"));
+  if (embedUrls.some(value => !value.startsWith("https://www.youtube-nocookie.com/embed/"))) {
     fail("tv/app.js: embedded media host is not on the approved YouTube embed domain");
+  }
   }
 }
 
