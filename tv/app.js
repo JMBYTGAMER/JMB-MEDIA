@@ -38,12 +38,20 @@ function play(feed){
  $("playerQuality").textContent="YOUTUBE EMBED";
  $("nowChannel").textContent=feed.name;
  $("nowSource").textContent=feed.authority+" · playback controlled by YouTube";
- $("openSource").disabled=false;
+ $("openSource").disabled=false;$("stopPlayer").disabled=false;
  document.querySelectorAll("[data-watch]").forEach(function(btn){btn.classList.toggle("active",btn.getAttribute("data-watch")===feed.id);});
 }
 $("featuredChannels").addEventListener("click",function(e){
  var b=e.target.closest("[data-watch]");if(!b)return;
  play(featured.find(function(x){return x.id===b.getAttribute("data-watch");}));
+});
+$("stopPlayer").addEventListener("click",function(){
+ stopPlayer();current=null;
+ $("playerState").textContent="PLAYER STOPPED";
+ $("nowChannel").textContent="No channel selected";
+ $("nowSource").textContent="Select an official channel from the list.";
+ $("openSource").disabled=true;$("stopPlayer").disabled=true;
+ document.querySelectorAll("[data-watch]").forEach(function(btn){btn.classList.remove("active");});
 });
 $("openSource").addEventListener("click",function(){
  if(current&&current.source)window.open(current.source,"_blank","noopener,noreferrer");
