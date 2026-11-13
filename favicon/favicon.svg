@@ -1,5 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="JMB">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ef3340"/><stop offset="1" stop-color="#ff8a35"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity=".28"/></filter></defs>
-<rect x="3" y="3" width="94" height="94" rx="25" fill="url(#g)" filter="url(#s)"/>
-<text x="50" y="63" text-anchor="middle" fill="#fff" font-family="Arial,Helvetica,sans-serif" font-size="31" font-weight="900" letter-spacing="-1.7">JMB</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+<title id="title">JMB TV logo</title><desc id="desc">A glowing blue television emblem with JMB TV lettering.</desc>
+<defs>
+ <linearGradient id="bg" x1="28" y1="20" x2="486" y2="492" gradientUnits="userSpaceOnUse"><stop stop-color="#101d48"/><stop offset=".55" stop-color="#071329"/><stop offset="1" stop-color="#130a35"/></linearGradient>
+ <linearGradient id="edge" x1="62" y1="75" x2="450" y2="450" gradientUnits="userSpaceOnUse"><stop stop-color="#25ecff"/><stop offset=".48" stop-color="#267bff"/><stop offset="1" stop-color="#a53cff"/></linearGradient>
+ <linearGradient id="tv" x1="100" y1="140" x2="420" y2="390" gradientUnits="userSpaceOnUse"><stop stop-color="#0e2c60"/><stop offset="1" stop-color="#080b20"/></linearGradient>
+ <linearGradient id="txt" x1="150" y1="245" x2="370" y2="390" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset=".58" stop-color="#d8efff"/><stop offset="1" stop-color="#55eaff"/></linearGradient>
+ <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect x="12" y="12" width="488" height="488" rx="112" fill="url(#bg)" stroke="url(#edge)" stroke-width="10"/>
+<circle cx="252" cy="250" r="205" fill="#1966ff" opacity=".12"/>
+<path d="M188 117 153 66M324 117l40-51" fill="none" stroke="#c7edff" stroke-width="14" stroke-linecap="round"/>
+<circle cx="150" cy="62" r="12" fill="#20ddff"/><circle cx="367" cy="62" r="12" fill="#20ddff"/>
+<rect x="66" y="115" width="380" height="295" rx="58" fill="url(#tv)" stroke="url(#edge)" stroke-width="13" filter="url(#glow)"/>
+<rect x="84" y="133" width="344" height="259" rx="43" fill="#050d20" stroke="#5cbdff" stroke-opacity=".45" stroke-width="3"/>
+<path d="M230 156 281 156 264 183 213 183Z" fill="#28dcff" opacity=".9"/>
+<path d="M236 173 276 198 236 223Z" fill="#20dbff"/>
+<text x="256" y="306" text-anchor="middle" fill="url(#txt)" font-family="Arial,Helvetica,sans-serif" font-size="142" font-weight="900" letter-spacing="-10">JMB</text>
+<text x="256" y="382" text-anchor="middle" fill="#22dcff" font-family="Arial,Helvetica,sans-serif" font-size="82" font-weight="900" letter-spacing="3">TV</text>
 </svg>
