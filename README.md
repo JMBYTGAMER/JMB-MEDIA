@@ -4,9 +4,9 @@ A mobile-first directory hub for discovering television broadcasters, newspaper 
 
 ## Our content and copyright approach
 
-JMB TV is a **source directory, not a media host, player, broadcaster or publisher**.
+JMB TV is a **broadcaster discovery directory with a limited in-page official-player feature**. It is not a broadcaster or an independent host of third-party video.
 
-- JMB TV lists channel metadata and restores an in-page TV player for a small manually approved set of official YouTube live-player embeds. The player is YouTube's own embedded player and is used only where the uploader/platform permit embedding. JMB does not load raw IPTV/HLS playlists, host recordings, proxy media requests, or bypass region/subscription restrictions. Other channel names remain searchable but show as unavailable for in-page playback until an official embed is confirmed.
+- JMB TV lists channel metadata and restores an in-page TV player for a small manually approved set of official YouTube live-player embeds. The player is YouTube's own embedded player and is used only where the uploader/platform permit embedding. Follow [YouTube's embed instructions](https://support.google.com/youtube/answer/171780?hl=en) and [embedded player documentation](https://developers.google.com/youtube/player_parameters). JMB does not load raw IPTV/HLS playlists, host recordings, proxy media requests, or bypass region/subscription restrictions. Other channel names remain searchable but show as unavailable for in-page playback until an official embed is confirmed.
 - JMB Newspapers lists publisher names, regions, languages and publisher websites. It does not scrape RSS articles, store headlines or article text, show publisher photographs or reproduce articles.
 - JMB Radio lists station metadata and directory-listed HTTPS station websites. It does not play, relay, cache or retransmit station audio.
 - JMB World News lists publisher websites, official video-channel pages and podcast pages. It does not fetch news stories, copy headlines or summaries, embed videos, display thumbnails or play podcast audio.
