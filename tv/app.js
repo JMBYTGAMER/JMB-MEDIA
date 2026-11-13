@@ -62,7 +62,7 @@ function fill(id,values,label,map){
  if(items.indexOf(old)>=0)el.value=old;
 }
 function safeWebsite(raw){try{var u=new URL(raw);return u.protocol==="https:"&&!u.username&&!u.password?u.href:"";}catch(e){return "";}}
-function playableFor(ch){return featured.find(function(x){var name=String(ch.name||"").trim();return (/^asianet news(?:\\b|$)/i.test(name)&&x.id==="asianet-news")||(/^dd news(?:\\b|$)/i.test(name)&&x.id==="dd-news")||(/^(?:doordarshan national|dd national)(?:\\b|$)/i.test(name)&&x.id==="dd-national");})||null;}
+function playableFor(ch){return featured.find(function(x){var name=String(ch.name||"").trim();return (/^asianet news(?:\b|$)/i.test(name)&&x.id==="asianet-news")||(/^dd news(?:\b|$)/i.test(name)&&x.id==="dd-news")||(/^(?:doordarshan national|dd national)(?:\b|$)/i.test(name)&&x.id==="dd-national");})||null;}
 function renderDirectory(){
  var q=$("channelSearch").value.trim().toLowerCase(),country=$("countryFilter").value,category=$("categoryFilter").value;
  var rows=channels.filter(function(ch){
