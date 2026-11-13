@@ -159,7 +159,7 @@ if (fs.existsSync(tvAppPath)) {
   if (!tvApp.includes("blocklist.json") || !tvApp.includes("channels.json")) {
     fail("tv/app.js: NSFW/blocklist and channel metadata filters are missing");
   }
-  if (!tvApp.includes("liveVideo") || !tvApp.includes("streamURL")) {
+  if (!tvApp.includes("liveVideo") || !tvApp.includes("safeStreamURL")) {
     fail("tv/app.js: direct video player wiring is missing");
   }
 }
