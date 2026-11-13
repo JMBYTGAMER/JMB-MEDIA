@@ -1520,7 +1520,6 @@ async function diagnoseCurrentChannel(channel) {
 async function giveUp(c, d, n, msg) {
   fail(msg || netMsg(c, d, n > 0));
   const failedChannel = c;
-  diagnoseCurrentChannel(failedChannel);
   if (n > 0 && ++proxyFails >= 3) { // several proxied failures in a row: is the proxy itself down?
     proxyFails = 0;
     const p = proxyList()[0], prev = proxyMode;
@@ -1538,8 +1537,9 @@ function fail(m) {
     ? normaliseSearch([x.name, x.tvg].join(' ')).includes('asianet')
     : (x.cats || []).some(k => (cur.cats || []).includes(k)))).slice(0, 3) : [];
   const altMarkup = alternatives.length ? `<div class="tv-alt-wrap"><span class="tv-alt-label">${isAsianet ? 'OTHER ASIANET LISTINGS' : 'TRY ANOTHER CHANNEL'}</span><div class="tv-alt-list">${alternatives.map(x => `<button type="button" class="tv-alt-channel" data-alt-channel="${x.id}"><span>${esc(x.name)}</span><b>PLAY ↗</b></button>`).join('')}</div></div>` : '';
-  $('err').innerHTML = `<div class="tv-playback-error"><span class="tv-error-mark">!</span><div class="tv-error-copy"><strong>We couldn't start this channel</strong><p>${safe}</p><small>This channel stays in your directory. You can retry, test the proxy, or choose another listing.</small></div><div class="tv-error-actions"><button id="retry" class="btn !text-white">Try again</button>${live ? `<button id="proxyTestErr" class="btn !text-white">Test proxy</button><button id="proxyErr" class="btn !text-white">Change proxy</button>` : ''}</div><div id="streamDiag" class="tv-stream-diagnostic" role="status" aria-live="polite">Waiting for stream diagnostics…</div>${altMarkup}</div>`;
+  $('err').innerHTML = `<div class="tv-playback-error"><span class="tv-error-mark">!</span><div class="tv-error-copy"><strong>We couldn't start this channel</strong><p>${safe}</p><small>This channel stays in your directory. You can retry, test the proxy, or choose another listing.</small></div><div class="tv-error-actions"><button id="retry" class="btn !text-white">Try again</button>${live ? `<button id="proxyTestErr" class="btn !text-white">Test proxy</button><button id="proxyErr" class="btn !text-white">Change proxy</button>` : ''}</div>${live ? `<div id="streamDiag" class="tv-stream-diagnostic" role="status" aria-live="polite">Checking stream and proxy…</div>` : ''}${altMarkup}</div>`;
   $('err').classList.remove('hidden');
+  if (live && cur) diagnoseCurrentChannel(cur);
 }
 $('err').onclick = e => {
   const alternateButton = e.target.closest('[data-alt-channel]');
