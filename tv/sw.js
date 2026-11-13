@@ -1,36 +1,61 @@
-// JMB TV service worker: app shell + playlist caching. Streams (video) are never touched.
-const V = 'jmbtv-v12';
-const SHELL = ['./', '/favicon/site.webmanifest?v=6', '/favicon/jmb-app-icon.svg?v=6', '/favicon/jmb-maskable-icon.svg?v=6'];
-const CDN = ['cdnjs.cloudflare.com', 'cdn.tailwindcss.com'];
-const LISTS = ['/iptv/index.m3u', '/iptv/index.category.m3u', '/iptv/index.country.m3u', '/iptv/index.language.m3u'];
-const SUPPLEMENTAL = '/freecasthub/public-iptv/main/playlist.m3u';
-
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(V).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => {})))).then(() => self.skipWaiting()));
+// JMB TV channel directory: caches only the app shell and its own static assets.
+const VERSION = "jmbtv-directory-v13";
+const SHELL = [
+  "./",
+  "./index.html",
+  "./app.js?v=13",
+  "./directory.css",
+  "/assets/css/styles.css",
+  "/assets/css/theme.css",
+  "/assets/css/premium.css",
+  "/assets/js/common.js",
+  "/assets/branding/jmb-tv-logo.svg",
+  "/favicon/site.webmanifest?v=6",
+  "/favicon/jmb-app-icon.svg?v=6"
+];
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open(VERSION)
+      .then(cache => Promise.all(SHELL.map(path => cache.add(path).catch(() => null))))
+      .then(() => self.skipWaiting())
+  );
 });
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(key => key.startsWith("jmbtv-") && key !== VERSION).map(key => caches.delete(key))))
+      .then(() => self.clients.claim())
+  );
 });
-
-const keep = (key, res) => {
-  if (res && (res.ok || res.type === 'opaque')) { const c = res.clone(); caches.open(V).then(ch => ch.put(key, c)).catch(() => {}); }
-  return res;
-};
-// Show cached copy instantly, refresh it in the background
-const swr = req => caches.match(req).then(hit => {
-  const net = fetch(req).then(res => keep(req, res)).catch(() => hit);
-  return hit || net;
-});
-
-self.addEventListener('fetch', e => {
-  const r = e.request; if (r.method !== 'GET') return;
-  const u = new URL(r.url), same = u.origin === location.origin;
-  if (r.mode === 'navigate' && same) { // page: network first, cached copy when offline
-    const key = u.origin + u.pathname;
-    e.respondWith(fetch(r).then(res => keep(key, res)).catch(() => caches.match(key).then(m => m || caches.match('./'))));
+self.addEventListener("fetch", event => {
+  const request = event.request;
+  if (request.method !== "GET") return;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+  if (request.mode === "navigate") {
+    event.respondWith((async () => {
+      const cache = await caches.open(VERSION);
+      try {
+        const fresh = await fetch(request);
+        if (fresh.ok) await cache.put(url.pathname, fresh.clone());
+        return fresh;
+      } catch (error) {
+        return await cache.match(url.pathname) || await cache.match("./index.html") ||
+          new Response("JMB TV is offline. Reconnect and reload.", {
+            status: 503, headers: { "Content-Type": "text/plain; charset=utf-8" }
+          });
+      }
+    })());
     return;
   }
-  const playlist = u.hostname === 'iptv-org.github.io' && LISTS.includes(u.pathname);
-  const supplemental = u.hostname === 'raw.githubusercontent.com' && u.pathname === SUPPLEMENTAL;
-  if (same || CDN.includes(u.hostname) || playlist || supplemental) e.respondWith(swr(r));
+  if (SHELL.some(path => new URL(path, self.location.href).href === request.url.split("?")[0])) {
+    event.respondWith((async () => {
+      const cache = await caches.open(VERSION);
+      const cached = await cache.match(request, { ignoreSearch: true });
+      if (cached) return cached;
+      const fresh = await fetch(request);
+      if (fresh.ok) await cache.put(request, fresh.clone());
+      return fresh;
+    })());
+  }
 });
