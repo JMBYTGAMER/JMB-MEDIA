@@ -1460,7 +1460,7 @@ function diagnosticMessage(message) {
 async function diagnoseCurrentChannel(channel) {
   if (!channel || !PROXY) { diagnosticMessage('No personal Cloudflare Worker is configured.'); return; }
   diagnosticMessage('Checking your Cloudflare Worker…');
-  const pingUrl = PROXY.replace(/\\?url=$/, '?ping=1');
+  const pingUrl = PROXY.slice(0, PROXY.lastIndexOf('?')) + '?ping=1';
   try {
     const ping = await diagnosticRequest(pingUrl);
     const pong = await ping.text();
@@ -1476,27 +1476,28 @@ async function diagnoseCurrentChannel(channel) {
   }
   diagnosticMessage('Worker is online. Checking this channel playlist…');
   try {
-    let playlistUrl = viaProxy(channel.url), playlistText = '';
+    let playlistUrl = viaProxy(channel.url);
     for (let depth = 0; depth < 3; depth++) {
       const response = await diagnosticRequest(playlistUrl);
       if (!response.ok) {
         diagnosticMessage('Worker is online, but this channel server returned HTTP ' + response.status + '. The source may be offline or refuse proxy access.');
         return;
       }
-      playlistText = await response.text();
-      if (!playlistText.replace(/^\\uFEFF/, '').trimStart().startsWith('#EXTM3U')) {
+      const playlistText = await response.text();
+      if (!playlistText.replace(String.fromCharCode(0xFEFF), '').trimStart().startsWith('#EXTM3U')) {
         diagnosticMessage('Worker is online, but the channel did not return a valid HLS playlist. The stream URL may have expired or may not be a browser-compatible HLS source.');
         return;
       }
-      const nextLine = playlistText.split(/\\r?\\n/).map(line => line.trim()).find(line => line && !line.startsWith('#'));
+      const nextLine = playlistText.split(String.fromCharCode(10)).map(line => line.trim()).find(line => line && !line.startsWith('#'));
       if (!nextLine) {
         diagnosticMessage('The playlist loaded, but it contains no video segments to play.');
         return;
       }
       const nextUrl = new URL(nextLine, playlistUrl).href;
-      const wrapped = new URL(nextUrl);
-      const original = wrapped.hostname === new URL(PROXY).hostname ? wrapped.searchParams.get('url') || nextUrl : nextUrl;
-      if (/\\.m3u8?(?:$|[?#])/i.test(original) && depth < 2) {
+      const nextParsed = new URL(nextUrl);
+      const original = nextParsed.hostname === new URL(PROXY).hostname ? (nextParsed.searchParams.get('url') || nextUrl) : nextUrl;
+      const originalPath = new URL(original).pathname.toLowerCase();
+      if (originalPath.endsWith('.m3u8') && depth < 2) {
         playlistUrl = nextUrl.startsWith(PROXY) ? nextUrl : viaProxy(nextUrl);
         continue;
       }
