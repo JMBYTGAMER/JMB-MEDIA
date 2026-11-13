@@ -39,3 +39,10 @@ JMB TV also reads the optional playlist at https://raw.githubusercontent.com/fre
 If JMB TV shows a playback error, open **More tools → Test proxy**. The test checks both the Worker health endpoint and a public HLS test playlist. A green result means the proxy is reachable; it does not guarantee that a particular broadcaster stream is online or permits third-party playback.
 
 If the Worker test fails, deploy the current `cors-proxy-worker.js` in Cloudflare. This is a separate deployment from GitHub Pages. If the Worker test passes but one channel still fails, the provider may be offline, region-limited, or blocking third-party playback; try another listing from the same broadcaster.
+
+
+## New automatic playback diagnostics
+
+When a channel fails, JMB TV now checks the configured Worker, then requests that channel's HLS playlist and first media segment through the Worker. The message in the player identifies the failing stage. This is a diagnostic only; it does not make an offline, geo-restricted, subscription-only, DRM-protected or browser-incompatible stream playable.
+
+The HLS.js player routes both XHR-based and Fetch-based playlist/segment requests through the configured Worker. If the diagnostic says the Worker cannot be reached or rejects the site origin, deploy the current `cors-proxy-worker.js` in Cloudflare Workers and confirm that `https://media.jmbhost.qzz.io` is in its `ALLOWED` origin list. GitHub Pages deployment does not publish Cloudflare Worker code.
