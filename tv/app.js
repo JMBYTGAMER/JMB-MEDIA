@@ -354,6 +354,14 @@
       state.all=buildChannels(raw);
       if(!state.all.length)throw new Error("No usable channels were found in the public playlist.");
       updateFilters();updateCounts();render();
+      // Migrate favourites saved by the previous version, where the key also included the stream URL.
+      state.all.forEach(function(channel){
+        if(channel.id&&!favourites.has(channel.key)){
+          var legacy=Array.from(favourites).some(function(saved){return saved.indexOf(channel.id+"|")===0;});
+          if(legacy)favourites.add(channel.key);
+        }
+      });
+      saveFavourites();
       var requested=new URLSearchParams(location.search).get("channel");
       if(requested){
         var found=state.all.find(function(x){return x.id===requested||x.name.toLowerCase()===requested.toLowerCase();});
