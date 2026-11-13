@@ -1,10 +1,10 @@
 // JMB TV app shell. Third-party streams are never cached or relayed.
-const VERSION = "jmbtv-world-v17";
+const VERSION = "jmbtv-world-v18";
 const SHELL = [
   "./",
   "./index.html",
-  "./app.js?v=17",
-  "./directory.css?v=17",
+  "./app.js?v=18",
+  "./directory.css?v=18",
   "/assets/branding/jmb-tv-logo.svg",
   "/favicon/favicon.svg",
   "/favicon/media.webmanifest"
