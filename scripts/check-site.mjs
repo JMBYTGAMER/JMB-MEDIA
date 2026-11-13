@@ -84,13 +84,21 @@ const files = walk(root);
 for (const file of files) {
   const ext = path.extname(file).toLowerCase();
   if (ext === ".html") checkHtml(file);
-  if (ext === ".js" && path.basename(file) !== "cors-proxy-worker.js") {
+  if (ext === ".js") {
     counts.javascript++;
     try {
-      new vm.Script(fs.readFileSync(file, "utf8"), { filename: relative(file) });
+      let source = fs.readFileSync(file, "utf8");
+      if (path.basename(file) === "cors-proxy-worker.js") {
+        source = source.replace(/^export\\s+default\\s+/m, "const workerModule = ");
+      }
+      new vm.Script(source, { filename: relative(file) });
     } catch (error) {
       fail(relative(file) + ": JavaScript syntax (" + error.message + ")");
     }
+  }
+  if (ext === ".webmanifest") {
+    try { JSON.parse(fs.readFileSync(file, "utf8")); }
+    catch (error) { fail(relative(file) + ": invalid web manifest (" + error.message + ")"); }
   }
   if (ext === ".css") {
     counts.stylesheets++;
