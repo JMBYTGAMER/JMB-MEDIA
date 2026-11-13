@@ -2,134 +2,53 @@
 "use strict";
 var $=function(id){return document.getElementById(id);};
 var hosts=["https://de1.api.radio-browser.info","https://nl1.api.radio-browser.info","https://at1.api.radio-browser.info"];
-var cacheKey="jmb-radio-directory-cache-v1";
-var stations=[],audio=$("radioAudio"),current=null,favorites=loadFavorites(),timer=null,optionsLoaded=false,loadSequence=0;
-function esc(s){return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
-function safeHttps(s){try{var u=new URL(s);return u.protocol==="https:"?u.href:"";}catch(e){return "";}}
-function loadFavorites(){try{return JSON.parse(localStorage.getItem("jmb-radio-favorites")||"[]");}catch(e){return [];}}
-function saveFavorites(){try{localStorage.setItem("jmb-radio-favorites",JSON.stringify(favorites));}catch(e){window.JMBToast("Browser storage is unavailable; favourites may not be saved.");}}
-function safeStation(s){return !/(adult|erotic|porn|explicit|xxx|sex)/i.test(String(s.tags||""))&&!/(adult|erotic|porn|explicit|xxx|sex)/i.test(String(s.name||""));}
-function fill(id,values){var el=$(id),old=el.value;Array.from(new Set(values.filter(Boolean))).sort().forEach(function(v){if(!Array.from(el.options).some(function(o){return o.value===v;}))el.insertAdjacentHTML("beforeend",'<option value="'+esc(v)+'">'+esc(v)+'</option>');});if(Array.from(el.options).some(function(o){return o.value===old;}))el.value=old;}
-async function request(url,ms){
- var controller=typeof AbortController!=="undefined"?new AbortController():null;
- var timer=controller?setTimeout(function(){controller.abort();},ms||9000):null;
- try{var r=await fetch(url,{headers:{"Accept":"application/json"},signal:controller?controller.signal:undefined,cache:"no-store"});if(!r.ok)throw new Error("HTTP "+r.status);return await r.json();}
- finally{if(timer)clearTimeout(timer);}
-}
-async function api(path){
- var last;
- for(var i=0;i<hosts.length;i++){
-  try{return await request(hosts[i]+path,9000);}
-  catch(e){last=e;}
- }
- throw last||new Error("Radio Browser directory unavailable");
-}
-function queryUrl(){
- var p=new URLSearchParams(),q=$("stationSearch").value.trim(),country=$("radioCountry").value,language=$("radioLanguage").value,genre=$("radioGenre").value;
- if(q)p.set("name",q);if(country)p.set("country",country);if(language)p.set("language",language);if(genre)p.set("tag",genre);
- p.set("hidebroken","true");p.set("order","clickcount");p.set("reverse","true");p.set("limit","80");
- return "/json/stations/search?"+p.toString();
-}
-function readCache(){try{return JSON.parse(localStorage.getItem(cacheKey)||"{}")||{};}catch(e){return {};}}
-function storeCache(rows){
- try{localStorage.setItem(cacheKey,JSON.stringify({time:Date.now(),stations:rows}));}catch(e){}
-}
-function restoreCache(){
- var saved=readCache();
- return Array.isArray(saved.stations)?saved.stations.filter(safeStation):[];
-}
+var cacheKey="jmb-radio-directory-v2",stations=[],favorites=readFavorites(),timer=null,sequence=0,loading=false;
+function esc(v){return String(v||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function safeSite(v){try{var u=new URL(v);return u.protocol==="https:"&&!u.username&&!u.password?u.href:"";}catch(e){return "";}}
+function readFavorites(){try{return JSON.parse(localStorage.getItem("jmb-radio-favorites-v2")||"[]");}catch(e){return [];}}
+function saveFavorites(){try{localStorage.setItem("jmb-radio-favorites-v2",JSON.stringify(favorites));}catch(e){window.JMBToast("Browser storage is unavailable; favourites may not be saved.");}}
+function safeName(s){return s&&!/(adult|erotic|porn|explicit|xxx|sex)/i.test(String(s.name||"")+" "+String(s.tags||""));}
+function cleanStation(s){return {stationuuid:String(s.stationuuid||""),name:String(s.name||""),country:String(s.country||""),countrycode:String(s.countrycode||""),state:String(s.state||""),language:String(s.language||""),tags:String(s.tags||"").slice(0,300),homepage:safeSite(s.homepage),codec:String(s.codec||""),bitrate:Number(s.bitrate)||0};}
+async function request(url){var controller=new AbortController(),timer=setTimeout(function(){controller.abort();},9000);try{var r=await fetch(url,{signal:controller.signal,cache:"no-store",headers:{"Accept":"application/json"}});if(!r.ok)throw new Error("HTTP "+r.status);return await r.json();}finally{clearTimeout(timer);}}
+async function api(path){var last;for(var i=0;i<hosts.length;i++){try{return await request(hosts[i]+path);}catch(e){last=e;}}throw last||new Error("Radio directory unavailable");}
+function fill(id,values){var el=$(id),old=el.value,unique=Array.from(new Set(values.filter(Boolean))).sort();el.innerHTML='<option value="">'+(id==="radioCountry"?"All countries":"All languages")+'</option>'+unique.map(function(v){return '<option value="'+esc(v)+'">'+esc(v)+'</option>';}).join("");if(unique.indexOf(old)>=0)el.value=old;}
+function cacheRead(){try{return JSON.parse(localStorage.getItem(cacheKey)||"{}")||{};}catch(e){return {};}}
+function cacheWrite(rows){try{localStorage.setItem(cacheKey,JSON.stringify({updated:Date.now(),stations:rows.map(cleanStation)}));}catch(e){}}
 function render(){
- var band=$("bandFilter").value,q=$("stationSearch").value.trim().toLowerCase();
- var country=$("radioCountry").value,language=$("radioLanguage").value;
- var list=stations.filter(safeStation).filter(function(s){
-  var blob=[s.name,s.country,s.state,s.language,s.tags].join(" ").toLowerCase();
-  return (!q||blob.indexOf(q)>=0)&&(!country||s.country===country)&&(!language||String(s.language||"").split(",").indexOf(language)>=0);
- });
- if(band==="fm")list=list.filter(function(s){return /\bfm\b/i.test(s.tags||"")||/\bfm\b/i.test(s.name||"");});
- if(band==="am")list=list.filter(function(s){return /\bam\b/i.test(s.tags||"")||/\bam\b/i.test(s.name||"");});
- if(band==="internet")list=list.filter(function(s){return !/\b(am|fm)\b/i.test((s.tags||"")+" "+(s.name||""));});
- $("radioStatus").textContent=list.length.toLocaleString()+" stations"+(stations.some(function(s){return s.__saved;})?" · saved directory":" found");
- if(!list.length){$("radioGrid").innerHTML='<div class="empty-state">No stations matched. Try removing a filter or searching a different spelling.</div>';return;}
- $("radioGrid").innerHTML=list.map(function(s){
-  var fav=favorites.indexOf(s.stationuuid)>=0;
-  var logo=s.favicon&&/^https:\/\//i.test(s.favicon)?'<img src="'+esc(s.favicon)+'" alt="" style="width:52px;height:52px;object-fit:contain;border-radius:12px;background:#fff" loading="lazy" onerror="this.remove()">':'<div class="avatar">📻</div>';
-  var type=/\bfm\b/i.test((s.tags||"")+" "+(s.name||""))?"FM-tagged":/\bam\b/i.test((s.tags||"")+" "+(s.name||""))?"AM-tagged":"Internet stream";
-  var secure=!!safeHttps(s.url_resolved||s.url);
-  var tags='<span class="tag">'+esc(type)+'</span><span class="tag">'+esc((s.codec||"Audio")+" "+(s.bitrate?s.bitrate+" kbps":""))+'</span>';
-  if(!secure)tags+='<span class="tag">HTTPS unavailable</span>';
-  if(s.tags)tags+='<span class="tag">'+esc(String(s.tags).split(",").slice(0,2).join(", "))+'</span>';
-  return '<article class="media-card"><div class="card-top">'+logo+'<div style="min-width:0;flex:1"><div class="card-title">'+esc(s.name)+'</div><div class="muted tiny">'+esc(s.country||"Worldwide")+' · '+esc(s.language||"Language not listed")+'</div></div><button class="icon-btn" data-fav="'+esc(s.stationuuid)+'" aria-label="'+(fav?"Remove favourite":"Add favourite")+'" aria-pressed="'+String(fav)+'" title="Favourite">'+(fav?"♥":"♡")+'</button></div><div class="tag-row">'+tags+'</div><div class="card-description">'+esc([s.state,s.country].filter(Boolean).join(" · ")||"Live internet radio")+' · Internet audio stream</div><div class="card-actions"><button class="btn small" data-play="'+esc(s.stationuuid)+'" '+(secure?"":"disabled")+'>'+(secure?"▶ Listen live":"Stream unavailable")+'</button></div></article>';
- }).join("");
+ var q=$("stationSearch").value.trim().toLowerCase(),country=$("radioCountry").value,language=$("radioLanguage").value,genre=$("radioGenre").value,band=$("bandFilter").value;
+ var list=stations.filter(function(s){var blob=[s.name,s.country,s.state,s.language,s.tags].join(" ").toLowerCase();return (!q||blob.indexOf(q)>=0)&&(!country||s.country===country)&&(!language||s.language.split(",").map(function(x){return x.trim();}).indexOf(language)>=0)&&(!genre||s.tags.toLowerCase().indexOf(genre)>=0);});
+ if(band==="fm")list=list.filter(function(s){return /\bfm\b/i.test(s.tags+" "+s.name);});
+ if(band==="am")list=list.filter(function(s){return /\bam\b/i.test(s.tags+" "+s.name);});
+ if(band==="internet")list=list.filter(function(s){return !/\b(am|fm)\b/i.test(s.tags+" "+s.name);});
+ list.sort(function(a,b){var fav=favorites.indexOf(b.stationuuid)-favorites.indexOf(a.stationuuid);return fav||a.name.localeCompare(b.name);});
+ $("radioStatus").textContent=list.length.toLocaleString()+" matching stations · directory information only";
+ $("radioGrid").innerHTML=list.length?list.map(function(s){
+  var fav=favorites.indexOf(s.stationuuid)>=0,kind=/\bfm\b/i.test(s.tags+" "+s.name)?"FM-tagged":/\bam\b/i.test(s.tags+" "+s.name)?"AM-tagged":"Internet radio listing";
+  var tags=[kind,s.codec,s.bitrate?s.bitrate+" kbps":""].filter(Boolean);
+  return '<article class="media-card radio-directory-card"><div class="card-top"><div class="avatar" aria-hidden="true">📻</div><div style="min-width:0;flex:1"><div class="card-title">'+esc(s.name)+'</div><div class="muted tiny">'+esc(s.country||"Country not listed")+' · '+esc(s.language||"Language not listed")+'</div></div><button class="icon-btn" data-fav="'+esc(s.stationuuid)+'" aria-label="'+(fav?"Remove favourite":"Add favourite")+'" aria-pressed="'+String(fav)+'">'+(fav?"♥":"♡")+'</button></div><div class="tag-row">'+tags.map(function(x){return '<span class="tag">'+esc(x)+'</span>';}).join("")+'</div><div class="card-description">'+esc(s.state||"Station directory entry")+' · Website links are supplied by Radio Browser and may need verification.</div><div class="card-actions">'+(s.homepage?'<a class="btn small" href="'+esc(s.homepage)+'" target="_blank" rel="noopener noreferrer">Visit listed station website ↗</a>':'<span class="btn small secondary" aria-disabled="true">No secure website listed</span>')+'</div></article>';
+ }).join(""):'<div class="empty-state">No station matches these filters. Try another search or clear a filter.</div>';
 }
 async function load(){
- var id=++loadSequence,button=$("radioRetry");
- $("radioStatus").textContent="Searching radio stations…";
- $("radioGrid").innerHTML='<div class="loading-state">Finding stations <span class="loading-dot"></span><span class="loading-dot"></span></div>';
- if(button){button.disabled=true;button.textContent="Searching…";}
+ if(loading)return;loading=true;var id=++sequence;
+ $("radioStatus").textContent="Loading station directory…";$("radioGrid").innerHTML='<div class="loading-state">Searching public station records <span class="loading-dot"></span></div>';
+ $("radioRetry").disabled=true;$("radioRetry").textContent="Refreshing…";
+ var p=new URLSearchParams(),q=$("stationSearch").value.trim(),country=$("radioCountry").value,language=$("radioLanguage").value,genre=$("radioGenre").value;
+ if(q)p.set("name",q);if(country)p.set("country",country);if(language)p.set("language",language);if(genre)p.set("tag",genre);
+ p.set("limit","100");p.set("order","name");p.set("reverse","false");p.set("hidebroken","true");
  try{
-  var result=await api(queryUrl());
-  if(id!==loadSequence)return;
-  stations=(Array.isArray(result)?result:[]).filter(safeStation);
-  storeCache(stations);
-  if(!optionsLoaded){
-   var lists=await Promise.allSettled([api("/json/countries?order=name&reverse=false"),api("/json/languages?order=name&reverse=false")]);
-   if(id!==loadSequence)return;
-   if(lists[0].status==="fulfilled")fill("radioCountry",lists[0].value.map(function(x){return x.name;}));
-   if(lists[1].status==="fulfilled")fill("radioLanguage",lists[1].value.map(function(x){return x.name;}));
-   optionsLoaded=true;
-  }
+  var rows=await api("/json/stations/search?"+p.toString());if(id!==sequence)return;
+  stations=rows.filter(safeName).map(cleanStation).filter(function(s){return s.stationuuid&&s.name;});
+  cacheWrite(stations);
+  fill("radioCountry",stations.map(function(s){return s.country;}));fill("radioLanguage",stations.reduce(function(a,s){return a.concat(s.language.split(",").map(function(x){return x.trim();}));},[]));
   render();
  }catch(error){
-  if(id!==loadSequence)return;
-  var cached=restoreCache();
-  if(cached.length){
-   stations=cached.map(function(s){var x=Object.assign({},s);x.__saved=true;return x;});
-   render();$("radioStatus").textContent="Directory offline · showing "+stations.length+" saved stations";
-   window.JMBToast("Showing your last saved radio directory.");
-  }else{
-   $("radioStatus").textContent="Could not connect to Radio Browser";
-   $("radioGrid").innerHTML='<div class="empty-state">The radio directory is temporarily unavailable. Check your connection, then try Refresh.</div>';
-  }
- }
- if(id===loadSequence&&button){button.disabled=false;button.textContent="↻ Refresh";}
+  if(id!==sequence)return;
+  var saved=cacheRead();
+  if(Array.isArray(saved.stations)&&saved.stations.length){stations=saved.stations.map(cleanStation);render();$("radioStatus").textContent="Directory service unavailable · showing saved station information";}
+  else{$("radioStatus").textContent="Could not connect to Radio Browser";$("radioGrid").innerHTML='<div class="empty-state">The station directory is temporarily unavailable. Try refreshing later.</div>';}
+ }finally{if(id===sequence){loading=false;$("radioRetry").disabled=false;$("radioRetry").textContent="↻ Refresh";}}
 }
-function stopPlayback(){
- audio.pause();audio.removeAttribute("src");audio.load();current=null;
- $("nowTitle").textContent="Choose a station";$("nowSubtitle").textContent="JMB Radio player";$("radioPlay").textContent="▶";
-}
-function play(s){
- var src=s&&safeHttps(s.url_resolved||s.url);
- if(!s||!src){window.JMBToast("This station has no secure HTTPS stream for browser playback.");return;}
- current=s;audio.pause();audio.src=src;audio.volume=Number($("radioVolume").value);
- $("nowTitle").textContent=s.name;$("nowSubtitle").textContent="Connecting · "+(s.country||"Worldwide")+" · "+(s.language||"Online radio");
- $("radioPlay").textContent="…";
- audio.play().then(function(){
-  $("nowSubtitle").textContent="Live · "+(s.country||"Worldwide")+" · "+(s.language||"Online radio");
-  $("radioPlay").textContent="Ⅱ";
-  api("/json/url/"+encodeURIComponent(s.stationuuid)).catch(function(){});
- }).catch(function(){
-  $("nowSubtitle").textContent="Could not start · try another station";
-  $("radioPlay").textContent="▶";
-  window.JMBToast("The stream did not start. The station may be offline or browser-incompatible.");
- });
-}
-$("radioGrid").addEventListener("click",function(event){
- var b=event.target.closest("[data-play]"),f=event.target.closest("[data-fav]");
- if(b){var station=stations.find(function(x){return x.stationuuid===b.getAttribute("data-play");});play(station);}
- if(f){var id=f.getAttribute("data-fav"),i=favorites.indexOf(id);if(i>=0)favorites.splice(i,1);else favorites.push(id);saveFavorites();render();}
-});
-$("radioPlay").addEventListener("click",function(){
- if(!current){window.JMBToast("Choose a station first.");return;}
- if(audio.paused){audio.play().then(function(){$("radioPlay").textContent="Ⅱ";}).catch(function(){$("radioPlay").textContent="▶";});}
- else{audio.pause();$("radioPlay").textContent="▶";}
-});
-$("stopRadio").addEventListener("click",stopPlayback);
-$("radioVolume").addEventListener("input",function(){audio.volume=Number(this.value);});
-audio.volume=Number($("radioVolume").value);
-audio.addEventListener("playing",function(){if(current)$("nowSubtitle").textContent="Live · "+(current.country||"Worldwide");});
-audio.addEventListener("waiting",function(){if(current)$("nowSubtitle").textContent="Buffering · "+(current.country||"Worldwide");});
-audio.addEventListener("ended",function(){$("radioPlay").textContent="▶";if(current)$("nowSubtitle").textContent="Stream ended";});
-audio.addEventListener("error",function(){if(current){$("nowSubtitle").textContent="Stream unavailable · try another station";window.JMBToast("This station is offline or its provider is blocking playback.");}$("radioPlay").textContent="▶";});
+$("radioGrid").addEventListener("click",function(e){var b=e.target.closest("[data-fav]");if(!b)return;var id=b.getAttribute("data-fav"),i=favorites.indexOf(id);if(i>=0)favorites.splice(i,1);else favorites.push(id);saveFavorites();render();});
 ["radioCountry","radioLanguage","radioGenre","bandFilter"].forEach(function(id){$(id).addEventListener("change",load);});
 $("stationSearch").addEventListener("input",function(){clearTimeout(timer);timer=setTimeout(load,350);});
 $("radioRetry").addEventListener("click",load);
