@@ -1,73 +1,39 @@
-# JMB TV / JMB MEDIA
+# JMB MEDIA
 
-A mobile-first directory hub for discovering television broadcasters, newspaper publishers, radio stations and world-news sources.
+A mobile-first media hub with JMB TV, newspapers, radio and world-news directories.
 
-## Our content and copyright approach
+## JMB TV — worldwide channel catalogue and in-page player
 
-JMB TV is a **broadcaster discovery directory with a limited in-page official-player feature**. It is not a broadcaster or an independent host of third-party video.
+The TV page uses the public IPTV-org collection:
+- Playlist: https://iptv-org.github.io/iptv/index.m3u
+- Metadata API: channel, feed, logo, country, language, category and blocklist JSON files from https://iptv-org.github.io/api/
 
-- JMB TV lists channel metadata and restores an in-page TV player for a small manually approved set of official YouTube live-player embeds. The player is YouTube's own embedded player and is used only where the uploader/platform permit embedding. Follow [YouTube's embed instructions](https://support.google.com/youtube/answer/171780?hl=en) and [embedded player documentation](https://developers.google.com/youtube/player_parameters). JMB does not load raw IPTV/HLS playlists, host recordings, proxy media requests, or bypass region/subscription restrictions. Other channel names remain searchable but show as unavailable for in-page playback until an official embed is confirmed.
-- JMB Newspapers lists publisher names, regions, languages and publisher websites. It does not scrape RSS articles, store headlines or article text, show publisher photographs or reproduce articles.
-- JMB Radio lists station metadata and directory-listed HTTPS station websites. It does not play, relay, cache or retransmit station audio.
-- JMB World News lists publisher websites, official video-channel pages and podcast pages. It does not fetch news stories, copy headlines or summaries, embed videos, display thumbnails or play podcast audio.
-- Third-party names and trademarks are used only to identify the website or service being linked. Their owners retain all rights. A directory entry is not an endorsement or a guarantee that the destination is free, available or authorised for every viewer.
-- JMB does not bypass paywalls, subscriptions, DRM, authentication, access controls or geographic restrictions.
+The catalogue updates from the upstream source when visitors load or refresh the TV page. It is a broad public directory, not literally every TV broadcaster in existence. The page filters entries identified as NSFW, closed, replaced or blocklisted by the upstream metadata.
 
-The site's detailed policy and removal-request process are in [Copyright, Content & Privacy](https://media.jmbhost.qzz.io/legal/).
+Every channel card shows the channel logo (when available), name, country, language/category details and feed quality when provided. Selecting a card opens the JMB TV in-page player. The browser connects directly to the listed stream host using HLS.js or native browser playback where supported. No Official website action is shown on channel cards.
 
-## Data providers and attribution
+### Playback limitations
 
-- **TV channel metadata:** [IPTV-org API](https://github.com/iptv-org/api). JMB reads the channel database fields and blocklist, and only uses HTTPS website addresses. JMB does not read the stream endpoint list. The API repository publishes an Unlicense; this does not grant rights to broadcaster programmes, brands or linked websites.
-- **Radio station metadata:** [Radio Browser](https://www.radio-browser.info/) and its [API documentation](https://api.radio-browser.info/). JMB uses descriptive directory fields only; it does not use station stream addresses.
-- **Newspapers and news sources:** the pages contain manually curated publisher/channel names and links to their own sites. JMB does not scrape or republish their editorial content.
+- JMB does not upload, host, record, cache or retransmit the programmes.
+- JMB does not deploy a CORS proxy or route stream traffic through a JMB server.
+- A stream may be offline, region-limited, require provider-specific playback settings, or reject cross-origin browser requests. Such streams will not play in every browser.
+- JMB does not bypass DRM, authentication, subscriptions, paywalls, access controls or regional restrictions.
+- Quality labels come from upstream feed metadata; they are not measurements of the viewer's actual connection or playback quality.
 
-Third-party services may receive ordinary network request information when the browser loads directory data or opens a link. See the [privacy section](https://media.jmbhost.qzz.io/legal/#privacy).
+IPTV-org describes its collection as publicly available channel stream links submitted by contributors, not video files. That is the upstream project's description, not a warranty that every stream is licensed for every purpose or territory. Read the JMB copyright and privacy policy at https://media.jmbhost.qzz.io/legal/ and the IPTV-org project notes at https://github.com/iptv-org/iptv.
 
-## Retired media proxy — important deployment step
+## Other JMB MEDIA sections
 
-The previous JMB TV version used a Cloudflare Worker to proxy third-party TV streams. That approach remains retired. The repository's `cors-proxy-worker.js` contains a **disabled** Worker which does not fetch, relay, rewrite or stream any URL. The restored player uses the official YouTube player and does not need this Worker.
+- Newspapers: publisher names, regions, languages and publisher links.
+- Radio: station directory information.
+- World News: news publisher and official source links.
 
-**GitHub cannot update an already-deployed Cloudflare Worker.** To retire the old deployed copy:
+These pages remain separate from the JMB TV live player.
 
-1. Open Cloudflare Dashboard → **Workers & Pages**.
-2. Open the existing Worker named `jb-proxy` (the old URL was `jb-proxy.johanbiju15.workers.dev`).
-3. Choose **Edit code**.
-4. Replace the entire Worker code with the current `cors-proxy-worker.js` from this repository.
-5. Select **Deploy**.
-6. The `?ping=1` endpoint should return JSON with `"status":"disabled"`; other proxy requests should return HTTP 410.
+## Retired proxy
 
-Do not leave the old proxy deployed. JMB's current website does not require it.
-
-## Privacy and local storage
-
-There are no JMB user accounts, payment forms, visitor-posting features, ad trackers or analytics scripts configured. Theme preference and radio favourites may be kept in local browser storage; service workers cache the site's own app shell for offline navigation. JMB does not receive these local preferences as a user profile.
+The previous CORS/media proxy is retired. The current TV player connects directly from the visitor's browser to the public stream host. The cors-proxy-worker.js repository file is a disabled retirement stub only. An already deployed old Cloudflare Worker must be disabled or replaced in Cloudflare separately; a GitHub commit does not change an existing Cloudflare deployment.
 
 ## Quality checks
 
-GitHub Actions runs `scripts/check-site.mjs` on updates. It checks HTML metadata, duplicate IDs, local assets, JavaScript syntax, Cloudflare Worker syntax, PWA manifests, CSS block balance and the custom-domain file.
-
-## Deployment
-
-The site is a static HTML/CSS/JavaScript project hosted with GitHub Pages from the `main` branch and repository root. Cloudflare is used only for DNS/domain routing; no media proxy is required.
-
-## Project structure
-
-    /
-    ├── index.html
-    ├── assets/
-    │   ├── branding/              # Original JMB TV logo and link-preview artwork
-    │   ├── css/                   # Shared, theme, premium and legal styles
-    │   └── js/common.js           # Navigation, theme and sharing
-    ├── favicon/                  # App icons and web manifests
-    ├── tv/                       # Channel metadata directory
-    ├── newspaper/                # Publisher website directory
-    ├── radio/                    # Radio station metadata directory
-    ├── social/                   # Publisher, video-channel and podcast links
-    ├── legal/                    # Copyright, content and privacy policy
-    ├── cors-proxy-worker.js      # Retired worker; redeploy to disable old copy
-    ├── sw.js                     # Whole-hub offline app shell
-    └── scripts/check-site.mjs    # Static quality checks
-
-## Responsible future changes
-
-Before adding a new stream, article, image, logo, video, music track, audio feed, iframe or downloadable file, obtain and record permission or a licence that explicitly allows the intended use. Do not assume that a URL being public means it can be embedded, copied, cached, retransmitted or monetised. When permission is unclear, link to the original source instead.
+GitHub Actions runs scripts/check-site.mjs on updates. It checks HTML, JavaScript syntax, local references, required policy content, direct-player configuration and that no media-proxy fallback is present.
