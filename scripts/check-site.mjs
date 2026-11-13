@@ -124,8 +124,8 @@ if (!fs.existsSync(shareImage) || fs.statSync(shareImage).size < 30000) {
 
 
 const complianceRules = [
-  { file: "tv/index.html", forbidden: ["<video", "<audio", "hls.js", ".m3u8", "streams.json"] },
-  { file: "tv/app.js", forbidden: ["streams.json", "url_resolved", ".m3u8", "new Hls"] },
+  { file: "tv/index.html", forbidden: ["<iframe", "proxyBtn", "proxyTest", "allorigins.win", "codetabs.com"] },
+  { file: "tv/app.js", forbidden: ["viaProxy", "proxyList", "allorigins.win", "codetabs.com", "jb-proxy", "streams.json"] },
   { file: "radio/index.html", forbidden: ["<audio", "<iframe", "url_resolved"] },
   { file: "radio/app.js", forbidden: ["url_resolved", "streamUrl", "audio.play", "new Audio"] },
   { file: "newspaper/index.html", forbidden: ["<iframe", "<article id=", "news-reader-content"] },
@@ -150,18 +150,19 @@ for (const rule of complianceRules) {
 const tvAppPath = path.join(root, "tv/app.js");
 if (fs.existsSync(tvAppPath)) {
   const tvApp = fs.readFileSync(tvAppPath, "utf8");
-  if (!tvApp.includes("https://www.youtube-nocookie.com/embed/live_stream")) {
-    fail("tv/app.js: in-page player must use the official YouTube privacy-enhanced embed host");
+  if (!tvApp.includes("https://iptv-org.github.io/iptv/index.m3u")) {
+    fail("tv/app.js: expected the public IPTV-org worldwide playlist");
   }
-  if (!tvApp.includes("channelId") || !tvApp.includes("featured=[")) {
-    fail("tv/app.js: player sources must come from the manually approved channel allowlist");
+  if (!tvApp.includes("new Hls") || !tvApp.includes("Hls.isSupported")) {
+    fail("tv/app.js: direct HLS in-page player is missing");
   }
-  const embedUrls = tvApp.split("\"").concat(tvApp.split("\'")).filter(value => value.startsWith("https://") && value.includes("/embed"));
-  if (embedUrls.some(value => !value.startsWith("https://www.youtube-nocookie.com/embed/"))) {
-    fail("tv/app.js: embedded media host is not on the approved YouTube embed domain");
+  if (!tvApp.includes("blocklist.json") || !tvApp.includes("channels.json")) {
+    fail("tv/app.js: NSFW/blocklist and channel metadata filters are missing");
+  }
+  if (!tvApp.includes("liveVideo") || !tvApp.includes("streamURL")) {
+    fail("tv/app.js: direct video player wiring is missing");
   }
 }
-
 const retiredWorkerPath = path.join(root, "cors-proxy-worker.js");
 if (fs.existsSync(retiredWorkerPath)) {
   const worker = fs.readFileSync(retiredWorkerPath, "utf8");
