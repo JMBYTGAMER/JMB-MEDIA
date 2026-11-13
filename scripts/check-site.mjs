@@ -153,7 +153,7 @@ if (fs.existsSync(tvAppPath)) {
   if (!tvApp.includes("https://www.youtube-nocookie.com/embed/live_stream")) {
     fail("tv/app.js: in-page player must use the official YouTube privacy-enhanced embed host");
   }
-  if (!tvApp.includes("channelId") || !tvApp.includes("featured =")) {
+  if (!tvApp.includes("channelId") || !tvApp.includes("featured=[")) {
     fail("tv/app.js: player sources must come from the manually approved channel allowlist");
   }
   const embedUrls = tvApp.split("\"").concat(tvApp.split("\'")).filter(value => value.startsWith("https://") && value.includes("/embed"));
