@@ -1,0 +1,37 @@
+name: Build JMB TV social preview
+on:
+  push:
+    branches: [main]
+    paths:
+      - "assets/branding/jmb-tv-share.svg"
+      - ".github/workflows/jmb-tv-social-preview.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  render-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out JMB MEDIA
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Install SVG renderer and JPEG encoder
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y librsvg2-bin imagemagick
+      - name: Render 1200 x 630 JPEG
+        run: |
+          rsvg-convert --width 1200 --height 630 assets/branding/jmb-tv-share.svg > /tmp/jmb-tv-share.png
+          magick /tmp/jmb-tv-share.png -strip -sampling-factor 4:2:0 -quality 88 assets/branding/jmb-tv-share.jpg
+          test -s assets/branding/jmb-tv-share.jpg
+          identify -format '%wx%h %b\n' assets/branding/jmb-tv-share.jpg
+      - name: Commit generated preview
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/branding/jmb-tv-share.jpg
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate JMB TV social preview image"
+            git push
+          fi
