@@ -45,6 +45,12 @@ $("featuredChannels").addEventListener("click",function(e){
  var b=e.target.closest("[data-watch]");if(!b)return;
  play(featured.find(function(x){return x.id===b.getAttribute("data-watch");}));
 });
+$("channelGrid").addEventListener("click",function(e){
+ var b=e.target.closest("[data-watch]");
+ if(!b||b.disabled)return;
+ var feed=featured.find(function(x){return x.id===b.getAttribute("data-watch");});
+ if(feed)play(feed);
+});
 $("stopPlayer").addEventListener("click",function(){
  stopPlayer();current=null;
  $("playerState").textContent="PLAYER STOPPED";
