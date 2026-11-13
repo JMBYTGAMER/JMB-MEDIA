@@ -1,5 +1,5 @@
 // JMB TV media hub — offline app shell for the main site.
-const CACHE = "jmb-tv-hub-v6";
+const CACHE = "jmb-tv-hub-v7";
 const SHELL = [
   "/",
   "/index.html",
@@ -8,18 +8,18 @@ const SHELL = [
   "/social/",
   "/legal/",
   "/assets/css/legal.css",
-  "/tv/app.js?v=17",
+  "/tv/app.js?v=18",
   "/tv/directory.css",
   "/tv/sw.js",
   "/social/app.js?v=2",
   "/newspaper/app.js?v=2",
   "/tv/",
-  "/tv/directory.css?v=17",
+  "/tv/directory.css?v=18",
   "/newspaper/app.js",
   "/radio/app.js",
   "/social/app.js",
   "/tv/index.html",
-  "/tv/app.js?v=17",
+  "/tv/app.js?v=18",
   "/tv/directory.css",
   "/tv/sw.js",
   "/legal/",
