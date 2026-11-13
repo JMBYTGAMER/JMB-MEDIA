@@ -130,14 +130,14 @@
           key:key,id:id,name:(meta&&meta.name)||item.name||"Unknown channel",
           countryCode:countryCode,countryName:(country&&country.name)||countryCode||"Country not listed",
           flag:(country&&country.flag)||"",categories:unique(cats),languages:unique(langs),
-          quality:"",logo:logo,streams:[],network:(meta&&meta.network)||""
+          quality:(feed&&feed.format)||item.qualityHint||"",logo:logo,streams:[],network:(meta&&meta.network)||""
         };
         grouped.set(key,row);
       }
       if(!row.streams.some(function(x){return x.url===item.url;})){
         row.streams.push({url:item.url,quality:item.qualityHint||"",score:streamScore(item)});
       }
-      if(!row.quality&&item.qualityHint)row.quality=item.qualityHint;
+      if((!row.quality||row.quality==="")&&(item.qualityHint))row.quality=item.qualityHint;
       if(!row.logo&&item.logo&&/^https:\/\//i.test(item.logo))row.logo=item.logo;
       if(!row.countryCode){
         var feed=feedMap.get(id)||null, meta2=(id&&channelMap.get(id))||null;
