@@ -52,13 +52,13 @@ function render(){
  if(!list.length){$("radioGrid").innerHTML='<div class="empty-state">No stations matched. Try removing a filter or searching a different spelling.</div>';return;}
  $("radioGrid").innerHTML=list.map(function(s){
   var fav=favorites.indexOf(s.stationuuid)>=0;
-  var logo=s.favicon&&/^https:\/\//i.test(s.favicon)?'<img src="'+esc(s.favicon)+'" alt="" style="width:52px;height:52px;object-fit:contain;border-radius:12px;background:#fff" loading="lazy" onerror="this.style.display=\\'none\\'">':'<div class="avatar">📻</div>';
+  var logo=s.favicon&&/^https:\/\//i.test(s.favicon)?'<img src="'+esc(s.favicon)+'" alt="" style="width:52px;height:52px;object-fit:contain;border-radius:12px;background:#fff" loading="lazy" onerror="this.remove()">':'<div class="avatar">📻</div>';
   var type=/\bfm\b/i.test((s.tags||"")+" "+(s.name||""))?"FM-tagged":/\bam\b/i.test((s.tags||"")+" "+(s.name||""))?"AM-tagged":"Internet stream";
   var secure=!!safeHttps(s.url_resolved||s.url);
   var tags='<span class="tag">'+esc(type)+'</span><span class="tag">'+esc((s.codec||"Audio")+" "+(s.bitrate?s.bitrate+" kbps":""))+'</span>';
   if(!secure)tags+='<span class="tag">HTTPS unavailable</span>';
   if(s.tags)tags+='<span class="tag">'+esc(String(s.tags).split(",").slice(0,2).join(", "))+'</span>';
-  return '<article class="media-card"><div class="card-top">'+logo+'<div style="min-width:0;flex:1"><div class="card-title">'+esc(s.name)+'</div><div class="muted tiny">'+esc(s.country||"Worldwide")+' · '+esc(s.language||"Language not listed")+'</div></div><button class="icon-btn" data-fav="'+esc(s.stationuuid)+'" aria-label="'+(fav?"Remove favourite":"Add favourite")+'" aria-pressed="'+String(fav)+'" title="Favourite">'+(fav?"♥":"♡")+'</button></div><div class="tag-row">'+tags+'</div><div class="card-description">'+esc([s.state,s.country].filter(Boolean).join(" · ")||"Live internet radio")+' · Internet audio stream</div><div class="card-actions"><button class="btn small" data-play="'+esc(s.stationuuid)+'" '+(secure?"":"disabled title=\\"This station does not provide an HTTPS stream\\"")+'>'+(secure?"▶ Listen live":"Stream unavailable")+'</button></div></article>';
+  return '<article class="media-card"><div class="card-top">'+logo+'<div style="min-width:0;flex:1"><div class="card-title">'+esc(s.name)+'</div><div class="muted tiny">'+esc(s.country||"Worldwide")+' · '+esc(s.language||"Language not listed")+'</div></div><button class="icon-btn" data-fav="'+esc(s.stationuuid)+'" aria-label="'+(fav?"Remove favourite":"Add favourite")+'" aria-pressed="'+String(fav)+'" title="Favourite">'+(fav?"♥":"♡")+'</button></div><div class="tag-row">'+tags+'</div><div class="card-description">'+esc([s.state,s.country].filter(Boolean).join(" · ")||"Live internet radio")+' · Internet audio stream</div><div class="card-actions"><button class="btn small" data-play="'+esc(s.stationuuid)+'" '+(secure?"":"disabled")+'>'+(secure?"▶ Listen live":"Stream unavailable")+'</button></div></article>';
  }).join("");
 }
 async function load(){
