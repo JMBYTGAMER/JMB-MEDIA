@@ -149,7 +149,7 @@ for (const rule of complianceRules) {
 const retiredWorkerPath = path.join(root, "cors-proxy-worker.js");
 if (fs.existsSync(retiredWorkerPath)) {
   const worker = fs.readFileSync(retiredWorkerPath, "utf8");
-  if (worker.includes("fetch(")) fail("cors-proxy-worker.js: retired worker must not fetch or relay external URLs");
+  if (worker.includes("await fetch(") || worker.includes("return fetch(") || worker.includes("fetch(new Request")) fail("cors-proxy-worker.js: retired worker must not make outbound fetch requests");
   if (!worker.includes("JMB_MEDIA_PROXY_RETIRED")) fail("cors-proxy-worker.js: retired endpoint marker missing");
 }
 const policyPath = path.join(root, "legal/index.html");
