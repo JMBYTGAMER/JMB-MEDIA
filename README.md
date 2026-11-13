@@ -21,7 +21,7 @@ The site's detailed policy and removal-request process are in [Copyright, Conten
 - **Radio station metadata:** [Radio Browser](https://www.radio-browser.info/) and its [API documentation](https://api.radio-browser.info/). JMB uses descriptive directory fields only; it does not use station stream addresses.
 - **Newspapers and news sources:** the pages contain manually curated publisher/channel names and links to their own sites. JMB does not scrape or republish their editorial content.
 
-Third-party services may receive ordinary network request information when the browser loads directory data or opens a link. See the [privacy section](https://media.jmbhost.qzz.io/legal/#6-privacy-and-local-storage).
+Third-party services may receive ordinary network request information when the browser loads directory data or opens a link. See the [privacy section](https://media.jmbhost.qzz.io/legal/#privacy).
 
 ## Retired media proxy — important deployment step
 
