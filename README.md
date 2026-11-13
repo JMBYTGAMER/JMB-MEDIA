@@ -6,7 +6,7 @@ A mobile-first directory hub for discovering television broadcasters, newspaper 
 
 JMB TV is a **source directory, not a media host, player, broadcaster or publisher**.
 
-- JMB TV lists channel metadata and links to listed HTTPS broadcaster websites. It does not load stream playlists, embed players, host recordings, retransmit broadcasts, proxy media requests or bypass region/subscription restrictions.
+- JMB TV lists channel metadata and restores an in-page TV player for a small manually approved set of official YouTube live-player embeds. The player is YouTube's own embedded player and is used only where the uploader/platform permit embedding. JMB does not load raw IPTV/HLS playlists, host recordings, proxy media requests, or bypass region/subscription restrictions. Other channel names remain searchable but show as unavailable for in-page playback until an official embed is confirmed.
 - JMB Newspapers lists publisher names, regions, languages and publisher websites. It does not scrape RSS articles, store headlines or article text, show publisher photographs or reproduce articles.
 - JMB Radio lists station metadata and directory-listed HTTPS station websites. It does not play, relay, cache or retransmit station audio.
 - JMB World News lists publisher websites, official video-channel pages and podcast pages. It does not fetch news stories, copy headlines or summaries, embed videos, display thumbnails or play podcast audio.
@@ -25,7 +25,7 @@ Third-party services may receive ordinary network request information when the b
 
 ## Retired media proxy — important deployment step
 
-The previous JMB TV version used a Cloudflare Worker to proxy third-party TV streams. That approach has been retired. The repository's `cors-proxy-worker.js` now contains a **disabled** Worker which does not fetch, relay, rewrite or stream any URL.
+The previous JMB TV version used a Cloudflare Worker to proxy third-party TV streams. That approach remains retired. The repository's `cors-proxy-worker.js` contains a **disabled** Worker which does not fetch, relay, rewrite or stream any URL. The restored player uses the official YouTube player and does not need this Worker.
 
 **GitHub cannot update an already-deployed Cloudflare Worker.** To retire the old deployed copy:
 
