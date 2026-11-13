@@ -122,6 +122,39 @@ if (!fs.existsSync(shareImage) || fs.statSync(shareImage).size < 30000) {
   fail("Missing or unexpectedly small JMB TV share-preview JPEG");
 }
 
+
+const complianceRules = [
+  { file: "tv/index.html", forbidden: ["<video", "<audio", "<iframe", "hls.js", ".m3u8"] },
+  { file: "tv/app.js", forbidden: ["streams.json", "url_resolved", ".m3u8", "new Hls"] },
+  { file: "radio/index.html", forbidden: ["<audio", "<iframe", "url_resolved"] },
+  { file: "radio/app.js", forbidden: ["url_resolved", "streamUrl", "audio.play", "new Audio"] },
+  { file: "newspaper/index.html", forbidden: ["<iframe", "<article id=", "news-reader-content"] },
+  { file: "newspaper/app.js", forbidden: ["content:encoded", "safeArticleHtml", "fetchFeed(", "fetch("] },
+  { file: "social/index.html", forbidden: ["<iframe", "<video", "<audio"] },
+  { file: "social/app.js", forbidden: ["fetch(", "media:thumbnail", "content:encoded", "youtube.com/embed"] }
+];
+for (const rule of complianceRules) {
+  const target = path.join(root, rule.file);
+  if (!fs.existsSync(target)) {
+    fail(rule.file + ": required compliance file missing");
+    continue;
+  }
+  const source = fs.readFileSync(target, "utf8").toLowerCase();
+  for (const forbidden of rule.forbidden) {
+    if (source.includes(forbidden.toLowerCase())) {
+      fail(rule.file + ": compliance guard found forbidden feature " + forbidden);
+    }
+  }
+}
+const retiredWorkerPath = path.join(root, "cors-proxy-worker.js");
+if (fs.existsSync(retiredWorkerPath)) {
+  const worker = fs.readFileSync(retiredWorkerPath, "utf8");
+  if (worker.includes("fetch(")) fail("cors-proxy-worker.js: retired worker must not fetch or relay external URLs");
+  if (!worker.includes("JMB_MEDIA_PROXY_RETIRED")) fail("cors-proxy-worker.js: retired endpoint marker missing");
+}
+const policyPath = path.join(root, "legal/index.html");
+if (!fs.existsSync(policyPath)) fail("Missing public copyright and privacy policy at legal/index.html");
+
 console.log("Checked " + counts.html + " HTML pages, " + counts.javascript +
   " JavaScript files, " + counts.stylesheets + " stylesheets and " +
   counts.localReferences + " local references.");
