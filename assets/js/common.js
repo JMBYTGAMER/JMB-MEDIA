@@ -97,5 +97,10 @@ document.querySelectorAll('a[target="_blank"]').forEach(function(anchor){
  ["noopener","noreferrer"].forEach(function(value){if(rel.indexOf(value)<0)rel.push(value);});
  anchor.setAttribute("rel",rel.join(" "));
 });
+if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
+ window.addEventListener("load",function(){
+  navigator.serviceWorker.register(base+"sw.js",{scope:base}).catch(function(){});
+ });
+}
 document.documentElement.classList.add("js-ready");
 })();
