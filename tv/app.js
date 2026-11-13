@@ -1,110 +1,218 @@
 (function(){
 "use strict";
 var $=function(id){return document.getElementById(id);};
+var API="https://iptv-org.github.io/api/";
 var featured=[
- {id:"asianet-news",name:"Asianet News",label:"Malayalam · Official YouTube live player",channelId:"UCf8w5m0YsRa8MHQ5bwSGmbw",source:"https://www.youtube.com/@asianetnews/live",authority:"Verified official YouTube channel"},
- {id:"dd-news",name:"DD News",label:"India · Prasar Bharati",channelId:"UCKwucPzHZ7zCUI7fI-Wo1g",source:"https://www.youtube.com/@DDNewsOfficial/live",authority:"Prasar Bharati channel listing"},
- {id:"dd-national",name:"DD National",label:"India · Doordarshan",channelId:"UCSjPe5kinQtwcyHcFJyyMfw",source:"https://www.youtube.com/DoordarshanNational/live",authority:"Prasar Bharati channel listing"}
+ {id:"AsianetNews.in",name:"Asianet News",channelId:"UCf8w5m0YsRa8MHQ5bwSGmbw",country:"IN",language:"Malayalam",category:"News",quality:"Official YouTube live player",sourceName:"Asianet News verified YouTube channel",aliases:["asianet news","asianetnews"]},
+ {id:"DDNews.in",name:"DD News",channelId:"UCKwucPzHZ7zCUI7fI-Wo1g",country:"IN",language:"Hindi / English",category:"News",quality:"Official YouTube live player",sourceName:"Prasar Bharati channel directory",aliases:["dd news"]},
+ {id:"DDNational.in",name:"DD National",channelId:"UCSjPe5kinQtwcyHcFJyyMfw",country:"IN",language:"Hindi",category:"General",quality:"Official YouTube live player",sourceName:"Prasar Bharati channel directory",aliases:["dd national","doordarshan national"]},
+ {id:"DDMalayalam.in",name:"DD Malayalam",channelId:"UC4--pPs1CVZvs6OuuhfjdwQ",country:"IN",language:"Malayalam",category:"General",quality:"Official YouTube live player",sourceName:"Prasar Bharati channel directory",aliases:["dd malayalam"]},
+ {id:"KeralaDDNews.in",name:"Kerala DD News",channelId:"UC-GEJA8oiKOg6l2__7F6BhQ",country:"IN",language:"Malayalam",category:"News",quality:"Official YouTube live player",sourceName:"Prasar Bharati channel directory",aliases:["kerala dd news"]},
+ {id:"DDBharati.in",name:"DD Bharati",channelId:"UCIAnlTV3O9NYWMI-DwYZaWg",country:"IN",language:"Hindi",category:"Culture",quality:"Official YouTube live player",sourceName:"Prasar Bharati channel directory",aliases:["dd bharati"]},
+ {id:"DDBanglaNews.in",name:"DD Bangla News",channelId:"UCe4GERYkwpMUJWZpxOiATYA",country:"IN",language:"Bengali",category:"News",quality:"Official YouTube live player",sourceName:"Prasar Bharati channel directory",aliases:["dd bangla news"]},
+ {id:"DDSahyadriNews.in",name:"DD Sahyadri News",channelId:"UCbcCOCo2JeLRK48puKro1pQ",country:"IN",language:"Marathi",category:"News",quality:"Official YouTube live player",sourceName:"Prasar Bharati channel directory",aliases:["dd sahyadri news"]},
+ {id:"DDKisan.in",name:"DD Kisan",channelId:"UCnDfmcUyhgJp6xC1LmBLfUg",country:"IN",language:"Hindi",category:"Education",quality:"Official YouTube live player",sourceName:"Prasar Bharati channel directory",aliases:["dd kisan"]}
 ];
-var API="https://iptv-org.github.io/api/",channels=[],countries={},categories={},current=null,visible=60,loading=false;
-function esc(v){return String(v||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
-function monogram(v){return String(v||"TV").split(/\s+/).filter(Boolean).slice(0,2).map(function(x){return x.charAt(0);}).join("").toUpperCase()||"TV";}
-function featuredCard(x){
- return '<button class="tv-featured-card" type="button" data-watch="'+esc(x.id)+'"><span class="tv-featured-icon">'+esc(monogram(x.name))+'</span><span class="tv-featured-text"><b>'+esc(x.name)+'</b><small>'+esc(x.label)+'</small></span><span class="tv-featured-status">LIVE PLAYER</span></button>';
+var channels=[],countryNames={},categoryNames={},languageNames={},logoMap={},feedMap={},current=null,visible=72,loading=false,loadToken=0;
+var savedPage=1;
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function normalize(s){return String(s||"").normalize("NFKD").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();}
+function monogram(name){return String(name||"TV").split(/\s+/).filter(Boolean).slice(0,2).map(function(s){return s.slice(0,1);}).join("").toUpperCase()||"TV";}
+function httpsUrl(raw){try{var u=new URL(raw);return u.protocol==="https:"&&!u.username&&!u.password?u.href:"";}catch(e){return "";}}
+function countryLabel(code){return countryNames[code]||code||"Worldwide";}
+function languageLabel(code){return languageNames[code]||code||"Language not listed";}
+function feedInfo(channelId){return feedMap[channelId]||null;}
+function playableFor(ch){
+ var tokens=[ch.id,ch.name].concat(ch.alt_names||[]).map(normalize);
+ return featured.find(function(f){
+  return tokens.some(function(t){return t===normalize(f.id)||t===normalize(f.name)||f.aliases.some(function(a){return t===normalize(a)});});
+ })||null;
 }
-function renderFeatured(){$("featuredChannels").innerHTML=featured.map(featuredCard).join("");$("featuredCount").textContent=String(featured.length).padStart(2,"0");}
+function channelLogo(ch){
+ var logos=logoMap[ch.id]||[];
+ if(!logos.length)return "";
+ var pick=logos.find(function(x){return x.in_use&&httpsUrl(x.url);})||logos.find(function(x){return httpsUrl(x.url);});
+ return pick?httpsUrl(pick.url):"";
+}
+function channelQuality(ch){
+ var info=feedInfo(ch.id);
+ if(!info||!info.formats.length)return "Quality not listed";
+ var formats=info.formats.slice().sort(function(a,b){
+  function score(v){var m=String(v).match(/(\d{3,4})/);return m?Number(m[1]):0;}
+  return score(b)-score(a);
+ });
+ return formats[0];
+}
+function channelLanguages(ch){
+ var info=feedInfo(ch.id);
+ var list=info&&info.languages.length?info.languages:(ch.languages||[]);
+ return list.slice(0,2).map(languageLabel).join(", ")||"Language not listed";
+}
+function cardHtml(ch){
+ var play=playableFor(ch),logo=channelLogo(ch),country=countryLabel(ch.country),quality=channelQuality(ch),lang=channelLanguages(ch);
+ var badge=play?'<span class="tv-playable-badge">IN-PAGE PLAYER</span>':'<span class="tv-listing-badge">CHANNEL LISTING</span>';
+ var image=logo?'<img src="'+esc(logo)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="tv-card-fallback" hidden>'+esc(monogram(ch.name))+'</span>':'<span class="tv-card-fallback">'+esc(monogram(ch.name))+'</span>';
+ return '<button class="tv-channel-card" type="button" data-channel="'+esc(ch.id)+'" aria-label="Select '+esc(ch.name)+'"><span class="tv-card-main"><span class="tv-channel-logo">'+image+'</span><span class="tv-card-copy"><b>'+esc(ch.name)+'</b><small>'+esc(country)+' · '+esc(lang)+'</small></span>'+badge+'</span><span class="tv-card-details"><span>'+esc(quality)+'</span><span>'+esc((ch.categories||[]).slice(0,2).map(function(x){return categoryNames[x]||x;}).join(" · ")||"TV")+'</span></span></button>';
+}
+function featuredHtml(f){
+ var ch=channels.find(function(x){return x.id===f.id;});
+ var logo=ch?channelLogo(ch):"";
+ var image=logo?'<img src="'+esc(logo)+'" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>'+esc(monogram(f.name))+'</span>':'<span>'+esc(monogram(f.name))+'</span>';
+ return '<button class="tv-featured-card" type="button" data-featured="'+esc(f.id)+'"><span class="tv-featured-icon">'+image+'</span><span class="tv-featured-text"><b>'+esc(f.name)+'</b><small>'+esc(f.language)+' · '+esc(f.quality)+'</small></span><span class="tv-featured-status">PLAY</span></button>';
+}
+function renderFeatured(){
+ $("featuredChannels").innerHTML=featured.map(featuredHtml).join("");
+ $("featuredCount").textContent=String(featured.length).padStart(2,"0");
+}
 function playerUrl(feed){
  var url=new URL("https://www.youtube-nocookie.com/embed/live_stream");
  url.searchParams.set("channel",feed.channelId);
  url.searchParams.set("playsinline","1");
  url.searchParams.set("rel","0");
  url.searchParams.set("modestbranding","1");
- url.searchParams.set("origin","https://media.jmbhost.qzz.io");
+ url.searchParams.set("origin",location.origin);
  return url.href;
 }
-function stopPlayer(){
+function clearPlayer(){
  var frame=$("officialPlayer");frame.src="about:blank";frame.hidden=true;
  $("playerPlaceholder").hidden=false;
 }
-function play(feed){
- if(!feed)return;
+function showNotPlayable(ch){
+ current=null;clearPlayer();
+ $("playerState").textContent="PLAYER NOT CONFIGURED";
+ $("playerQuality").textContent="DIRECTORY ENTRY";
+ $("nowChannel").textContent=ch.name;
+ $("nowSource").textContent=countryLabel(ch.country)+" · "+channelLanguages(ch);
+ $("playerMessage").textContent="This channel is in the worldwide catalogue, but JMB does not yet have a verified official in-page live player for it. It will not load a random third-party stream.";
+ $("stopPlayer").disabled=true;
+ document.querySelectorAll(".tv-channel-card,.tv-featured-card").forEach(function(b){b.classList.remove("active");});
+}
+function play(feed,ch){
+ if(!feed||!feed.channelId){showNotPlayable(ch||{name:"Channel"});return;}
  current=feed;
  var frame=$("officialPlayer");
  $("playerPlaceholder").hidden=true;
- frame.title=feed.name+" — official YouTube live player";
+ frame.title=feed.name+" official live player";
  frame.src=playerUrl(feed);
  frame.hidden=false;
  $("playerState").textContent="OFFICIAL PLAYER REQUESTED";
- $("playerQuality").textContent="YOUTUBE EMBED";
+ $("playerQuality").textContent="YOUTUBE PLAYER";
  $("nowChannel").textContent=feed.name;
- $("nowSource").textContent=feed.authority+" · playback controlled by YouTube";
- $("openSource").disabled=false;$("stopPlayer").disabled=false;
- document.querySelectorAll("[data-watch]").forEach(function(btn){btn.classList.toggle("active",btn.getAttribute("data-watch")===feed.id);});
-}
-$("featuredChannels").addEventListener("click",function(e){
- var b=e.target.closest("[data-watch]");if(!b)return;
- play(featured.find(function(x){return x.id===b.getAttribute("data-watch");}));
-});
-$("channelGrid").addEventListener("click",function(e){
- var b=e.target.closest("[data-watch]");
- if(!b||b.disabled)return;
- var feed=featured.find(function(x){return x.id===b.getAttribute("data-watch");});
- if(feed)play(feed);
-});
-$("stopPlayer").addEventListener("click",function(){
- stopPlayer();current=null;
- $("playerState").textContent="PLAYER STOPPED";
- $("nowChannel").textContent="No channel selected";
- $("nowSource").textContent="Select an official channel from the list.";
- $("openSource").disabled=true;$("stopPlayer").disabled=true;
- document.querySelectorAll("[data-watch]").forEach(function(btn){btn.classList.remove("active");});
-});
-$("openSource").addEventListener("click",function(){
- if(current&&current.source)window.open(current.source,"_blank","noopener,noreferrer");
-});
-function fill(id,values,label,map){
- var el=$(id),old=el.value,items=Array.from(new Set(values.filter(Boolean))).sort(function(a,b){return String(map&&map[a]||a).localeCompare(String(map&&map[b]||b));});
- el.innerHTML='<option value="">'+esc(label)+'</option>'+items.map(function(v){return '<option value="'+esc(v)+'">'+esc(map&&map[v]||v)+'</option>';}).join("");
- if(items.indexOf(old)>=0)el.value=old;
-}
-function safeWebsite(raw){try{var u=new URL(raw);return u.protocol==="https:"&&!u.username&&!u.password?u.href:"";}catch(e){return "";}}
-function playableFor(ch){return featured.find(function(x){var name=String(ch.name||"").trim();return (/^asianet news(?:\b|$)/i.test(name)&&x.id==="asianet-news")||(/^dd news(?:\b|$)/i.test(name)&&x.id==="dd-news")||(/^(?:doordarshan national|dd national)(?:\b|$)/i.test(name)&&x.id==="dd-national");})||null;}
-function renderDirectory(){
- var q=$("channelSearch").value.trim().toLowerCase(),country=$("countryFilter").value,category=$("categoryFilter").value;
- var rows=channels.filter(function(ch){
-  var text=[ch.name,ch.network,ch.alt_names||[],countries[ch.country]||ch.country,(ch.categories||[]).map(function(x){return categories[x]||x;})].join(" ").toLowerCase();
-  return (!q||text.indexOf(q)>=0)&&(!country||ch.country===country)&&(!category||(ch.categories||[]).indexOf(category)>=0);
+ $("nowSource").textContent=feed.language+" · "+feed.quality;
+ $("playerMessage").textContent="The official YouTube player is loading. If the broadcaster is not live or has disabled embedding, the original platform will show its availability message.";
+ $("stopPlayer").disabled=false;
+ document.querySelectorAll(".tv-channel-card,.tv-featured-card").forEach(function(b){
+  b.classList.toggle("active",b.getAttribute("data-featured")===feed.id||b.getAttribute("data-channel")===ch.id);
  });
- rows.sort(function(a,b){return a.name.localeCompare(b.name);});
- $("directoryStatus").textContent=rows.length.toLocaleString()+" matching channels · "+featured.length+" official in-page players configured";
- var show=rows.slice(0,visible);
- $("channelGrid").innerHTML=show.length?show.map(function(ch){
-  var feed=playableFor(ch),name=ch.name||"TV channel",meta=(countries[ch.country]||ch.country||"Country not listed")+" · "+(ch.network||((ch.categories||[]).map(function(x){return categories[x]||x;}).slice(0,1).join(", "))||"Television");
-  return '<article class="tv-directory-card"><div class="tv-directory-card-top"><span class="tv-directory-monogram">'+esc(monogram(name))+'</span><div><h3>'+esc(name)+'</h3><p>'+esc(meta)+'</p></div></div><div class="tv-directory-card-footer"><button class="btn small '+(feed?"":"secondary")+'" type="button" data-watch="'+(feed?esc(feed.id):"")+'" '+(feed?"":"disabled")+'>'+(feed?"▶ Watch in JMB TV":"Official player not verified yet")+'</button></div></article>';
- }).join(""):'<div class="empty-state">No channels match the search.</div>';
+}
+function selectChannel(ch){
+ if(!ch)return;
+ var feed=playableFor(ch);
+ if(feed){play(feed,ch);return;}
+ showNotPlayable(ch);
+}
+function selectFeatured(id){
+ var feed=featured.find(function(x){return x.id===id;});
+ if(!feed)return;
+ var ch=channels.find(function(x){return playableFor(x)&&playableFor(x).id===id;})||{id:feed.id,name:feed.name,country:feed.country,categories:[feed.category]};
+ play(feed,ch);
+}
+function fillSelect(id,values,label,map){
+ var el=$(id),old=el.value,unique=Array.from(new Set(values.filter(Boolean))).sort(function(a,b){return String(map&&map[a]||a).localeCompare(String(map&&map[b]||b));});
+ el.innerHTML='<option value="">'+esc(label)+'</option>'+unique.map(function(v){return '<option value="'+esc(v)+'">'+esc(map&&map[v]||v)+'</option>';}).join("");
+ if(unique.indexOf(old)>=0)el.value=old;
+}
+function filteredChannels(){
+ var q=normalize($("channelSearch").value),country=$("countryFilter").value,category=$("categoryFilter").value,language=$("languageFilter").value;
+ return channels.filter(function(ch){
+  var feed=feedInfo(ch.id);
+  var blob=normalize([ch.name,ch.id,ch.network,(ch.alt_names||[]).join(" "),(ch.owners||[]).join(" "),countryLabel(ch.country),(ch.categories||[]).map(function(x){return categoryNames[x]||x;}).join(" "),(feed?feed.languages:[]).map(languageLabel).join(" ")].join(" "));
+  var langOk=!language||(feed&&feed.languages.indexOf(language)>=0)||(ch.languages||[]).indexOf(language)>=0;
+  return (!q||blob.indexOf(q)>=0)&&(!country||ch.country===country)&&(!category||(ch.categories||[]).indexOf(category)>=0)&&langOk;
+ });
+}
+function renderDirectory(){
+ var rows=filteredChannels();
+ $("directoryStatus").textContent=rows.length.toLocaleString()+" matching channels · "+channels.length.toLocaleString()+" worldwide catalogue entries · "+featured.length+" verified player sources configured";
+ var shown=rows.slice(0,visible);
+ $("channelGrid").innerHTML=shown.length?shown.map(cardHtml).join(""):'<div class="empty-state">No channels match these filters. Try a different search or clear the filters.</div>';
  $("loadMoreChannels").hidden=rows.length<=visible;
 }
-async function getJson(path){var controller=new AbortController(),timer=setTimeout(function(){controller.abort();},12000);try{var r=await fetch(API+path,{signal:controller.signal,cache:"no-store"});if(!r.ok)throw new Error("Channel directory request failed: "+r.status);return await r.json();}finally{clearTimeout(timer);}}
-async function load(){
- if(loading)return;loading=true;$("directoryRefresh").disabled=true;$("directoryRefresh").textContent="Refreshing…";
+async function fetchJson(path){
+ var controller=new AbortController(),timer=setTimeout(function(){controller.abort();},18000);
  try{
-  var r=await Promise.all([getJson("channels.json"),getJson("countries.json"),getJson("categories.json"),getJson("blocklist.json")]);
-  countries={};categories={};
-  r[1].forEach(function(x){countries[x.code]=x.name;});
-  r[2].forEach(function(x){categories[x.id]=x.name;});
-  var blocked=new Set(r[3].map(function(x){return x.channel;}));
-  channels=r[0].filter(function(ch){return ch&&ch.name&&ch.id&&!ch.is_nsfw&&!ch.closed&&!ch.replaced_by&&!blocked.has(ch.id);});
-  fill("countryFilter",channels.map(function(ch){return ch.country;}),"All countries",countries);
-  fill("categoryFilter",Array.from(new Set(channels.reduce(function(a,ch){return a.concat(ch.categories||[]);},[]))),"All categories",categories);
-  channels.sort(function(a,b){return a.name.localeCompare(b.name);});
-  renderDirectory();
- }catch(error){
-  $("directoryStatus").textContent="Channel directory temporarily unavailable.";
-  $("channelGrid").innerHTML='<div class="empty-state">Could not load the channel catalogue. The featured official players remain available above.</div>';
- }finally{loading=false;$("directoryRefresh").disabled=false;$("directoryRefresh").textContent="↻ Refresh";}
+  var r=await fetch(API+path,{signal:controller.signal,cache:"no-store",headers:{"Accept":"application/json"}});
+  if(!r.ok)throw new Error(path+" returned "+r.status);
+  return await r.json();
+ }finally{clearTimeout(timer);}
 }
-["channelSearch","countryFilter","categoryFilter"].forEach(function(id){$(id).addEventListener(id==="channelSearch"?"input":"change",function(){visible=60;renderDirectory();});});
+function consumeData(data){
+ var rawChannels=data[0],logos=data[1],feeds=data[2],countries=data[3],categories=data[4],languages=data[5],blocked=data[6];
+ countryNames={};categoryNames={};languageNames={};logoMap={};feedMap={};
+ countries.forEach(function(x){if(x.code)countryNames[x.code]=x.name;});
+ categories.forEach(function(x){if(x.id)categoryNames[x.id]=x.name;});
+ languages.forEach(function(x){if(x.code)languageNames[x.code]=x.name;});
+ logos.forEach(function(x){if(x.channel&&x.url){if(!logoMap[x.channel])logoMap[x.channel]=[];logoMap[x.channel].push(x);}});
+ feeds.forEach(function(x){
+  if(!x.channel)return;
+  if(!feedMap[x.channel])feedMap[x.channel]={formats:[],languages:[]};
+  if(x.format)feedMap[x.channel].formats.push(x.format);
+  (x.languages||[]).forEach(function(lang){if(lang&&!feedMap[x.channel].languages.includes(lang))feedMap[x.channel].languages.push(lang);});
+ });
+ var blockedIds=new Set(blocked.map(function(x){return x.channel;}).filter(Boolean));
+ channels=rawChannels.filter(function(ch){
+  return ch&&ch.id&&ch.name&&!ch.is_nsfw&&!ch.closed&&!ch.replaced_by&&!blockedIds.has(ch.id);
+ }).sort(function(a,b){return a.name.localeCompare(b.name);});
+ fillSelect("countryFilter",channels.map(function(x){return x.country;}),"All countries",countryNames);
+ fillSelect("categoryFilter",Array.from(new Set(channels.reduce(function(out,x){return out.concat(x.categories||[]);},[]))),"All categories",categoryNames);
+ var allLanguages=[];
+ Object.keys(feedMap).forEach(function(id){allLanguages=allLanguages.concat(feedMap[id].languages);});
+ fillSelect("languageFilter",allLanguages,"All languages",languageNames);
+ renderFeatured();renderDirectory();
+}
+async function load(){
+ if(loading)return;loading=true;var token=++loadToken;
+ $("directoryRefresh").disabled=true;$("directoryRefresh").textContent="Loading…";
+ $("directoryStatus").textContent="Loading global channel, logo, feed and language data…";
+ try{
+  var result=await Promise.all([
+   fetchJson("channels.json"),fetchJson("logos.json"),fetchJson("feeds.json"),fetchJson("countries.json"),fetchJson("categories.json"),fetchJson("languages.json"),fetchJson("blocklist.json")
+  ]);
+  if(token!==loadToken)return;
+  consumeData(result);
+  $("playerMessage").textContent="Worldwide channel catalogue loaded. Choose a card to select it.";
+ }catch(error){
+  $("directoryStatus").textContent="Could not load the worldwide catalogue.";
+  $("channelGrid").innerHTML='<div class="empty-state"><b>Channel catalogue unavailable</b><p>Check your connection and press Refresh. The approved featured player list is still available.</p></div>';
+  renderFeatured();
+  $("playerMessage").textContent="The catalogue could not be reached. Featured official players can still be selected.";
+ }finally{
+  if(token===loadToken){loading=false;$("directoryRefresh").disabled=false;$("directoryRefresh").textContent="↻ Refresh";}
+ }
+}
+$("featuredChannels").addEventListener("click",function(e){
+ var b=e.target.closest("[data-featured]");if(b)selectFeatured(b.getAttribute("data-featured"));
+});
+$("channelGrid").addEventListener("click",function(e){
+ var b=e.target.closest("[data-channel]");if(!b)return;
+ var ch=channels.find(function(x){return x.id===b.getAttribute("data-channel");});
+ if(ch)selectChannel(ch);
+});
+$("stopPlayer").addEventListener("click",function(){
+ clearPlayer();current=null;
+ $("playerState").textContent="PLAYER STOPPED";$("playerQuality").textContent="SELECT A CHANNEL";
+ $("nowChannel").textContent="No channel selected";$("nowSource").textContent="Select a channel card below.";
+ $("playerMessage").textContent="Player stopped.";
+ $("stopPlayer").disabled=true;
+ document.querySelectorAll(".tv-channel-card,.tv-featured-card").forEach(function(b){b.classList.remove("active");});
+});
+["countryFilter","categoryFilter","languageFilter"].forEach(function(id){$(id).addEventListener("change",function(){visible=72;renderDirectory();});});
+$("channelSearch").addEventListener("input",function(){visible=72;renderDirectory();});
+$("loadMoreChannels").addEventListener("click",function(){visible+=72;renderDirectory();});
 $("directoryRefresh").addEventListener("click",load);
-$("loadMoreChannels").addEventListener("click",function(){visible+=60;renderDirectory();});
+$("clearFilters").addEventListener("click",function(){
+ $("channelSearch").value="";$("countryFilter").value="";$("categoryFilter").value="";$("languageFilter").value="";visible=72;renderDirectory();
+});
+var params=new URLSearchParams(location.search);if(params.has("q"))$("channelSearch").value=params.get("q");
 renderFeatured();load();
 })();
