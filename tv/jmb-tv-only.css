@@ -553,3 +553,31 @@ html.light .tv-alt-channel b{color:#a84d39!important}
  .tv-alt-channel span{font-size:9px!important}
 }
 @media(prefers-reduced-motion:reduce){.tv-show-search-hint{animation:none!important}}
+
+/* JMB TV — final fit, focus and resilience refinements */
+.tv-topbar{box-shadow:0 10px 35px rgba(0,0,0,.15)!important}
+#grid .tv-channel-card{position:relative!important}
+#grid .tv-channel-card:focus-visible{outline:2px solid var(--tv-cyan)!important;outline-offset:3px!important}
+#grid article .thumb img{will-change:transform}
+#grid article .thumb:after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(145deg,rgba(255,255,255,.045),transparent 45%,rgba(0,0,0,.12));}
+#bar details>summary{cursor:pointer;list-style:none}
+#bar details>summary::-webkit-details-marker{display:none}
+#bar details>summary:after{content:"⌄";margin-left:8px;color:var(--tv-cyan)}
+#bar details[open]>summary:after{content:"⌃"}
+#status{position:relative;overflow:hidden}
+#status:after{content:"";position:absolute;inset:auto 0 0;height:2px;background:linear-gradient(90deg,transparent,var(--tv-blue),var(--tv-cyan),transparent);background-size:200% 100%;animation:tvStatusSweep 2.8s linear infinite}
+@keyframes tvStatusSweep{to{background-position:-200% 0}}
+#more{transition:transform .2s,border-color .2s,background .2s!important}
+#more:hover{transform:translateY(-2px)!important;border-color:rgba(103,228,212,.45)!important}
+.tv-playback-error{max-height:calc(100% - 22px)!important;overflow:auto!important}
+.tv-error-actions .btn:focus-visible,.tv-alt-channel:focus-visible{outline:2px solid var(--tv-cyan)!important;outline-offset:2px!important}
+#ctl{padding-bottom:max(10px,env(safe-area-inset-bottom))!important}
+@media(max-width:680px){
+ #grid .tv-channel-card{min-height:0!important}
+ #grid .tv-channel-card h3{overflow-wrap:anywhere!important}
+ #bar details>div{position:fixed!important;right:12px!important;left:12px!important;top:auto!important;bottom:max(12px,env(safe-area-inset-bottom))!important;min-width:0!important;z-index:90!important}
+ #bar details>div .btn{min-height:42px!important}
+ .tv-playback-error{max-height:calc(100% - 18px)!important;overflow-y:auto!important}
+ #ctl{padding-bottom:max(10px,env(safe-area-inset-bottom))!important}
+}
+@media(prefers-reduced-motion:reduce){#status:after{animation:none!important}#grid article .thumb img{will-change:auto}}
