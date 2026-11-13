@@ -141,7 +141,7 @@
   .line2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 </style>
 
-<link rel="stylesheet" href="jmb-tv-only.css?v=9">
+<link rel="stylesheet" href="jmb-tv-only.css?v=10">
 </head>
 <body>
 <h1 class="sr-only">JMB TV – Watch live TV channels online for free</h1>
@@ -546,18 +546,21 @@ function combinePlaylists(mainText, categoryText, areaText, supplementalText) {
     areas: c.areas || [], langs: c.langs || []
   }));
 }
-async function fetchPlaylistText(source, required = false, allowProxy = true) {
-  const direct = async () => {
-    const response = await fetch(url(source), { cache: 'force-cache' });
+async function timedFetch(resource, options = {}, timeoutMs = 12000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(resource, { ...options, signal: controller.signal });
     if (!response.ok) throw new Error('HTTP ' + response.status);
-    return response.text();
-  };
+    return response;
+  } finally { clearTimeout(timer); }
+}
+async function fetchPlaylistText(source, required = false, allowProxy = true) {
+  const direct = async () => (await timedFetch(url(source), { cache: 'force-cache' }, 12000)).text();
   try { return await direct(); } catch (error) {
     if (allowProxy && PROXY) {
-      try {
-        const response = await fetch(viaProxy(source), { cache: 'force-cache' });
-        if (response.ok) return await response.text();
-      } catch (e) {}
+      try { return await (await timedFetch(viaProxy(source), { cache: 'force-cache' }, 12000)).text(); }
+      catch (e) {}
     }
     if (required) throw error;
     return '';
@@ -651,13 +654,18 @@ async function load() {
       return;
     }
     $('grid').innerHTML = '';
-    $('status').innerHTML = `Could not load public playlists (${esc(error.message)}).<br>Check your connection and reload JMB TV.`;
+    $('status').classList.remove('hidden');
+    $('status').innerHTML = `<div class="tv-load-error"><span class="tv-error-mark">!</span><strong>Channel directory unavailable</strong><p>${esc(error.message || 'The public playlists could not be reached.')}</p><small>Check your connection and try again. If you opened JMB TV before, its saved directory will appear here automatically when available.</small><button id="reloadDirectory" class="btn" type="button">Try loading again</button></div>`;
+    $('status').onclick = e => { if (e.target.closest('#reloadDirectory')) { $('status').onclick = null; load(); } };
   }
 }
 
-async function fetchLangText() { // direct first, then proxy (if configured)
+async function fetchLangText() { // direct first, then the configured worker
   const tries = [url(LANG_PLAYLIST)]; if (PROXY) tries.push(viaProxy(LANG_PLAYLIST));
-  for (const t of tries) { try { const x = await fetch(t); if (x.ok) return await x.text(); } catch (e) {} }
+  for (const target of tries) {
+    try { return await (await timedFetch(target, { cache: 'force-cache' }, 10000)).text(); }
+    catch (e) {}
+  }
   return null;
 }
 let langState = 'loading', langRetried = false, wantLang = '';
