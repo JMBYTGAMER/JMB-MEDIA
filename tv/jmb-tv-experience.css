@@ -1,0 +1,24 @@
+/* JMB TV — final interaction and accessibility polish */
+:where(a,button,input,select,textarea,[tabindex]):focus-visible{
+  outline:3px solid rgba(83,223,210,.78)!important;
+  outline-offset:3px!important;
+}
+html{scroll-padding-top:88px}
+::selection{background:rgba(83,223,210,.28);color:inherit}
+.tv-home-link:active,.tv-watch-btn:active,#installBtn:active,#aboutBtn:active,#theme:active{transform:scale(.98)}
+.tv-channel-card:focus-within{border-color:rgba(83,223,210,.42);box-shadow:0 0 0 3px rgba(83,223,210,.07)}
+.tv-watch-btn:focus-visible{outline-offset:4px!important}
+.tv-player-dialog{max-height:min(94vh,1000px);overflow:auto;overscroll-behavior:contain}
+#watchSlot,#miniSlot{background:#000;contain:layout paint}
+#status{min-height:90px}
+@media(max-width:520px){
+  .tv-home-link{min-height:42px}
+  .tv-head-actions .btn,#installBtn,#aboutBtn,#theme{min-height:40px!important}
+  .tv-channel-card{padding:13px}
+  .tv-channel-brand{width:50px;height:50px;flex-basis:50px}
+  .tv-player-dialog{width:calc(100% - 14px);border-radius:16px}
+}
+@media(prefers-reduced-motion:reduce){
+  .tv-channel-card,.tv-watch-btn,.tv-home-link{transition:none!important}
+  .tv-channel-card:hover{transform:none!important}
+}
