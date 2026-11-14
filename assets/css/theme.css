@@ -40,3 +40,5 @@ html.light .reader-article blockquote,html.light .reader-note{background:#f3f5f8
 html.light .reader-article a{color:#a44c2c}
 html.light .reader-toolbar button{background:#fff;color:#263044;border-color:rgba(20,25,40,.14)}
 html.light .news-health{color:#667085}
+
+html.light .main-nav a[aria-current="page"]{color:#171b28;background:rgba(20,25,40,.09)}html.light .skip-link{background:#171b28;color:#fff}

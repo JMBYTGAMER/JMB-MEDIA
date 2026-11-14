@@ -23,7 +23,7 @@ var allItems=[],feedHealth={},cacheKey="jmb-newspaper-feed-cache-v3",lastUpdated
 function esc(s){return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 function safeUrl(s){try{var u=new URL(s);return (u.protocol==="https:"||u.protocol==="http:")?u.href:"";}catch(e){return "";}}
 function safeImage(s){try{var u=new URL(s);return u.protocol==="https:";}catch(e){return false;}}
-function clean(s,max){var d=document.createElement("div");d.innerHTML=String(s||"");return (d.textContent||d.innerText||"").replace(/\\s+/g," ").trim().slice(0,max||700);}
+function clean(s,max){var d=new DOMParser().parseFromString(String(s||""),"text/html");return (d.body.textContent||"").replace(/\s+/g," ").trim().slice(0,max||700);}
 function nodeText(node,tag){var n=node.getElementsByTagName(tag)[0];return n?(n.textContent||"").trim():"";}
 function nodeFirst(node,tags){for(var i=0;i<tags.length;i++){var n=node.getElementsByTagName(tags[i])[0];if(n)return n;}return null;}
 function setStatus(message){var el=$("newsStatus");if(el)el.textContent=message;}

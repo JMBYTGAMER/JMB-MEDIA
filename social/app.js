@@ -16,8 +16,7 @@ var sources=[
 ];
 var items=[];
 function esc(s){return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
-function clean(s){var d=new DOMParser().parseFromString(String(s||""),"text/html");return (d.body.textContent||"").replace(/\\s+/g," ").trim().slice(0,240);}
-function safeUrl(s){try{var u=new URL(s);return (u.protocol==="https:"||u.protocol==="http:")&&!u.username&&!u.password?u.href:"";}catch(e){return "";}}
+function clean(s){var d=new DOMParser().parseFromString(String(s||""),"text/html");return (d.body.textContent||"").replace(/\s+/g," ").trim().slice(0,240);}
 function nodeText(node,name){var a=node.getElementsByTagName(name);return a.length?(a[0].textContent||"").trim():"";}
 function firstAttr(node,name,attrName){var a=node.getElementsByTagName(name);return a.length?a[0].getAttribute(attrName)||"":"";}
 async function timeoutText(url,ms){

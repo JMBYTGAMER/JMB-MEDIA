@@ -1,23 +1,26 @@
-<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="JMB MEDIA app icon"><defs><linearGradient id="appbg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#181d2a"/><stop offset=".55" stop-color="#080b13"/><stop offset="1" stop-color="#33050d"/></linearGradient></defs><rect width="512" height="512" rx="112" fill="url(#appbg)"/><rect x="8" y="8" width="496" height="496" rx="105" fill="none" stroke="#c9152a" stroke-width="8"/><g transform="translate(25 23) scale(.90)"><defs>
-<linearGradient id="shield" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#262b36"/><stop offset=".5" stop-color="#080a10"/><stop offset="1" stop-color="#202531"/></linearGradient>
-<linearGradient id="red" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ff5260"/><stop offset=".42" stop-color="#df071a"/><stop offset="1" stop-color="#65000b"/></linearGradient>
-<linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".22" stop-color="#bfc7d2"/><stop offset=".42" stop-color="#fff"/><stop offset=".66" stop-color="#78818d"/><stop offset=".84" stop-color="#f7f9fc"/><stop offset="1" stop-color="#8e98a5"/></linearGradient>
-<linearGradient id="silver" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".45" stop-color="#8d96a2"/><stop offset=".7" stop-color="#f8fbff"/><stop offset="1" stop-color="#59616d"/></linearGradient>
-<radialGradient id="gem"><stop stop-color="#fff"/><stop offset=".22" stop-color="#ffb3b7"/><stop offset=".55" stop-color="#ff1429"/><stop offset="1" stop-color="#7e0010"/></radialGradient>
-<filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7" result="blur"/><feFlood flood-color="#ef1028" flood-opacity=".7"/><feComposite in2="blur" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-<filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="#000" flood-opacity=".8"/></filter>
+<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="JMB TV app icon"><defs><linearGradient id="appbg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#1b2840"/><stop offset=".55" stop-color="#080b13"/><stop offset="1" stop-color="#360712"/></linearGradient></defs><rect width="512" height="512" rx="110" fill="url(#appbg)"/><rect x="8" y="8" width="496" height="496" rx="104" fill="none" stroke="#d3122a" stroke-width="8"/><defs>
+<linearGradient id="shell" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f3f7ff"/><stop offset=".18" stop-color="#6b7482"/><stop offset=".48" stop-color="#171d28"/><stop offset=".78" stop-color="#05070c"/><stop offset="1" stop-color="#aab3c0"/></linearGradient>
+<linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#18263d"/><stop offset=".55" stop-color="#050a16"/><stop offset="1" stop-color="#250711"/></linearGradient>
+<linearGradient id="red" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ff6670"/><stop offset=".38" stop-color="#ef1028"/><stop offset="1" stop-color="#790010"/></linearGradient>
+<linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".24" stop-color="#c2cad5"/><stop offset=".48" stop-color="#fff"/><stop offset=".75" stop-color="#77818f"/><stop offset="1" stop-color="#f6f8fb"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff2b0"/><stop offset=".32" stop-color="#f6c14a"/><stop offset=".7" stop-color="#b66a0c"/><stop offset="1" stop-color="#fff0a0"/></linearGradient>
+<filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#000" flood-opacity=".7"/></filter>
+<filter id="redglow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6" result="b"/><feFlood flood-color="#ff1832" flood-opacity=".55"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
 </defs>
-<path d="M256 94 426 174 437 304Q431 415 256 493 81 415 75 304L86 174Z" fill="url(#shield)" stroke="url(#silver)" stroke-width="9" filter="url(#shadow)"/>
-<path d="M256 108 414 181 423 301Q416 399 256 477 96 399 89 301L98 181Z" fill="none" stroke="#b5091b" stroke-width="7" filter="url(#glow)"/>
-<path d="M107 177 76 218 117 226 147 200 171 224 192 207 209 226 256 214 303 226 320 207 341 224 365 200 395 226 436 218 405 177" fill="#0d111a" stroke="url(#silver)" stroke-width="5"/>
-<path d="M126 159 108 72 174 122 196 42 256 119 316 42 338 122 404 72 386 159Q256 196 126 159Z" fill="url(#red)" stroke="url(#silver)" stroke-width="9" stroke-linejoin="round" filter="url(#glow)"/>
-<path d="M126 159Q256 189 386 159M108 72 174 122 196 42 256 119 316 42 338 122 404 72" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round" opacity=".9"/>
-<path d="M109 180Q256 215 403 180L392 205Q256 239 120 205Z" fill="#11151d" stroke="url(#silver)" stroke-width="6"/>
-<path d="M126 190Q256 220 386 190" fill="none" stroke="#ff2638" stroke-width="5" filter="url(#glow)"/>
-<g fill="url(#gem)" stroke="url(#silver)" stroke-width="4"><path d="M196 42 208 79 196 105 184 79Z"/><path d="M316 42 328 79 316 105 304 79Z"/><path d="M256 119 273 145 256 169 239 145Z"/><circle cx="154" cy="155" r="9"/><circle cx="358" cy="155" r="9"/></g>
-<path d="M110 252Q256 227 402 252L393 358Q256 418 119 358Z" fill="#090b11" opacity=".72"/>
-<text x="256" y="333" text-anchor="middle" font-family="Arial Black,Impact,Arial,sans-serif" font-size="155" font-weight="900" letter-spacing="-12" fill="#05070b" stroke="#05070b" stroke-width="24" paint-order="stroke" filter="url(#shadow)">JMB</text>
-<text x="256" y="327" text-anchor="middle" font-family="Arial Black,Impact,Arial,sans-serif" font-size="155" font-weight="900" letter-spacing="-12" fill="url(#chrome)" stroke="#242a34" stroke-width="12" paint-order="stroke fill">JMB</text>
-<path d="M115 366 174 389 211 375 256 419 301 375 338 389 397 366 368 405 304 395 256 444 208 395 144 405Z" fill="#11151d" stroke="url(#silver)" stroke-width="5" stroke-linejoin="round"/>
-<path d="M174 389 211 375 256 419 301 375 338 389" fill="none" stroke="#e30c21" stroke-width="5" filter="url(#glow)"/>
-<path d="M256 408 272 433 256 456 240 433Z" fill="url(#gem)" stroke="url(#silver)" stroke-width="4"/></g></svg>
+<g fill="none" stroke="url(#chrome)" stroke-width="10" stroke-linecap="round"><path d="M220 157 151 94"/><path d="M292 157 361 94"/></g>
+<g fill="url(#red)" stroke="url(#chrome)" stroke-width="5"><circle cx="148" cy="91" r="10"/><circle cx="364" cy="91" r="10"/></g>
+<path d="M189 128 174 76 220 105 256 48 292 105 338 76 323 128Q256 151 189 128Z" fill="url(#gold)" stroke="#fff0ae" stroke-width="6" stroke-linejoin="round" filter="url(#shadow)"/>
+<path d="M189 128Q256 148 323 128" stroke="#8d4a08" stroke-width="5" fill="none"/>
+<g fill="#d70920" stroke="#fff1b4" stroke-width="3"><path d="M256 60 269 83 256 99 243 83Z"/><circle cx="211" cy="111" r="5"/><circle cx="301" cy="111" r="5"/></g>
+<rect x="34" y="142" width="444" height="285" rx="42" fill="url(#shell)" stroke="#f3f6fd" stroke-width="7" filter="url(#shadow)"/>
+<rect x="45" y="153" width="422" height="263" rx="33" fill="#080b12" stroke="#bc0c21" stroke-width="5" filter="url(#redglow)"/>
+<rect x="61" y="169" width="339" height="231" rx="22" fill="url(#screen)" stroke="#667487" stroke-width="3"/>
+<path d="M73 181H388" stroke="#fff" stroke-opacity=".16" stroke-width="3"/><path d="M77 383Q220 357 385 382" fill="none" stroke="#ed1830" stroke-opacity=".65" stroke-width="4"/>
+<text x="230" y="279" text-anchor="middle" font-family="Arial Black,Impact,Arial,sans-serif" font-size="100" font-weight="900" letter-spacing="-7" fill="#05070b" stroke="#05070b" stroke-width="17" paint-order="stroke" filter="url(#shadow)">JMB</text>
+<text x="230" y="279" text-anchor="middle" font-family="Arial Black,Impact,Arial,sans-serif" font-size="100" font-weight="900" letter-spacing="-7" fill="url(#chrome)" stroke="#333c49" stroke-width="5" paint-order="stroke fill">JMB</text>
+<path d="M126 298H334" stroke="#f2f6ff" stroke-opacity=".2" stroke-width="2"/>
+<text x="230" y="375" text-anchor="middle" font-family="Arial Black,Impact,Arial,sans-serif" font-size="82" font-weight="900" letter-spacing="8" fill="url(#red)" stroke="#30040b" stroke-width="7" paint-order="stroke fill">TV</text>
+<rect x="412" y="190" width="43" height="190" rx="17" fill="#080b12" stroke="#66717f" stroke-width="3"/>
+<circle cx="433.5" cy="229" r="12" fill="url(#chrome)" stroke="#202734" stroke-width="4"/><circle cx="433.5" cy="276" r="12" fill="url(#chrome)" stroke="#202734" stroke-width="4"/><circle cx="433.5" cy="348" r="5" fill="#ef1830" stroke="#ff9ea7" stroke-width="2"/>
+<path d="M143 427 124 450H189L201 428M369 427 388 450H323L311 428" fill="#101621" stroke="url(#chrome)" stroke-width="5" stroke-linejoin="round"/>
+<path d="M54 405H458" stroke="#ff233b" stroke-opacity=".75" stroke-width="4"/></svg>
