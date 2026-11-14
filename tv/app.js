@@ -188,6 +188,21 @@ dialog.addEventListener("click",function(e){if(e.target===dialog)closePlayer();}
 dialog.addEventListener("close",function(){stopMedia();});
 video.addEventListener("playing",function(){$("playerLoading").classList.add("hidden");});
 video.addEventListener("error",function(){if(dialog.open){$("playerLoading").classList.add("hidden");$("playerHelp").textContent="The broadcaster stream is offline, blocked, or incompatible with this browser. Try another channel when available.";}});
+
+/* Match the shared-site search shortcut on the standalone JMB TV app. */
+var channelSearchInput = $("channelSearch");
+if (channelSearchInput) {
+  channelSearchInput.setAttribute("aria-keyshortcuts", "/");
+  channelSearchInput.title = (channelSearchInput.title ? channelSearchInput.title + " · " : "") + "Press / to focus search";
+  document.addEventListener("keydown", function(e) {
+    if (e.defaultPrevented || e.isComposing || e.altKey || e.ctrlKey || e.metaKey || e.key !== "/") return;
+    var target = e.target;
+    if (target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName || ""))) return;
+    e.preventDefault();
+    channelSearchInput.focus();
+  });
+}
+
 var q=new URLSearchParams(location.search).get("q");if(q)$("channelSearch").value=q;
 init();
 })();
