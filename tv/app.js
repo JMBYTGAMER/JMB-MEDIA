@@ -31,13 +31,12 @@
     if(!raw) return "";
     try {
       var url = new URL(String(raw).trim());
-      if(url.protocol !== "https:" && url.protocol !== "http:") return "";
+      if(url.protocol !== "https:") return "";
       if(url.username || url.password) return "";
       var host = url.hostname.toLowerCase();
       if(!host || host === "localhost" || host.endsWith(".local") || host === "127.0.0.1" ||
          host === "0.0.0.0" || host === "169.254.169.254" || /^10\./.test(host) ||
          /^192\.168\./.test(host) || /^172\.(1[6-9]|2\d|3[01])\./.test(host)) return "";
-      url.protocol = "https:";
       url.hash = "";
       return url.href;
     } catch(error) { return ""; }
