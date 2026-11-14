@@ -22,3 +22,12 @@ html{scroll-padding-top:88px}
   .tv-channel-card,.tv-watch-btn,.tv-home-link{transition:none!important}
   .tv-channel-card:hover{transform:none!important}
 }
+/* Premium touch finish for the dedicated JMB TV experience */
+.tv-topbar{box-shadow:0 12px 38px rgba(0,0,0,.17),inset 0 -1px rgba(117,206,224,.08)!important}
+.tv-home-link,.tv-head-actions .btn,#installBtn,#aboutBtn,#theme{transition:transform .18s,border-color .18s,background .18s,box-shadow .18s!important}
+.tv-search-panel{box-shadow:0 22px 55px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.07)!important}
+.tv-channel-card{box-shadow:0 13px 32px rgba(0,0,0,.16),inset 0 1px rgba(255,255,255,.035)!important}
+.tv-channel-card:hover{box-shadow:0 22px 45px rgba(0,0,0,.25),0 0 30px rgba(83,223,210,.06)!important}
+.tv-watch-primary{box-shadow:0 10px 25px rgba(240,68,82,.22)!important}
+@media(max-width:760px){.tv-topbar{box-shadow:0 8px 25px rgba(0,0,0,.14)!important}.tv-channel-card{border-radius:17px!important}}
+@media(prefers-reduced-motion:reduce){.tv-home-link,.tv-head-actions .btn,#installBtn,#aboutBtn,#theme{transition:none!important}}
