@@ -14,13 +14,13 @@
   ],
   "icons": [
     {
-      "src": "/favicon/jmb-app-icon.svg?v=5",
+      "src": "/favicon/jmb-app-icon.svg?v=6",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/favicon/jmb-maskable-icon.svg?v=5",
+      "src": "/favicon/jmb-maskable-icon.svg?v=6",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "maskable"
