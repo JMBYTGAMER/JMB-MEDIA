@@ -1,40 +1,50 @@
-# JMB MEDIA
+# JMB TV / JMB MEDIA
 
-A mobile-first media hub with JMB TV, newspapers, radio and world-news directories.
+A mobile-first discovery directory for television channel metadata, newspapers, radio stations and world-news sources.
 
-## JMB TV — worldwide channel guide
+## Content and copyright design
 
-The TV page reads the public IPTV-org collection:
-- Channel playlist: https://iptv-org.github.io/iptv/index.m3u
-- Channel metadata: https://iptv-org.github.io/api/ (channels, feeds, logos, countries, languages, categories and blocklist)
+JMB is designed as a **directory, not a broadcaster, streaming service, newspaper publisher or media host**.
 
-Channel data is loaded when the visitor opens the TV guide. The large total on the page is calculated from the distinct channel cards actually loaded after duplicate feed entries and excluded entries are processed; it is not a hand-written or permanently fixed number. Country totals are calculated from the mapped channel country metadata.
+- No embedded third-party TV or radio player.
+- No IPTV M3U, stream URL or streams API is loaded by the website.
+- No CORS/media proxy, playlist rewriting, user-agent/referrer spoofing or access-control bypass.
+- No channel logos or other third-party artwork are loaded into the TV cards.
+- No programme recording, downloading, caching or retransmission.
+- Newspaper and world-news sections show source directories and links only; they do not republish articles, headlines, photos, thumbnails, video or audio.
+- Radio is a station directory; playback remains on the station's own service.
 
-Each channel has one card with its logo when available, name, country, language/category information and feed format when provided. The same channel is shown once even if the playlist supplies more than one feed URL. Available alternative URLs are kept as player fallbacks. Favourites are saved locally in the visitor's browser.
+A public URL or third-party directory entry is not proof of permission to rebroadcast copyrighted content. Any future player or media embed must be separately approved in writing by the broadcaster/rightsholder and comply with its platform terms, territorial limits and embedding rules. Do not add streams merely because a link appears in a public playlist.
 
-Selecting a card opens the built-in JMB TV player. The browser connects directly to the listed stream host using HLS.js or native browser playback when supported. No “Official website” card button is shown.
+## JMB TV channel directory
 
-### Playback limitations
+The TV page reads factual channel metadata from the IPTV-org API:
 
-- The directory is a broad public collection, not a guarantee that literally every broadcaster in the world is listed.
-- Some listed streams are offline, region-limited, time-limited, or not compatible with browser playback. Multiple listed feed URLs can be tried when the playlist provides them, but no player can guarantee every third-party source will work.
-- JMB does not upload, host, record, cache or retransmit programmes, and does not route video through a CORS proxy.
-- JMB does not bypass DRM, authentication, subscriptions, paywalls, access controls or geographic restrictions.
-- Quality labels come from upstream feed metadata; they are not measurements of the viewer's actual connection or playback quality.
-- Entries marked NSFW or blocklisted by upstream channel metadata are excluded.
+- channels.json — channel name, alternate names, network/owner, country, categories, current/closed/replaced status and a website field.
+- feeds.json — descriptive feed metadata such as language. It is not used for stream URLs.
+- countries.json, languages.json, categories.json — filter labels.
+- blocklist.json — entries excluded by the upstream project, including rights-related and unsuitable entries.
 
-IPTV-org documents its collection as publicly available stream links submitted by contributors, not video files. This description is not a guarantee that every stream is authorised for every viewer or territory. Read the JMB copyright and privacy policy at https://media.jmbhost.qzz.io/legal/ and the IPTV-org project notes at https://github.com/iptv-org/iptv.
+The page does **not** request index.m3u, streams.json, logos.json or video/media files. Each card opens a JMB details dialog. Where the API provides an HTTPS website URL, the dialog gives the visitor a link to that source. Visitors leave JMB when opening it.
 
-## Other JMB MEDIA sections
+The upstream API documentation identifies channel records as sourced from the IPTV-org database. The API and database repositories publish Unlicense/public-domain dedication terms for their repository contents. This does not grant rights to channel brands, broadcaster programmes, logos, music, films or other content owned by third parties.
 
-- Newspapers: publisher names, regions, languages and publisher links.
-- Radio: station directory information.
-- World News: news publisher and official source links.
+Sources:
+- https://github.com/iptv-org/api
+- https://github.com/iptv-org/database
+- https://github.com/iptv-org/api/blob/master/LICENSE
+- https://github.com/iptv-org/database/blob/master/LICENSE
 
-## Retired proxy
+## Other sections
 
-The previous CORS/media proxy is retired. The current TV player connects directly from the visitor's browser to the public stream host. The cors-proxy-worker.js repository file is a disabled retirement stub only. An already deployed old Cloudflare Worker must be disabled or replaced in Cloudflare separately; a GitHub commit does not change an existing Cloudflare deployment.
+- Newspapers: publisher directory and links to publisher websites.
+- Radio: station directory information and station website links; no audio playback.
+- World News: publisher, official video channel and podcast destination links; no embedded content.
+
+## Retired media proxy
+
+cors-proxy-worker.js is a disabled retirement stub. It does not fetch or relay third-party content. GitHub commits do not change a Cloudflare Worker already deployed separately; verify in Cloudflare that any former media proxy has been removed or replaced by the retired stub.
 
 ## Quality checks
 
-GitHub Actions runs scripts/check-site.mjs on updates. It checks HTML, JavaScript syntax, local references, required policy content, direct-player configuration and that no media-proxy fallback is present.
+Run node scripts/check-site.mjs. The checker validates HTML language/title/viewport and sharing metadata, duplicate IDs, local asset references, JavaScript syntax, CSS braces, PWA manifests, the custom domain, the preview image and the media/copyright restrictions. It also ensures the TV page does not reintroduce an embedded player, stream playlist, external logo feed or media proxy.
