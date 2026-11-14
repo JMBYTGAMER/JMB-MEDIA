@@ -1,6 +1,6 @@
 // JMB TV service worker: app shell + playlist caching. Streams (video) are never touched.
-const V = 'jmbtv-v10';
-const SHELL = ['./', '/favicon/site.webmanifest?v=7', '/favicon/jmb-logo.svg?v=7', '/favicon/jmb-app-icon.svg?v=7', '/favicon/jmb-maskable-icon.svg?v=7'];
+const V = 'jmbtv-v9';
+const SHELL = ['./', '/favicon/site.webmanifest?v=6', '/favicon/jmb-app-icon.svg?v=6', '/favicon/jmb-maskable-icon.svg?v=6'];
 const CDN = ['cdnjs.cloudflare.com', 'cdn.tailwindcss.com'];
 const LISTS = ['/iptv/index.m3u', '/iptv/index.category.m3u', '/iptv/index.country.m3u', '/iptv/index.language.m3u'];
 const SUPPLEMENTAL = '/freecasthub/public-iptv/main/playlist.m3u';
@@ -9,7 +9,7 @@ self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => {})))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('jmbtv-') && k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 
 const keep = (key, res) => {

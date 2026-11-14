@@ -16,12 +16,18 @@ var sources=[
 ];
 var items=[];
 function esc(s){return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
-function clean(s){var d=document.createElement("div");d.innerHTML=String(s||"");return (d.textContent||d.innerText||"").replace(/\s+/g," ").trim().slice(0,240);}
+function clean(s){var d=new DOMParser().parseFromString(String(s||""),"text/html");return (d.body.textContent||"").replace(/\\s+/g," ").trim().slice(0,240);}
+function safeUrl(s){try{var u=new URL(s);return (u.protocol==="https:"||u.protocol==="http:")&&!u.username&&!u.password?u.href:"";}catch(e){return "";}}
 function nodeText(node,name){var a=node.getElementsByTagName(name);return a.length?(a[0].textContent||"").trim():"";}
 function firstAttr(node,name,attrName){var a=node.getElementsByTagName(name);return a.length?a[0].getAttribute(attrName)||"":"";}
+async function timeoutText(url,ms){
+ var ctl=new AbortController(),timer=setTimeout(function(){ctl.abort();},ms);
+ try{var r=await fetch(url,{cache:"no-store",signal:ctl.signal,headers:{"Accept":"application/rss+xml, application/atom+xml, application/xml, text/xml, */*"}});if(!r.ok)throw new Error("Feed request failed (HTTP "+r.status+")");return await r.text();}
+ finally{clearTimeout(timer);}
+}
 async function fetchFeed(url){
- try{var r=await fetch(url,{cache:"no-store"});if(!r.ok)throw new Error("blocked");return await r.text();}
- catch(e){var p=await fetch("https://api.allorigins.win/raw?url="+encodeURIComponent(url),{cache:"no-store"});if(!p.ok)throw e;return await p.text();}
+ try{return await timeoutText(url,9000);}
+ catch(e){return await timeoutText("https://api.allorigins.win/raw?url="+encodeURIComponent(url),12000);}
 }
 function parse(text,source){
  var doc=new DOMParser().parseFromString(text,"text/xml");if(doc.querySelector("parsererror"))throw new Error("Invalid feed");
@@ -35,7 +41,7 @@ function parse(text,source){
   var kind=source.format||(mime.indexOf("audio")===0?"audio":mime.indexOf("video")===0?"video":"text");
   if(mime.indexOf("audio")===0)kind="audio";if(mime.indexOf("video")===0)kind="video";
   var date=Date.parse(nodeText(n,"pubDate")||nodeText(n,"published")||nodeText(n,"updated"))||0;
-  return {title:nodeText(n,"title"),link:link,description:clean(nodeText(n,"description")||nodeText(n,"summary")||nodeText(n,"content")),date:date,source:source,kind:kind,media:mediaUrl,thumb:thumb,videoId:vid};
+  return {title:nodeText(n,"title"),link:safeUrl(link),description:clean(nodeText(n,"description")||nodeText(n,"summary")||nodeText(n,"content")),date:date,source:source,kind:kind,media:safeUrl(mediaUrl),thumb:safeUrl(thumb),videoId:vid};
  }).filter(function(x){return x.title&&/^https?:\/\//i.test(x.link);});
 }
 function fill(id,values){Array.from(new Set(values)).sort().forEach(function(v){$(id).insertAdjacentHTML("beforeend",'<option value="'+esc(v)+'">'+esc(v)+'</option>');});}

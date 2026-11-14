@@ -1,7 +1,7 @@
 {
   "name": "JMB TV",
   "short_name": "JMB TV",
-  "description": "JMB TV — discover channel listings and play supported public streams.",
+  "description": "JMB TV — live public television directory",
   "start_url": "/tv/?source=pwa",
   "scope": "/tv/",
   "display": "standalone",
@@ -14,13 +14,13 @@
   ],
   "icons": [
     {
-      "src": "/favicon/jmb-app-icon.svg?v=7",
+      "src": "/favicon/jmb-app-icon.svg?v=6",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/favicon/jmb-maskable-icon.svg?v=7",
+      "src": "/favicon/jmb-maskable-icon.svg?v=6",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "maskable"

@@ -1,26 +1,19 @@
 (function(){
 "use strict";
-var path=location.pathname,marker="/JMB-MEDIA/",base=path.indexOf(marker)===0?marker:"/";
+var path=location.pathname;
+var marker="/JMB-MEDIA/";
+var base=path.indexOf(marker)===0?marker:"/";
 window.JMBBase=base;
-function storageGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
-function storageSet(k,v){try{localStorage.setItem(k,v);return true;}catch(e){return false;}}
-var toggle=document.querySelector("[data-menu-toggle]"),mobile=document.querySelector("[data-mobile-nav]");
-function closeMenu(returnFocus){if(!toggle||!mobile)return;mobile.classList.remove("open");toggle.setAttribute("aria-expanded","false");if(returnFocus)toggle.focus();}
-if(toggle&&mobile){
- toggle.addEventListener("click",function(){var open=mobile.classList.toggle("open");toggle.setAttribute("aria-expanded",String(open));if(open){var first=mobile.querySelector("a");if(first)first.focus();}});
- mobile.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(){closeMenu(false);});});
- document.addEventListener("pointerdown",function(e){if(mobile.classList.contains("open")&&!mobile.contains(e.target)&&!toggle.contains(e.target))closeMenu(false);});
- document.addEventListener("keydown",function(e){if(e.key==="Escape"&&mobile.classList.contains("open"))closeMenu(true);});
-}
+var toggle=document.querySelector("[data-menu-toggle]");
+var mobile=document.querySelector("[data-mobile-nav]");
+if(toggle&&mobile){toggle.addEventListener("click",function(){var open=mobile.classList.toggle("open");toggle.setAttribute("aria-expanded",String(open));});mobile.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(){mobile.classList.remove("open");toggle.setAttribute("aria-expanded","false");});});}
 var theme=document.querySelector("[data-theme-toggle]");
-function updateTheme(){if(!theme)return;var light=document.documentElement.classList.contains("light");theme.setAttribute("aria-pressed",String(light));theme.setAttribute("aria-label",light?"Switch to dark theme":"Switch to light theme");theme.title=light?"Switch to dark theme":"Switch to light theme";}
-if(theme){if(storageGet("jmb-media-theme")==="light")document.documentElement.classList.add("light");updateTheme();theme.addEventListener("click",function(){document.documentElement.classList.toggle("light");var light=document.documentElement.classList.contains("light");storageSet("jmb-media-theme",light?"light":"dark");updateTheme();});}
+if(theme){var saved=localStorage.getItem("jmb-media-theme");if(saved==="light")document.documentElement.classList.add("light");theme.addEventListener("click",function(){document.documentElement.classList.toggle("light");localStorage.setItem("jmb-media-theme",document.documentElement.classList.contains("light")?"light":"dark");});}
 var quick=document.querySelector("[data-global-search]");
-if(quick)quick.addEventListener("submit",function(e){e.preventDefault();var input=quick.querySelector("input"),q=(input&&input.value||"").trim();if(q)location.href=base+"tv/?q="+encodeURIComponent(q);else window.JMBToast("Enter a channel or programme to search.");});
+if(quick){quick.addEventListener("submit",function(e){e.preventDefault();var input=quick.querySelector("input");var q=(input&&input.value||"").trim();if(q)location.href=base+"tv/?q="+encodeURIComponent(q);});}
 var current=location.pathname.split("/").filter(Boolean).pop()||"home";
-document.querySelectorAll("[data-nav]").forEach(function(a){if(a.getAttribute("data-nav")===current){a.classList.add("active");a.setAttribute("aria-current","page");}else a.removeAttribute("aria-current");});
-document.querySelectorAll('a[target="_blank"]').forEach(function(a){a.relList.add("noopener");a.relList.add("noreferrer");});
+document.querySelectorAll("[data-nav]").forEach(function(a){if(a.getAttribute("data-nav")===current)a.classList.add("active");});
 var toast=document.querySelector("[data-toast]");
-window.JMBToast=function(message){if(!toast){toast=document.createElement("div");toast.className="toast";toast.setAttribute("data-toast","");toast.setAttribute("role","status");toast.setAttribute("aria-live","polite");document.body.appendChild(toast);}toast.textContent=message;toast.classList.add("show");clearTimeout(window.__jmbToastTimer);window.__jmbToastTimer=setTimeout(function(){toast.classList.remove("show");},2800);};
+window.JMBToast=function(message){if(!toast){toast=document.createElement("div");toast.className="toast";toast.setAttribute("data-toast","");document.body.appendChild(toast);}toast.textContent=message;toast.classList.add("show");clearTimeout(window.__jmbToastTimer);window.__jmbToastTimer=setTimeout(function(){toast.classList.remove("show");},2600);};
 document.querySelectorAll("[data-year]").forEach(function(el){el.textContent=String(new Date().getFullYear());});
 })();
