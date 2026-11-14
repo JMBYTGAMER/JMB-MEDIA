@@ -26,6 +26,30 @@
   window.addEventListener("resize", requestProgress, { passive: true });
   updateProgress();
 
+  /* A shared Back to Top control for the homepage, newspapers, radio and world desk. */
+  if (document.querySelector(".radio-player")) document.body.classList.add("has-jmb-radio-player");
+  var backTop = document.createElement("button");
+  backTop.type = "button";
+  backTop.className = "jmb-to-top";
+  backTop.textContent = "↑";
+  backTop.setAttribute("aria-label", "Back to top");
+  backTop.setAttribute("title", "Back to top");
+  backTop.setAttribute("aria-hidden", "true");
+  backTop.tabIndex = -1;
+  document.body.appendChild(backTop);
+
+  function syncBackTop() {
+    var visible = window.scrollY > 420;
+    backTop.classList.toggle("is-visible", visible);
+    backTop.setAttribute("aria-hidden", String(!visible));
+    backTop.tabIndex = visible ? 0 : -1;
+  }
+  backTop.addEventListener("click", function() {
+    window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+  });
+  window.addEventListener("scroll", syncBackTop, { passive: true });
+  syncBackTop();
+
   var themeMeta = document.querySelector('meta[name="theme-color"]');
   function syncThemeColor() {
     if (themeMeta) themeMeta.setAttribute("content", root.classList.contains("light") ? "#f3f6fb" : "#090b12");

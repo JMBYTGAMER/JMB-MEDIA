@@ -23,4 +23,26 @@ document.querySelectorAll('a[target="_blank"]').forEach(function(a){a.relList.ad
 var toast=document.querySelector("[data-toast]");
 window.JMBToast=function(message){if(!toast){toast=document.createElement("div");toast.className="toast";toast.setAttribute("data-toast","");toast.setAttribute("role","status");toast.setAttribute("aria-live","polite");document.body.appendChild(toast);}toast.textContent=message;toast.classList.add("show");clearTimeout(window.__jmbToastTimer);window.__jmbToastTimer=setTimeout(function(){toast.classList.remove("show");},2800);};
 document.querySelectorAll("[data-year]").forEach(function(el){el.textContent=String(new Date().getFullYear());});
+
+/* Fast, page-aware search: "/" or Ctrl/Cmd+K focuses the current section's search field. */
+var searchTarget = document.querySelector(
+  "#channelSearch, #newsSearch, #stationSearch, #socialSearch, [data-global-search] input, input[type='search']"
+);
+if (searchTarget) {
+  searchTarget.setAttribute("aria-keyshortcuts", "/ Control+K Meta+K");
+  searchTarget.title = (searchTarget.title ? searchTarget.title + " · " : "") + "Shortcut: / or Ctrl+K";
+  document.addEventListener("keydown", function(e) {
+    if (e.defaultPrevented || e.isComposing || e.altKey) return;
+    var key = String(e.key || "").toLowerCase();
+    var slash = key === "/" && !e.ctrlKey && !e.metaKey;
+    var commandK = key === "k" && (e.ctrlKey || e.metaKey);
+    if (!slash && !commandK) return;
+    var target = e.target;
+    var editing = target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName || ""));
+    if (editing) return;
+    e.preventDefault();
+    searchTarget.focus();
+  });
+}
+
 })();
