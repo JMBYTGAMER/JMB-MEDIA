@@ -1,24 +1,24 @@
 {
   "id": "/",
-  "name": "JMB TV — Media Hub",
+  "name": "JMB TV — Media Discovery Hub",
   "short_name": "JMB TV",
-  "description": "Watch TV, read newspapers, listen to radio and explore world news.",
+  "description": "Discover channel, newspaper, radio and world-news sources.",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#070d1a",
   "theme_color": "#070d1a",
-  "categories": ["entertainment", "news", "music"],
+  "categories": ["entertainment", "news", "reference"],
   "icons": [
     {
-      "src": "/favicon/jmb-app-icon.svg?v=6",
+      "src": "/favicon/jmb-app-icon.svg?v=7",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/favicon/jmb-maskable-icon.svg?v=6",
+      "src": "/favicon/jmb-maskable-icon.svg?v=7",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "maskable"
