@@ -142,7 +142,7 @@
 </style>
 
 <link rel="stylesheet" href="jmb-tv-only.css?v=8">
-<link rel="stylesheet" href="jmb-tv-experience.css?v=2">
+<link rel="stylesheet" href="jmb-tv-experience.css?v=3">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to content</a>
@@ -173,7 +173,7 @@
       <div class="tv-kicker">JMB MEDIA / TELEVISION</div>
       <h1>Live channels</h1>
     </div>
-    <div class="tv-mode-tag"><span class="tv-live-dot"></span> CHANNEL DIRECTORY</div>
+    <div class="tv-heading-actions"><div id="tvNetworkState" class="tv-mode-tag" role="status" aria-live="polite"><span class="tv-live-dot"></span><span id="tvNetworkLabel">CHECKING CONNECTION</span></div></div>
   </div>
 
   <section class="tv-search-panel" aria-label="Find a TV channel">
@@ -229,6 +229,7 @@
     <div id="bar" class="hidden">
       <span id="count" class="text-xs t-muted"></span>
       <button id="hideBtn" class="btn" title="Hide channels that failed on this site"></button>
+      <button id="refreshChannelsBtn" class="btn" type="button" title="Refresh the public channel directory">↻ Refresh channels</button>
       <button id="clearBtn" class="btn hidden" title="Clear search and filters">Clear filters</button>
       <details>
         <summary>More tools</summary>
@@ -272,6 +273,8 @@
   </section>
   </div>
 </main>
+
+<button id="tvTopBtn" class="tv-top-button" type="button" aria-label="Back to top" title="Back to top">↑</button>
 
 <footer class="tv-footer">
   <img src="/favicon/jmb-logo.svg" alt="JMB logo" width="36" height="36" style="width:36px;height:36px;object-fit:contain;vertical-align:middle">
@@ -1660,6 +1663,60 @@ if (P0.has('tab') || P0.has('m')) {
 }
 renderRecent();
 load();
+
+// JMB TV quality-of-life controls: connection status, safe directory refresh and back-to-top.
+(function(){
+  const network = document.getElementById('tvNetworkState');
+  const networkLabel = document.getElementById('tvNetworkLabel');
+  const topButton = document.getElementById('tvTopBtn');
+  const refreshButton = document.getElementById('refreshChannelsBtn');
+
+  function updateNetwork(){
+    if(!network || !networkLabel) return;
+    const online = navigator.onLine;
+    network.classList.toggle('is-offline', !online);
+    networkLabel.textContent = online ? 'YOU ARE ONLINE' : 'OFFLINE — CHECK CONNECTION';
+    network.setAttribute('aria-label', online ? 'Internet connection available' : 'No internet connection');
+  }
+  updateNetwork();
+  window.addEventListener('online', updateNetwork);
+  window.addEventListener('offline', updateNetwork);
+
+  let scrollQueued = false;
+  function updateTopButton(){
+    if(!topButton) return;
+    topButton.classList.toggle('is-visible', window.scrollY > 420);
+    scrollQueued = false;
+  }
+  window.addEventListener('scroll', function(){
+    if(!scrollQueued){scrollQueued = true; requestAnimationFrame(updateTopButton);}
+  }, {passive:true});
+  updateTopButton();
+  if(topButton) topButton.addEventListener('click', function(){
+    window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  });
+
+  if(refreshButton) refreshButton.addEventListener('click', async function(){
+    if(refreshButton.disabled || !navigator.onLine) {
+      if(typeof toast === 'function' && !navigator.onLine) toast('You are offline. Reconnect to refresh channels.');
+      return;
+    }
+    const original = refreshButton.textContent;
+    refreshButton.disabled = true;
+    refreshButton.textContent = 'Refreshing…';
+    refreshButton.setAttribute('aria-busy','true');
+    try {
+      await load();
+      if(typeof toast === 'function') toast('Channel directory refreshed');
+    } catch(error) {
+      if(typeof toast === 'function') toast('Could not refresh channels. Please try again.');
+    } finally {
+      refreshButton.disabled = false;
+      refreshButton.textContent = original;
+      refreshButton.removeAttribute('aria-busy');
+    }
+  });
+})();
 </script>
 </body>
 </html>

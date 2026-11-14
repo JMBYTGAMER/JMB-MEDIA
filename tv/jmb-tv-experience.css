@@ -31,3 +31,75 @@ html{scroll-padding-top:88px}
 .tv-watch-primary{box-shadow:0 10px 25px rgba(240,68,82,.22)!important}
 @media(max-width:760px){.tv-topbar{box-shadow:0 8px 25px rgba(0,0,0,.14)!important}.tv-channel-card{border-radius:17px!important}}
 @media(prefers-reduced-motion:reduce){.tv-home-link,.tv-head-actions .btn,#installBtn,#aboutBtn,#theme{transition:none!important}}
+
+
+/* JMB TV mobile repair + useful quick controls */
+.skip-link{
+  position:fixed!important;top:10px!important;left:10px!important;z-index:1000!important;
+  width:1px!important;height:1px!important;padding:0!important;margin:0!important;
+  overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;
+  white-space:nowrap!important;border:0!important;border-radius:10px!important;
+  background:var(--tv-cyan)!important;color:#07131b!important;
+  font:800 13px "DM Sans",sans-serif!important;text-decoration:none!important;
+}
+.skip-link:focus,.skip-link:focus-visible{
+  width:auto!important;height:auto!important;padding:12px 16px!important;
+  clip:auto!important;clip-path:none!important;overflow:visible!important;
+  box-shadow:0 8px 28px rgba(0,0,0,.32)!important;outline:3px solid var(--tv-blue)!important;
+  outline-offset:3px!important;
+}
+.tv-heading-actions{display:flex;align-items:center;gap:9px}
+#tvNetworkState{gap:9px;white-space:nowrap}
+#tvNetworkState .tv-live-dot{flex:none}
+#tvNetworkState.is-offline{color:#ffb09f;border-color:rgba(255,130,110,.28);background:rgba(255,105,80,.07)}
+#tvNetworkState.is-offline .tv-live-dot{background:#ff806c;box-shadow:0 0 0 4px rgba(255,128,108,.12),0 0 14px #ff806c;animation:none}
+#refreshChannelsBtn{border-color:rgba(83,223,210,.24)!important;color:var(--tv-cyan)!important}
+#refreshChannelsBtn:disabled{opacity:.55!important;cursor:wait!important;transform:none!important}
+.tv-top-button{
+  position:fixed;right:18px;bottom:20px;z-index:45;
+  width:46px;height:46px;border:1px solid var(--tv-line);border-radius:15px;
+  display:grid;place-items:center;background:color-mix(in srgb,var(--tv-panel) 90%,transparent);
+  color:var(--tv-text);font:800 22px "DM Sans",sans-serif;
+  box-shadow:0 12px 32px rgba(0,0,0,.24);backdrop-filter:blur(16px);
+  opacity:0;visibility:hidden;transform:translateY(9px) scale(.96);
+  transition:opacity .2s,visibility .2s,transform .2s,border-color .2s;
+}
+.tv-top-button.is-visible{opacity:1;visibility:visible;transform:none}
+.tv-top-button:hover{border-color:var(--tv-cyan);color:var(--tv-cyan)}
+html.light .tv-top-button{box-shadow:0 12px 30px rgba(40,65,105,.17)}
+@media(max-width:680px){
+  body>header.tv-topbar{
+    display:grid!important;grid-template-columns:42px minmax(0,1fr) auto!important;
+    gap:9px!important;min-height:66px!important;padding:8px 10px!important;
+  }
+  .tv-home-link{width:40px!important;height:40px!important;justify-content:center!important;padding:0!important}
+  .tv-home-link>span{display:none!important}
+  .tv-brand{gap:7px!important;overflow:hidden}
+  .tv-brand img{width:34px!important;height:34px!important;flex:none!important}
+  .tv-brand b{font-size:15px!important;white-space:nowrap}
+  .tv-brand span span{font-size:8px!important;letter-spacing:.11em!important}
+  .tv-head-actions{gap:5px!important}
+  .tv-head-actions .btn,#installBtn,#aboutBtn,#theme{
+    width:38px!important;min-width:38px!important;height:38px!important;min-height:38px!important;
+    padding:0!important;border-radius:11px!important;display:grid!important;place-items:center!important;
+  }
+  #installBtn span,#aboutBtn span{display:none!important}
+  .tv-page-heading{align-items:flex-start!important}
+  .tv-heading-actions{max-width:48%;justify-content:flex-end}
+  #tvNetworkState{font-size:7px!important;letter-spacing:.045em!important;padding:7px 8px!important;white-space:normal!important;text-align:center}
+  #bar #refreshChannelsBtn{flex:1 1 auto!important}
+  .tv-top-button{right:13px;bottom:calc(16px + env(safe-area-inset-bottom));width:43px;height:43px}
+}
+@media(max-width:360px){
+  body>header.tv-topbar{grid-template-columns:38px minmax(0,1fr) auto!important;gap:6px!important;padding-inline:7px!important}
+  .tv-home-link{width:36px!important;height:36px!important}
+  .tv-brand img{width:30px!important;height:30px!important}
+  .tv-brand b{font-size:13px!important}
+  .tv-head-actions{gap:3px!important}
+  .tv-head-actions .btn,#installBtn,#aboutBtn,#theme{width:34px!important;min-width:34px!important;height:36px!important}
+  #tvNetworkState{font-size:6px!important;padding:6px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .tv-top-button{transition:none!important}
+  .skip-link:focus{transition:none!important}
+}
