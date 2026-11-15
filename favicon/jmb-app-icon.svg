@@ -1,26 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="JMB TV app icon"><defs><linearGradient id="appbg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#1b2840"/><stop offset=".55" stop-color="#080b13"/><stop offset="1" stop-color="#360712"/></linearGradient></defs><rect width="512" height="512" rx="110" fill="url(#appbg)"/><rect x="8" y="8" width="496" height="496" rx="104" fill="none" stroke="#d3122a" stroke-width="8"/><defs>
-<linearGradient id="shell" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f3f7ff"/><stop offset=".18" stop-color="#6b7482"/><stop offset=".48" stop-color="#171d28"/><stop offset=".78" stop-color="#05070c"/><stop offset="1" stop-color="#aab3c0"/></linearGradient>
-<linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#18263d"/><stop offset=".55" stop-color="#050a16"/><stop offset="1" stop-color="#250711"/></linearGradient>
-<linearGradient id="red" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ff6670"/><stop offset=".38" stop-color="#ef1028"/><stop offset="1" stop-color="#790010"/></linearGradient>
-<linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".24" stop-color="#c2cad5"/><stop offset=".48" stop-color="#fff"/><stop offset=".75" stop-color="#77818f"/><stop offset="1" stop-color="#f6f8fb"/></linearGradient>
-<linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff2b0"/><stop offset=".32" stop-color="#f6c14a"/><stop offset=".7" stop-color="#b66a0c"/><stop offset="1" stop-color="#fff0a0"/></linearGradient>
-<filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#000" flood-opacity=".7"/></filter>
-<filter id="redglow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6" result="b"/><feFlood flood-color="#ff1832" flood-opacity=".55"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<g fill="none" stroke="url(#chrome)" stroke-width="10" stroke-linecap="round"><path d="M220 157 151 94"/><path d="M292 157 361 94"/></g>
-<g fill="url(#red)" stroke="url(#chrome)" stroke-width="5"><circle cx="148" cy="91" r="10"/><circle cx="364" cy="91" r="10"/></g>
-<path d="M189 128 174 76 220 105 256 48 292 105 338 76 323 128Q256 151 189 128Z" fill="url(#gold)" stroke="#fff0ae" stroke-width="6" stroke-linejoin="round" filter="url(#shadow)"/>
-<path d="M189 128Q256 148 323 128" stroke="#8d4a08" stroke-width="5" fill="none"/>
-<g fill="#d70920" stroke="#fff1b4" stroke-width="3"><path d="M256 60 269 83 256 99 243 83Z"/><circle cx="211" cy="111" r="5"/><circle cx="301" cy="111" r="5"/></g>
-<rect x="34" y="142" width="444" height="285" rx="42" fill="url(#shell)" stroke="#f3f6fd" stroke-width="7" filter="url(#shadow)"/>
-<rect x="45" y="153" width="422" height="263" rx="33" fill="#080b12" stroke="#bc0c21" stroke-width="5" filter="url(#redglow)"/>
-<rect x="61" y="169" width="339" height="231" rx="22" fill="url(#screen)" stroke="#667487" stroke-width="3"/>
-<path d="M73 181H388" stroke="#fff" stroke-opacity=".16" stroke-width="3"/><path d="M77 383Q220 357 385 382" fill="none" stroke="#ed1830" stroke-opacity=".65" stroke-width="4"/>
-<text x="230" y="279" text-anchor="middle" font-family="Arial Black,Impact,Arial,sans-serif" font-size="100" font-weight="900" letter-spacing="-7" fill="#05070b" stroke="#05070b" stroke-width="17" paint-order="stroke" filter="url(#shadow)">JMB</text>
-<text x="230" y="279" text-anchor="middle" font-family="Arial Black,Impact,Arial,sans-serif" font-size="100" font-weight="900" letter-spacing="-7" fill="url(#chrome)" stroke="#333c49" stroke-width="5" paint-order="stroke fill">JMB</text>
-<path d="M126 298H334" stroke="#f2f6ff" stroke-opacity=".2" stroke-width="2"/>
-<text x="230" y="375" text-anchor="middle" font-family="Arial Black,Impact,Arial,sans-serif" font-size="82" font-weight="900" letter-spacing="8" fill="url(#red)" stroke="#30040b" stroke-width="7" paint-order="stroke fill">TV</text>
-<rect x="412" y="190" width="43" height="190" rx="17" fill="#080b12" stroke="#66717f" stroke-width="3"/>
-<circle cx="433.5" cy="229" r="12" fill="url(#chrome)" stroke="#202734" stroke-width="4"/><circle cx="433.5" cy="276" r="12" fill="url(#chrome)" stroke="#202734" stroke-width="4"/><circle cx="433.5" cy="348" r="5" fill="#ef1830" stroke="#ff9ea7" stroke-width="2"/>
-<path d="M143 427 124 450H189L201 428M369 427 388 450H323L311 428" fill="#101621" stroke="url(#chrome)" stroke-width="5" stroke-linejoin="round"/>
-<path d="M54 405H458" stroke="#ff233b" stroke-opacity=".75" stroke-width="4"/></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="JMB MEDIA app icon">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#263a5c"/><stop offset=".52" stop-color="#090e1b"/><stop offset="1" stop-color="#501a2a"/></linearGradient><linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9df4e7"/><stop offset=".5" stop-color="#8c9eff"/><stop offset="1" stop-color="#ff816f"/></linearGradient><linearGradient id="type" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".5" stop-color="#bcf9ef"/><stop offset="1" stop-color="#ff9b7b"/></linearGradient></defs>
+<rect width="512" height="512" rx="112" fill="url(#bg)"/><rect x="10" y="10" width="492" height="492" rx="104" fill="none" stroke="url(#edge)" stroke-width="6"/>
+<circle cx="256" cy="256" r="196" fill="none" stroke="#fff" stroke-opacity=".08" stroke-width="2"/><circle cx="256" cy="256" r="166" fill="none" stroke="url(#edge)" stroke-opacity=".36" stroke-width="3" stroke-dasharray="5 17"/>
+<rect x="57" y="128" width="398" height="258" rx="44" fill="#080d18" stroke="#d9e7f5" stroke-opacity=".2" stroke-width="4"/>
+<path d="M58 176h396" stroke="url(#edge)" stroke-width="5"/>
+<text x="256" y="291" text-anchor="middle" font-family="Arial Black,Impact,Arial,sans-serif" font-size="134" font-weight="900" letter-spacing="-11" fill="url(#type)">JMB</text>
+<path d="M203 327h106" stroke="url(#edge)" stroke-width="7" stroke-linecap="round"/>
+<text x="256" y="366" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" font-weight="800" letter-spacing="8" fill="#f7fbff">MEDIA</text>
+</svg>
