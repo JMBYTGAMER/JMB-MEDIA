@@ -713,7 +713,7 @@ try {
 function makeProxy(name, value) {
   try {
     const u = new URL(String(value || '').trim());
-    if (u.protocol !== 'https:' || u.username || u.password || u.hash) return null;
+    if (u.protocol !== 'https:' || u.username || u.password || u.hash || (u.pathname && u.pathname !== '/')) return null;
     u.search = '';
     let path = u.pathname || '/';
     if (!path.endsWith('/')) path += '/';
@@ -800,7 +800,7 @@ function buildProxyDialog() {
       localStorage.setItem('jbProxyOrder', proxyOrder);
     } catch (e) {}
     status.textContent = 'Settings saved on this device.';
-    if (cur && !cur.isMovie && enabled.checked) startStream(cur);
+    if (cur && !cur.isMovie) startStream(cur);
     window.setTimeout(close, 450);
   });
   proxyDialog.addEventListener('close', () => {
@@ -854,7 +854,7 @@ async function testProxy() {
   return results.every(x => x.includes(': OK'));
 }
 $('proxyBtn').onclick = openProxySettings;
-$('proxyTest').onclick = openProxySettings;
+$('proxyTest').onclick = () => { openProxySettings(); testProxy(); };
 syncProxyUi();
 
 // ---- Movies (Internet Archive: public-domain and openly licensed films) ----
