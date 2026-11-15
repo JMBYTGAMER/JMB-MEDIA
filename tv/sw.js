@@ -1,6 +1,6 @@
 // JMB TV service worker: app shell + playlist caching. Streams (video) are never touched.
-const V = 'jmbtv-v12';
-const SHELL = ['./jmb-tv-experience.css?v=4', './', '/favicon/site.webmanifest?v=7', '/favicon/jmb-logo.svg', '/favicon/jmb-app-icon.svg?v=7', '/favicon/jmb-maskable-icon.svg?v=7'];
+const V = 'jmbtv-v13';
+const SHELL = ['./jmb-tv-experience.css?v=5', './', '/assets/css/brand-intro.css?v=1', '/assets/js/brand-intro.js?v=1', '/favicon/site.webmanifest?v=10', '/favicon/jmb-logo.svg?v=10', '/favicon/jmb-app-icon.svg?v=10', '/favicon/jmb-maskable-icon.svg?v=10'];
 const CDN = ['cdnjs.cloudflare.com', 'cdn.tailwindcss.com'];
 const LISTS = ['/iptv/index.m3u', '/iptv/index.category.m3u', '/iptv/index.country.m3u', '/iptv/index.language.m3u'];
 const SUPPLEMENTAL = '/freecasthub/public-iptv/main/playlist.m3u';
