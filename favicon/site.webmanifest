@@ -1,29 +1,16 @@
 {
-  "name": "JMB TV",
-  "short_name": "JMB TV",
-  "description": "JMB TV — discover channel listings and play supported public streams.",
-  "start_url": "/tv/?source=pwa",
-  "scope": "/tv/",
+  "name": "JMB MEDIA",
+  "short_name": "JMB MEDIA",
+  "description": "JMB MEDIA — watch, read and listen in one connected media hub.",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0b1222",
-  "theme_color": "#0b1222",
-  "categories": [
-    "entertainment",
-    "video"
-  ],
+  "background_color": "#090b12",
+  "theme_color": "#090b12",
+  "categories": ["entertainment", "news", "music"],
   "icons": [
-    {
-      "src": "/favicon/jmb-app-icon.svg?v=7",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "/favicon/jmb-maskable-icon.svg?v=7",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
-    }
+    {"src": "/favicon/jmb-app-icon.svg?v=10", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any"},
+    {"src": "/favicon/jmb-maskable-icon.svg?v=10", "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable"}
   ]
 }
