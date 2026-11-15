@@ -782,6 +782,7 @@ function buildProxyDialog() {
   const order = proxyDialog.querySelector('#jmbProxyOrder');
   const enabled = proxyDialog.querySelector('#jmbProxyEnabled');
   const status = proxyDialog.querySelector('#jmbProxyStatus');
+  input.addEventListener('input', () => { order.disabled = !input.value.trim(); if (order.disabled) order.value = 'primary'; });
   const close = () => proxyDialog.close();
   proxyDialog.querySelector('.jmb-proxy-close').addEventListener('click', close);
   proxyDialog.addEventListener('click', e => { if (e.target === proxyDialog) close(); });
