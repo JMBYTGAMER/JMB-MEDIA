@@ -3,33 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JMB TV — Live Channel Guide</title>
+<title>JMB MEDIA — Live TV Guide</title>
 <meta name="description" content="Browse public live television channels by name, category, language and broadcast region. Play supported streams directly in JMB TV.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#0b1222">
 <link rel="preconnect" href="https://iptv-org.github.io" crossorigin>
 <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 <link rel="canonical" href="https://media.jmbhost.qzz.io/tv/">
-<link rel="icon" type="image/svg+xml" href="/favicon/jmb-app-icon.svg?v=7" sizes="any" />
-<link rel="manifest" href="/favicon/site.webmanifest?v=7" />
+<link rel="icon" type="image/svg+xml" href="/favicon/jmb-app-icon.svg?v=10" sizes="any" />
+<link rel="manifest" href="/favicon/site.webmanifest?v=10" />
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="JMB TV">
-<meta name="application-name" content="JMB TV">
+<meta name="apple-mobile-web-app-title" content="JMB MEDIA">
+<meta name="application-name" content="JMB MEDIA">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <!-- Google Search Console: paste your verification tag here, e.g. <meta name="google-site-verification" content="YOUR_CODE"> -->
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="JMB TV">
-<meta property="og:title" content="JMB TV — Live Channel Guide">
+<meta property="og:site_name" content="JMB MEDIA">
+<meta property="og:title" content="JMB MEDIA — Live TV Guide">
 <meta property="og:description" content="Browse public live television channels by category, language and region.">
 <meta property="og:url" content="https://media.jmbhost.qzz.io/tv/">
-<meta property="og:image" content="https://media.jmbhost.qzz.io/favicon/jmb-app-icon.svg?v=7">
+<meta property="og:image" content="https://media.jmbhost.qzz.io/favicon/jmb-app-icon.svg?v=10">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="JMB TV — Live Channel Guide">
+<meta name="twitter:title" content="JMB MEDIA — Live TV Guide">
 <meta name="twitter:description" content="Browse public live television channels by category, language and broadcast region.">
 <meta name="twitter:image" content="https://media.jmbhost.qzz.io/favicon/favicon.svg?v=5">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"JMB TV","url":"https://media.jmbhost.qzz.io/tv/","description":"Browse public live television channels and play supported streams.","applicationCategory":"EntertainmentApplication","operatingSystem":"Any","image":"https://media.jmbhost.qzz.io/favicon/favicon.svg","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+{"@context":"https://schema.org","@type":"WebApplication","name":"JMB MEDIA","url":"https://media.jmbhost.qzz.io/tv/","description":"Browse public live television channels and play supported streams.","applicationCategory":"EntertainmentApplication","operatingSystem":"Any","image":"https://media.jmbhost.qzz.io/favicon/favicon.svg","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js" defer></script>
@@ -142,7 +142,7 @@
 </style>
 
 <link rel="stylesheet" href="jmb-tv-only.css?v=8">
-<link rel="stylesheet" href="jmb-tv-experience.css?v=4">
+<link rel="stylesheet" href="jmb-tv-experience.css?v=5"><link rel="stylesheet" href="/assets/css/brand-intro.css?v=1">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to content</a>
@@ -156,9 +156,9 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
     <span><img src="/favicon/jmb-logo.svg" alt="" width="30" height="30" style="width:30px;height:30px;object-fit:contain;vertical-align:middle;margin-right:6px"><b>JMB MEDIA</b><small>BACK TO HOME</small></span>
   </a>
-  <a class="tv-brand" href="./" aria-label="JMB TV home">
-    <img data-logo alt="JMB TV logo">
-    <span><b>JMB TV</b><span>TELEVISION</span></span>
+  <a class="tv-brand" href="./" aria-label="JMB MEDIA Television">
+    <img data-logo alt="JMB MEDIA logo">
+    <span><b>JMB MEDIA</b><span>WATCH · READ · LISTEN</span></span>
   </a>
   <div class="tv-head-actions">
     <button id="installBtn" class="btn hidden" title="Install JMB TV as an app" data-ic="download"><span>Install</span></button>
@@ -278,7 +278,7 @@
 
 <footer class="tv-footer">
   <img src="/favicon/jmb-logo.svg" alt="JMB logo" width="36" height="36" style="width:36px;height:36px;object-fit:contain;vertical-align:middle">
-  <span>JMB TV</span><span>·</span><span>Public channel directory</span><span>·</span>
+  <span>JMB MEDIA</span><span>·</span><span>TELEVISION</span><span>·</span>
   <button id="aboutLink" type="button">About</button><span>·</span>
   <button id="keysLink" type="button">Keyboard shortcuts</button>
 </footer>
@@ -309,7 +309,7 @@
   <div id="aboutCard" class="t-bg rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6 shadow-2xl ring-1 ring-white/10 relative">
     <button id="aboutClose" class="btn absolute top-3 right-3 !p-2" title="Close" data-ic="close"></button>
     <div class="stag text-center">
-      <img data-logo alt="JMB TV logo" class="h-20 w-auto mx-auto float" style="--i:0">
+      <img data-logo alt="JMB MEDIA logo" class="h-20 w-auto mx-auto float" style="--i:0">
       <h2 class="text-2xl font-extrabold mt-3" style="--i:1">About JMB TV</h2>
       <p class="text-sm t-muted mt-2" style="--i:2">JMB TV is a television channel directory and player. Browse public channel listings by name, category, language or broadcast region and play supported streams inside this page. We do not unlock subscriptions, remove regional restrictions or bypass broadcaster protections.</p>
     </div>
@@ -411,7 +411,7 @@ const BASE_TITLE = document.title;
 const SKEL = '<div><div class="aspect-video rounded-xl shimmer"></div><div class="h-3 w-4/5 mt-3 rounded shimmer"></div><div class="h-3 w-2/5 mt-2 rounded shimmer"></div></div>';
 const $ = id => document.getElementById(id);
 const url = x => location.protocol === 'https:' ? x.replace(/^http:/, 'https:') : x; // try https on secure pages
-const viaProxy = x => PROXY + encodeURIComponent(x);
+const viaProxy = x => { const p = proxyList()[0]; return p ? p.wrap(x) : url(x); };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 const P = {
@@ -559,11 +559,13 @@ async function fetchPlaylistText(source, required = false, allowProxy = true) {
     return response.text();
   };
   try { return await direct(); } catch (error) {
-    if (allowProxy && PROXY) {
-      try {
-        const response = await fetch(viaProxy(source), { cache: 'force-cache' });
-        if (response.ok) return await response.text();
-      } catch (e) {}
+    if (allowProxy) {
+      for (const worker of proxyList()) {
+        try {
+          const response = await fetch(worker.wrap(source), { cache: 'force-cache' });
+          if (response.ok) return await response.text();
+        } catch (e) {}
+      }
     }
     if (required) throw error;
     return '';
@@ -604,7 +606,7 @@ async function load() {
 }
 
 async function fetchLangText() { // direct first, then proxy (if configured)
-  const tries = [url(LANG_PLAYLIST)]; if (PROXY) tries.push(viaProxy(LANG_PLAYLIST));
+  const tries = [url(LANG_PLAYLIST), ...proxyList().map(worker => worker.wrap(LANG_PLAYLIST))];
   for (const t of tries) { try { const x = await fetch(t); if (x.ok) return await x.text(); } catch (e) {} }
   return null;
 }
@@ -662,7 +664,11 @@ async function probe(u) {
     return new TextDecoder().decode(value || new Uint8Array()).trimStart().startsWith('#EXTM3U');
   } catch (e) { return false; } finally { clearTimeout(t); }
 }
-const checkChannel = async c => (await probe(url(c.url))) || (proxyMode === 'worker' && PROXY ? probe(viaProxy(c.url)) : false);
+const checkChannel = async c => {
+  if (await probe(url(c.url))) return true;
+  for (const worker of proxyList()) if (await probe(worker.wrap(c.url))) return true;
+  return false;
+};
 async function scanList() {
   if (scan) return;
   const todo = filtered.filter(c => !good.has(c.url));
@@ -693,64 +699,163 @@ $('scanStop').onclick = () => { if (scan) scan.stop = true; };
 $('hideBtn').onclick = () => { hideBad = !hideBad; try { localStorage.setItem('jbHide', hideBad ? '1' : '0'); } catch (e) {} applyFilter(); };
 $('resetBtn').onclick = () => { if (confirm('Show all hidden channels and forget scan results?')) { bad.clear(); good.clear(); saveSets(); applyFilter(); } };
 
-// ---- Proxy (public or your own) with an on/off switch ----
-const PUBLIC_PROXIES = [ // free third-party proxies: can be slow, rate-limited or offline
-  { name: 'AllOrigins', wrap: u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u) },
-  { name: 'CodeTabs', wrap: u => 'https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent(u) }
-];
-const PLABEL = { off: 'Off', public: 'Public', worker: 'Your proxy' };
-let proxyMode = PROXY ? 'worker' : 'public';
+// ---- Proxy fallback (direct first, then the Workers you configure) ----
+const PLABEL = { off: 'Off', auto: 'Auto' };
+let proxyMode = 'auto', proxyBackup = '', proxyOrder = 'primary';
 try {
-  const migrated = localStorage.getItem('jbProxyPrefVersion') === '2';
-  const m = localStorage.getItem('jbProxy');
-  if (migrated && (m === 'off' || m === 'public' || (m === 'worker' && PROXY))) proxyMode = m;
-  if (PROXY && !migrated) proxyMode = 'worker';
-  if (PROXY && localStorage.getItem('jbProxyUrl') !== PROXY) proxyMode = 'worker';
-  localStorage.setItem('jbProxy', proxyMode); localStorage.setItem('jbProxyUrl', PROXY); localStorage.setItem('jbProxyPrefVersion', '2');
+  const savedMode = localStorage.getItem('jbProxy');
+  proxyMode = savedMode === 'off' ? 'off' : 'auto';
+  proxyBackup = localStorage.getItem('jbProxyBackup') || '';
+  proxyOrder = localStorage.getItem('jbProxyOrder') === 'backup' ? 'backup' : 'primary';
+  localStorage.setItem('jbProxyPrefVersion', '3');
 } catch (e) {}
-const proxyList = () => proxyMode === 'off' ? [] : proxyMode === 'public' ? PUBLIC_PROXIES
-  : [{ name: 'Your proxy', wrap: u => u.startsWith(PROXY) ? u : PROXY + encodeURIComponent(u), ping: PROXY.replace(/\?url=$/, '?ping=1') }];
+
+function makeProxy(name, value) {
+  try {
+    const u = new URL(String(value || '').trim());
+    if (u.protocol !== 'https:' || u.username || u.password || u.hash) return null;
+    u.search = '';
+    let path = u.pathname || '/';
+    if (!path.endsWith('/')) path += '/';
+    const base = u.origin + path, prefix = base + '?url=';
+    return {
+      name, base, prefix, ping: base + '?ping=1',
+      wrap(target) {
+        const raw = String(target || '');
+        return raw.startsWith(prefix) ? raw : prefix + encodeURIComponent(raw);
+      },
+      isWrapped(target) { return String(target || '').startsWith(prefix); }
+    };
+  } catch (e) { return null; }
+}
+function configuredProxies() {
+  const primary = makeProxy('JMB Worker', PROXY);
+  const backup = makeProxy('Backup Worker', proxyBackup);
+  const list = proxyOrder === 'backup' ? [backup, primary] : [primary, backup];
+  const seen = new Set();
+  return list.filter(p => p && !seen.has(p.prefix) && seen.add(p.prefix));
+}
+const proxyList = () => proxyMode === 'off' ? [] : configuredProxies();
 function syncProxyUi() {
-  const b = $('proxyBtn'); b.textContent = 'Proxy: ' + PLABEL[proxyMode];
-  b.classList.toggle('!bg-red-600', proxyMode !== 'off'); b.classList.toggle('!text-white', proxyMode !== 'off');
+  const b = $('proxyBtn');
+  if (!b) return;
+  b.textContent = 'Proxy: ' + PLABEL[proxyMode];
+  b.title = 'Configure automatic proxy fallback';
+  b.classList.toggle('!bg-red-600', proxyMode !== 'off');
+  b.classList.toggle('!text-white', proxyMode !== 'off');
 }
-function setProxy(m) { proxyMode = m; try { localStorage.setItem('jbProxy', m); } catch (e) {} syncProxyUi(); }
-function cycleProxy() {
-  const modes = PROXY ? ['worker', 'public', 'off'] : ['public', 'off'];
-  setProxy(modes[(modes.indexOf(proxyMode) + 1) % modes.length]); toast('Proxy: ' + PLABEL[proxyMode]);
+function setProxy(m) {
+  proxyMode = m === 'off' ? 'off' : 'auto';
+  try { localStorage.setItem('jbProxy', proxyMode); } catch (e) {}
+  syncProxyUi();
 }
-async function proxyHealthy(p) { // fetch a tiny known page through the proxy
-  try { const x = await fetch(p.ping || p.wrap('https://example.com/'), { cache: 'no-store' }); const tx = await x.text(); return x.ok && (tx.includes('Example Domain') || tx.includes('jb-proxy-ok')); }
-  catch (e) { return false; }
-}
-$('proxyBtn').onclick = cycleProxy;
-async function testProxy() { // tells you exactly where the proxy setup is failing
-  const list = proxyList();
-  if (!list.length) return alert('Proxy is Off. Press the Proxy button to choose Public or Your proxy, then test again.');
-  if (proxyMode === 'worker' && !PROXY) return alert('The PROXY address in index.html is empty. Paste your Cloudflare Worker address there first.');
-  const px = list[0], out = ['Mode: ' + PLABEL[proxyMode]];
+async function proxyHealthy(p) {
   try {
-    const r1 = await fetch(px.ping || px.wrap('https://example.com/'), { cache: 'no-store' }), t1 = await r1.text();
-    if (r1.ok && (t1.includes('Example Domain') || t1.includes('jb-proxy-ok'))) out.push('OK: the proxy reaches the internet.');
-    else {
-      const say = t1.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80);
-      let why = '';
-      if (r1.status === 403) why = ' Your site address is not in the ALLOWED list of the worker, or the worker is not the latest version.';
-      else if (r1.status === 404 || r1.status === 530 || /1042|nothing here/i.test(t1)) why = ' No worker answers at that address. Check the address after PROXY, and that the worker is deployed with its workers.dev route enabled.';
-      else if (r1.ok) why = ' The address answers, but it is not running the proxy code. Paste cors-proxy-worker.js into the worker and press Deploy.';
-      out.push(`FAIL: the proxy answered ${r1.status}.${why}` + (say ? `\nIt said: "${say}"` : ''));
-      return alert(out.join('\n'));
+    const x = await fetch(p.ping, { cache: 'no-store' });
+    const tx = await x.text();
+    return x.ok && tx.trim() === 'jb-proxy-ok';
+  } catch (e) { return false; }
+}
+
+let proxyDialog;
+function buildProxyDialog() {
+  if (proxyDialog) return proxyDialog;
+  proxyDialog = document.createElement('dialog');
+  proxyDialog.className = 'jmb-proxy-dialog';
+  proxyDialog.setAttribute('aria-labelledby', 'jmbProxyTitle');
+  proxyDialog.innerHTML = `
+    <div class="jmb-proxy-sheet">
+      <div class="jmb-proxy-heading">
+        <div><span class="jmb-proxy-kicker">JMB MEDIA · PLAYER SETTINGS</span><h2 id="jmbProxyTitle">Playback connection</h2></div>
+        <button type="button" class="jmb-proxy-close" aria-label="Close proxy settings">×</button>
+      </div>
+      <p class="jmb-proxy-description">JMB TV tries the broadcaster first. Automatic fallback uses the configured Cloudflare Worker for HLS streams that need it.</p>
+      <label class="jmb-proxy-toggle"><input id="jmbProxyEnabled" type="checkbox"><span><b>Automatic proxy fallback</b><small>Try the Worker after a direct connection fails.</small></span></label>
+      <label class="jmb-proxy-field"><span>Optional backup Worker URL</span><input id="jmbProxyBackup" type="url" inputmode="url" autocomplete="url" placeholder="https://your-worker.workers.dev/"><small>Use a Worker you control, deployed with cors-proxy-worker.js and allowing media.jmbhost.qzz.io.</small></label>
+      <label class="jmb-proxy-field"><span>Preferred Worker order</span><select id="jmbProxyOrder"><option value="primary">JMB Worker first</option><option value="backup">My backup first</option></select></label>
+      <p class="jmb-proxy-warning">A proxy cannot make an offline, subscription-only, DRM-protected or region-restricted broadcast playable. It only helps with compatible public streams and browser CORS restrictions.</p>
+      <div id="jmbProxyStatus" class="jmb-proxy-status" role="status" aria-live="polite">Ready to test the configured Worker.</div>
+      <div class="jmb-proxy-actions"><button type="button" id="jmbProxyTest" class="jmb-proxy-secondary">Test Worker</button><button type="button" id="jmbProxySave" class="jmb-proxy-primary">Save settings</button></div>
+    </div>`;
+  document.body.appendChild(proxyDialog);
+  const input = proxyDialog.querySelector('#jmbProxyBackup');
+  const order = proxyDialog.querySelector('#jmbProxyOrder');
+  const enabled = proxyDialog.querySelector('#jmbProxyEnabled');
+  const status = proxyDialog.querySelector('#jmbProxyStatus');
+  const close = () => proxyDialog.close();
+  proxyDialog.querySelector('.jmb-proxy-close').addEventListener('click', close);
+  proxyDialog.addEventListener('click', e => { if (e.target === proxyDialog) close(); });
+  proxyDialog.querySelector('#jmbProxyTest').addEventListener('click', testProxy);
+  proxyDialog.querySelector('#jmbProxySave').addEventListener('click', () => {
+    const raw = input.value.trim();
+    if (raw && !makeProxy('Backup Worker', raw)) {
+      status.textContent = 'Enter a valid HTTPS Worker URL (without login details).';
+      input.focus(); return;
     }
-  } catch (e) { return alert(out.concat('FAIL: could not reach the proxy. Check the address after PROXY (it must end with /?url=), that the worker is deployed, and that you uploaded the new index.html.').join('\n')); }
-  try {
-    const r2 = await fetch(px.wrap('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'), { cache: 'no-store' }), t2 = await r2.text();
-    if (!r2.ok || !t2.startsWith('#EXTM3U')) out.push(`FAIL: a public test stream did not load (${r2.status}). It may be down; try again later.`);
-    else if (proxyMode === 'worker') out.push(t2.includes('?url=') ? 'OK: playlist rewriting works. Channels that still fail are blocked by their own servers (offline, region-locked, or refusing Cloudflare).' : 'FAIL: playlists are not rewritten. Paste the latest cors-proxy-worker.js into your worker and deploy it again.');
-    else out.push('OK: the test stream loads.');
-  } catch (e) { out.push('FAIL: the test stream could not be loaded through the proxy.'); }
-  alert(out.join('\n'));
+    proxyBackup = raw;
+    proxyOrder = order.value === 'backup' && raw ? 'backup' : 'primary';
+    setProxy(enabled.checked ? 'auto' : 'off');
+    try {
+      localStorage.setItem('jbProxyBackup', proxyBackup);
+      localStorage.setItem('jbProxyOrder', proxyOrder);
+    } catch (e) {}
+    status.textContent = 'Settings saved on this device.';
+    if (cur && !cur.isMovie && enabled.checked) startStream(cur);
+    window.setTimeout(close, 450);
+  });
+  proxyDialog.addEventListener('close', () => {
+    if (proxyDialog.returnValue !== 'save') status.textContent = 'Settings closed.';
+  });
+  proxyDialog._sync = () => {
+    input.value = proxyBackup;
+    order.value = proxyOrder;
+    enabled.checked = proxyMode !== 'off';
+    order.disabled = !proxyBackup;
+    status.textContent = proxyMode === 'off' ? 'Direct connection only.' : 'Automatic fallback is ready.';
+  };
+  return proxyDialog;
 }
-$('proxyTest').onclick = testProxy;
+function openProxySettings() {
+  const d = buildProxyDialog();
+  d._sync();
+  if (!d.open) d.showModal();
+}
+async function testProxy() {
+  const status = buildProxyDialog().querySelector('#jmbProxyStatus');
+  const workers = configuredProxies();
+  if (!workers.length) {
+    status.textContent = 'No valid Worker is configured. Save your own HTTPS Cloudflare Worker URL below.';
+    return false;
+  }
+  status.textContent = 'Testing Worker health and a public HLS test playlist…';
+  const results = [];
+  for (const worker of workers) {
+    try {
+      const ping = await fetch(worker.ping, { cache: 'no-store' });
+      const body = (await ping.text()).trim();
+      if (!ping.ok || body !== 'jb-proxy-ok') {
+        results.push(worker.name + ': health check failed (' + ping.status + '). Check deployment and the allowed site origin.');
+        continue;
+      }
+      const sample = await fetch(worker.wrap('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'), { cache: 'no-store' });
+      const playlist = await sample.text();
+      if (!sample.ok || !playlist.trimStart().startsWith('#EXTM3U')) {
+        results.push(worker.name + ': reachable, but the HLS test playlist failed (' + sample.status + ').');
+      } else if (!playlist.includes(worker.prefix)) {
+        results.push(worker.name + ': reachable, but playlist URLs were not rewritten. Deploy the latest cors-proxy-worker.js.');
+      } else {
+        results.push(worker.name + ': OK — health check and HLS playlist rewriting passed.');
+      }
+    } catch (e) {
+      results.push(worker.name + ': could not be reached from this browser. Check the Worker URL, deployment and CORS settings.');
+    }
+  }
+  status.textContent = results.join('  ·  ');
+  return results.every(x => x.includes(': OK'));
+}
+$('proxyBtn').onclick = openProxySettings;
+$('proxyTest').onclick = openProxySettings;
+syncProxyUi();
 
 // ---- Movies (Internet Archive: public-domain and openly licensed films) ----
 const IA = 'https://archive.org';
@@ -1365,7 +1470,7 @@ function startStream(c, n = 0) {
   }, 15000);
   if (window.Hls && Hls.isSupported()) {
     const cfg = { enableWorker: true, lowLatencyMode: true };
-    if (via) cfg.xhrSetup = (xhr, u) => xhr.open('GET', via.wrap(u), true);
+    if (via) cfg.xhrSetup = (xhr, u) => xhr.open('GET', via.isWrapped(u) ? u : via.wrap(u), true);
     hls = new Hls(cfg);
     hls.loadSource(src); hls.attachMedia(v);
     hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, renderAudio);
@@ -1411,8 +1516,8 @@ $('err').onclick = e => {
     if (alternative) openWatch(alternative);
   }
   if (e.target.closest('#retry') && cur) { if (cur.isMovie) openMovie(cur.mid, cur.name); else startStream(cur); }
-  if (e.target.closest('#proxyTestErr')) testProxy();
-  if (e.target.closest('#proxyErr') && cur) { cycleProxy(); startStream(cur); }
+  if (e.target.closest('#proxyTestErr')) { openProxySettings(); testProxy(); }
+  if (e.target.closest('#proxyErr')) openProxySettings();
   if (e.target.closest('#hideCh') && cur) { bad.add(cur.url); saveSets(); closePlayer(); if (history.state && history.state.w) history.back(); applyFilter(); }
 };
 
@@ -1718,5 +1823,6 @@ load();
   });
 })();
 </script>
+<script src="/assets/js/brand-intro.js?v=1"></script>
 </body>
 </html>
