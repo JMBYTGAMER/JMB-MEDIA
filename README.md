@@ -61,3 +61,8 @@ After changing the Worker source, deploy it in Cloudflare Workers. The deployed 
 - IPTV-org public worldwide playlist and its category, country and language metadata: https://github.com/iptv-org/iptv
 - Free Public IPTV playlist: https://github.com/freecasthub/public-iptv (the project states that its playlist is released under The Unlicense and that streams are free and publicly provided by official broadcasters).
 - JMB TV filters the supplemental playlist to secure HTTPS HLS stream URLs, excluding entries marked as GeoIP-blocked or YouTube-only and VOD groups. It does not bypass geographic restrictions, subscriptions or DRM. The visible channel count is calculated from the merged, deduplicated catalogue at runtime.
+
+
+## Proxy settings
+
+JMB TV attempts a public stream directly first, then uses the configured Cloudflare Worker for compatible HLS streams that need browser CORS support. The player settings allow an optional backup Worker URL. A backup must be deployed by the site owner with the same `cors-proxy-worker.js` source and must allow the JMB MEDIA origin (`https://media.jmbhost.qzz.io`). The proxy fallback does not bypass subscriptions, DRM, regional restrictions, or broadcaster access controls. A successful proxy health test confirms only that the Worker responds and rewrites a sample playlist; it does not guarantee that every channel is available.
