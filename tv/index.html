@@ -408,7 +408,7 @@ const PLAYLIST = 'https://iptv-org.github.io/iptv/index.m3u';
 const CATEGORY_PLAYLIST = 'https://iptv-org.github.io/iptv/index.category.m3u';
 const AREA_PLAYLIST = 'https://iptv-org.github.io/iptv/index.country.m3u';
 const FREE_TV_PLAYLIST = 'https://raw.githubusercontent.com/freecasthub/public-iptv/main/playlist.m3u';
-// Optional Cloudflare Worker proxy. Direct public streams are always tried first.
+// JMB-managed Cloudflare Worker shared with the JB TV demo. Direct streams are always tried first.
 const PROXY = 'https://jb-proxy.johanbiju15.workers.dev/?url=';
 const LANG_PLAYLIST = 'https://iptv-org.github.io/iptv/index.language.m3u';
 const PAGE = 72;
@@ -707,7 +707,7 @@ $('hideBtn').onclick = () => { hideBad = !hideBad; try { localStorage.setItem('j
 $('resetBtn').onclick = () => { if (confirm('Show all hidden channels and forget scan results?')) { bad.clear(); good.clear(); saveSets(); applyFilter(); } };
 
 // ---- JMB MEDIA managed Cloudflare Worker proxy (direct playback first) ----
-const PLABEL = { off: 'Off', auto: 'JMB proxy', jmb: 'JMB proxy' };
+const PLABEL = { off: 'Off', auto: 'JMB proxy' };
 let proxyMode = 'auto';
 try {
   const savedMode = localStorage.getItem('jbProxy');
@@ -881,6 +881,7 @@ async function testProxy() {
 }
 
 $('proxyBtn').onclick = openProxySettings;
+$('proxyTest').textContent = 'Test JMB proxy';
 $('proxyTest').onclick = () => { openProxySettings(); testProxy(); };
 syncProxyUi();
 
@@ -1494,7 +1495,7 @@ function netMsg(c, d, viaProx) {
   if (code === 401 || code === 403) return `The stream server refused access (${code}).`;
   if (code >= 500) return `The stream server has a problem (${code}). Try again later.`;
   if (/^http:/.test(c.url) && location.protocol === 'https:') return 'This stream is HTTP-only (or offline), so it cannot play on an HTTPS site.' + hint;
-  return 'The direct stream could not be reached from this browser. JMB TV will try the configured proxy automatically. If that also fails, the broadcaster may be offline, region-restricted, or may block third-party playback.' + hint;
+  return 'The direct stream could not be reached from this browser. JMB TV is retrying through the JMB proxy. If that also fails, the broadcaster may be offline, restricted by its provider, or may block third-party playback.' + hint;
 }
 // Tries the direct stream first, then each enabled proxy. With a proxy, the ORIGINAL playlist URL is
 // loaded and every request (playlist + video pieces) is routed through the proxy, so HTTP-only
@@ -1601,7 +1602,7 @@ function fail(m) {
     ? normaliseSearch([x.name, x.tvg].join(' ')).includes('asianet')
     : (x.cats || []).some(k => (cur.cats || []).includes(k)))).slice(0, 3) : [];
   const altMarkup = alternatives.length ? `<div class="tv-alt-wrap"><span class="tv-alt-label">${isAsianet ? 'OTHER ASIANET LISTINGS' : 'TRY ANOTHER CHANNEL'}</span><div class="tv-alt-list">${alternatives.map(x => `<button type="button" class="tv-alt-channel" data-alt-channel="${x.id}"><span>${esc(x.name)}</span><b>PLAY ↗</b></button>`).join('')}</div></div>` : '';
-  $('err').innerHTML = `<div class="tv-playback-error"><span class="tv-error-mark">!</span><div class="tv-error-copy"><strong>We couldn't start this channel</strong><p>${safe}</p><small>This channel stays in your directory. You can retry, test the proxy, or choose another listing.</small></div><div class="tv-error-actions"><button id="retry" class="btn !text-white">Try again</button>${live ? `<button id="proxyTestErr" class="btn !text-white">Test proxy</button><button id="proxyErr" class="btn !text-white">Change proxy</button>` : ''}</div>${altMarkup}</div>`;
+  $('err').innerHTML = `<div class="tv-playback-error"><span class="tv-error-mark">!</span><div class="tv-error-copy"><strong>We couldn't start this channel</strong><p>${safe}</p><small>This channel stays in your directory. JMB TV tries its built-in JMB proxy automatically; you can test the JMB proxy or choose another listing.</small></div><div class="tv-error-actions"><button id="retry" class="btn !text-white">Try again</button>${live ? `<button id="proxyTestErr" class="btn !text-white">Test JMB proxy</button><button id="proxyErr" class="btn !text-white">JMB proxy settings</button>` : ''}</div>${altMarkup}</div>`;
   $('err').classList.remove('hidden');
 }
 $('err').onclick = e => {
