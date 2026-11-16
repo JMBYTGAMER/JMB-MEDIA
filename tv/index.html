@@ -771,7 +771,7 @@ function buildProxyDialog() {
   proxyDialog = document.createElement('dialog');
   proxyDialog.className = 'jmb-proxy-dialog';
   proxyDialog.setAttribute('aria-labelledby', 'jmbProxyTitle');
-  proxyDialog.innerHTML = \`
+  proxyDialog.innerHTML = `
     <div class="jmb-proxy-sheet">
       <div class="jmb-proxy-heading">
         <div><span class="jmb-proxy-kicker">JMB MEDIA · CONNECTION MANAGER</span><h2 id="jmbProxyTitle">Choose your proxy</h2></div>
@@ -821,7 +821,7 @@ function buildProxyDialog() {
         <button type="button" id="jmbProxyTest" class="jmb-proxy-secondary">Test selected proxy</button>
         <button type="button" id="jmbProxySave" class="jmb-proxy-primary">Save &amp; use</button>
       </div>
-    </div>\`;
+    </div>`;
   document.body.appendChild(proxyDialog);
 
   const mode = proxyDialog.querySelector('#jmbProxyMode');
