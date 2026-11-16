@@ -145,3 +145,26 @@ html.light .jmb-mobile-dock{background:rgba(249,252,255,.95);border-color:rgba(4
 @media(prefers-reduced-motion:reduce){
   .hero-screen,.hero-screen-logo,.hero-screen:after{animation:none!important;transition:none!important;transform:none!important}
 }
+
+/* Cross-section search control */
+.quick-search{display:flex;align-items:stretch;gap:8px;padding:7px}
+.quick-search select{
+  flex:0 0 auto;min-width:118px;max-width:148px;
+  padding:0 28px 0 11px;border:1px solid rgba(174,198,233,.14);
+  border-radius:11px;background:rgba(9,15,26,.78);color:#dce8f7;
+  font:750 11px/1.2 "DM Sans",system-ui,sans-serif;outline:none;
+}
+.quick-search select:focus{border-color:rgba(120,229,215,.55);box-shadow:0 0 0 3px rgba(120,229,215,.09)}
+.quick-search input{flex:1 1 auto;width:100%;min-width:0}
+.quick-search .btn{flex:0 0 auto;white-space:nowrap}
+html.light .quick-search select{background:#fff;color:#24344c;border-color:rgba(48,73,110,.16)}
+@media(max-width:680px){
+ .quick-search{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px}
+ .quick-search select{grid-column:1/-1;width:100%;max-width:none;min-height:40px}
+ .quick-search input{grid-column:1}
+ .quick-search .btn{grid-column:2}
+}
+@media(max-width:360px){
+ .quick-search{grid-template-columns:minmax(0,1fr)}
+ .quick-search input,.quick-search .btn{grid-column:1}
+}
