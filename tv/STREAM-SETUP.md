@@ -12,7 +12,7 @@ Some HLS providers allow playback only when playlist and media requests have the
 4. Confirm the Worker keeps the `workers.dev` address configured in `tv/index.html` under `const PROXY`.
 5. Reload `https://media.jmbhost.qzz.io/tv/`, open **More tools**, and use **Test proxy** to check it.
 
-The Worker source now allows the exact site origin `https://media.jmbhost.qzz.io`. Updating this file in GitHub alone does not publish changes to Cloudflare; the Worker must be deployed in Cloudflare.
+The shared Worker source allows the exact site origins `https://media.jmbhost.qzz.io` and `https://tv.jbhub.ryzn.pro`. Updating this file in GitHub alone does not publish changes to Cloudflare; the Worker must be deployed in Cloudflare.
 
 ## Playback limitations
 
