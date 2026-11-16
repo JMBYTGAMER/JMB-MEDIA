@@ -51,7 +51,7 @@ This project is plain HTML, CSS and JavaScript. Enable **GitHub Pages** for the 
 
 ## JMB TV streaming proxy
 
-The TV page uses the JMB-configured Cloudflare Worker endpoint in `tv/index.html` for compatible public HLS streams that need a media proxy. The Worker source is `cors-proxy-worker.js`; its allowed origin is `https://media.jmbhost.qzz.io`.
+The TV page uses the JMB-configured Cloudflare Worker endpoint in `tv/index.html` for compatible public HLS streams that need a media proxy. The shared Worker source is `cors-proxy-worker.js`; its allowed origins are `https://media.jmbhost.qzz.io` and `https://tv.jbhub.ryzn.pro`.
 
 After changing the Worker source, deploy it in Cloudflare Workers. The deployed endpoint must match the `PROXY` constant in `tv/index.html` (`https://jb-proxy.johanbiju15.workers.dev/?url=`). A GitHub commit does not deploy Worker code to Cloudflare; the Cloudflare Worker must already be deployed and configured to allow the JMB MEDIA origin. See `tv/STREAM-SETUP.md`.
 
@@ -66,3 +66,11 @@ After changing the Worker source, deploy it in Cloudflare Workers. The deployed 
 ## Proxy settings
 
 JMB TV attempts a public stream directly first, then uses the configured Cloudflare Worker for compatible HLS streams that need browser CORS support. The player settings use the JMB-configured Worker automatically; visitors do not need to enter a Worker URL. The proxy fallback does not bypass subscriptions, DRM, regional restrictions, or broadcaster access controls. A successful proxy health test confirms only that the Worker responds and rewrites a sample playlist; it does not guarantee that every channel is available.
+
+
+## Shared JB TV / JMB MEDIA proxy
+
+JMB TV uses the same JMB-managed Cloudflare Worker endpoint as the JB TV demo:
+`https://jb-proxy.johanbiju15.workers.dev/?url=`.
+
+The static site tries channel URLs directly first and retries compatible public HLS streams through this Worker when needed. Visitors do not enter their own Worker URL. The Worker source in `cors-proxy-worker.js` allows exactly the JMB MEDIA and JB TV demo website origins. When the Worker source changes, it must also be deployed to the existing Cloudflare Worker; committing the file to GitHub does not deploy it.
