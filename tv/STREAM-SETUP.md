@@ -41,10 +41,19 @@ If JMB TV shows a playback error, open **More tools → Test proxy**. The test c
 If the Worker test fails, deploy the current `cors-proxy-worker.js` in Cloudflare. This is a separate deployment from GitHub Pages. If the Worker test passes but one channel still fails, the provider may be offline, region-limited, or blocking third-party playback; try another listing from the same broadcaster.
 
 
-## Updated player settings
+## Proxy connection selector
 
-Open **More tools → Proxy: Auto → Playback connection** to enable or disable automatic fallback, add an optional backup Worker, choose which Worker is tried first, and test the Worker health and HLS playlist rewriting. Direct playback is still attempted first.
+Use the **Proxy** button in the JMB TV toolbar to open the connection manager. It offers four modes:
 
-The player avoids wrapping playlist segment URLs twice: the Worker rewrites the HLS playlist, and the browser leaves those already-proxied segment URLs unchanged. If the broadcaster is offline or refuses third-party playback, the channel still cannot play.
+- **Auto** — try the JMB Worker and, when configured, your Worker in the selected order.
+- **JMB proxy** — use only the built-in JMB Worker as the fallback.
+- **Your proxy** — use only the HTTPS Cloudflare Worker URL you entered and tested.
+- **Off** — use direct stream connections only.
+
+Enter your Worker base URL (for example, `https://your-worker.workers.dev/`) under **Your Cloudflare Worker URL**. The URL must be an HTTPS Worker base URL without a path, query string, fragment or login details. Deploy the repository's `cors-proxy-worker.js` source to a Worker you control, and ensure its `ALLOWED` list includes `https://media.jmbhost.qzz.io`. Save and test the Worker from the JMB TV page. Your selection is stored in this browser on this device.
+
+The **Test selected proxy** action checks the Worker's health endpoint and whether it can fetch and rewrite a public sample HLS playlist. A passing test confirms only those checks; it does not certify every broadcaster stream or promise availability.
+
+Direct playback is still attempted first. The player avoids wrapping playlist segment URLs twice: the Worker rewrites the HLS playlist, and the browser leaves those already-proxied segment URLs unchanged. Use only a Worker you own or are authorised to use. Proxying helps compatible public streams with browser CORS restrictions; it does not bypass subscriptions, DRM, logins, geographic restrictions or broadcaster access controls. If a broadcaster is offline or refuses third-party playback, the channel still cannot play.
 
 Only use an HTTPS Worker you control for the optional backup. Its code must include `https://media.jmbhost.qzz.io` in the `ALLOWED` origin list. Deploying this static website through GitHub does not deploy a Cloudflare Worker; update the Worker separately only when its source changes.
