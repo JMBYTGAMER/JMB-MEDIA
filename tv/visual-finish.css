@@ -174,3 +174,126 @@ main.tv-main{
 @media(prefers-reduced-motion:reduce){
   #grid article,.tv-home-link,.tv-brand{transition:none!important}
 }
+
+
+
+/* JMB TV — selectable playback proxy manager */
+.jmb-proxy-dialog{
+  width:min(94vw,520px)!important;
+  max-width:520px!important;
+  max-height:min(88svh,820px)!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:23px!important;
+  background:transparent!important;
+  color:#f5f8ff!important;
+  overflow:visible!important;
+}
+.jmb-proxy-dialog::backdrop{
+  background:rgba(2,5,12,.76);
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+}
+.jmb-proxy-sheet{
+  max-height:min(88svh,820px);
+  overflow:auto;
+  overscroll-behavior:contain;
+  padding:clamp(17px,4vw,25px);
+  border:1px solid rgba(160,192,231,.2);
+  border-radius:23px;
+  background:
+    radial-gradient(500px 220px at 100% 0%,rgba(116,130,255,.15),transparent 70%),
+    linear-gradient(150deg,#141f31,#0a111e 82%);
+  box-shadow:0 28px 90px rgba(0,0,0,.58),inset 0 1px rgba(255,255,255,.08);
+}
+.jmb-proxy-heading{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:13px
+}
+.jmb-proxy-kicker{
+  display:block;color:#8fe8dc;font:900 9px/1.4 "DM Sans",system-ui,sans-serif;
+  letter-spacing:.18em;text-transform:uppercase
+}
+.jmb-proxy-heading h2{
+  margin:5px 0 0;color:#f3f7ff;
+  font:900 clamp(22px,5vw,28px)/1.15 Manrope,system-ui,sans-serif;letter-spacing:-.04em
+}
+.jmb-proxy-close{
+  display:grid;place-items:center;flex:none;width:38px;height:38px;
+  border:1px solid rgba(201,218,243,.17);border-radius:12px;
+  background:rgba(255,255,255,.06);color:#dce8f5;font-size:22px;cursor:pointer
+}
+.jmb-proxy-description{
+  margin:0 0 17px;color:#aebbd0;font:500 12px/1.7 "DM Sans",system-ui,sans-serif
+}
+.jmb-proxy-field{display:flex;flex-direction:column;gap:8px;margin:13px 0}
+.jmb-proxy-field>span{
+  color:#e5edf8;font:800 11px/1.4 "DM Sans",system-ui,sans-serif;letter-spacing:.025em
+}
+.jmb-proxy-field input,.jmb-proxy-field select{
+  width:100%;min-width:0;min-height:46px;padding:11px 13px;
+  border:1px solid rgba(169,194,229,.2);border-radius:12px;
+  background:#0b1422;color:#f3f7ff;font:600 12px/1.4 "DM Sans",system-ui,sans-serif;
+  outline:none;box-shadow:none;appearance:auto
+}
+.jmb-proxy-field input:focus,.jmb-proxy-field select:focus{
+  border-color:rgba(119,231,216,.7);box-shadow:0 0 0 3px rgba(99,217,210,.11)
+}
+.jmb-proxy-field input:disabled,.jmb-proxy-field select:disabled{opacity:.48;cursor:not-allowed}
+.jmb-proxy-field small{
+  color:#91a1b8;font:500 10px/1.6 "DM Sans",system-ui,sans-serif
+}
+.jmb-proxy-built-in{
+  display:flex;align-items:center;gap:10px;min-width:0;padding:12px;margin:13px 0;
+  border:1px solid rgba(116,226,210,.18);border-radius:14px;
+  background:linear-gradient(110deg,rgba(99,217,210,.09),rgba(130,148,255,.07))
+}
+.jmb-proxy-built-icon{
+  display:grid;place-items:center;flex:none;width:35px;height:35px;border-radius:11px;
+  background:rgba(99,217,210,.13);color:#9df4e7;font-size:18px
+}
+.jmb-proxy-built-in>span:nth-child(2){display:flex;min-width:0;flex-direction:column;gap:4px}
+.jmb-proxy-built-in b{color:#eaf7fa;font:850 11px/1.2 "DM Sans",system-ui,sans-serif}
+.jmb-proxy-built-in small{color:#94a8be;font:500 9px/1.3 "DM Sans",system-ui,sans-serif;overflow-wrap:anywhere}
+.jmb-proxy-built-state{
+  flex:none;margin-left:auto;padding:6px 8px;border:1px solid rgba(99,217,210,.17);
+  border-radius:999px;background:rgba(99,217,210,.07);
+  color:#9df4e7;font:900 8px/1 "DM Sans",system-ui,sans-serif;letter-spacing:.1em
+}
+.jmb-proxy-note{
+  display:flex;flex-direction:column;gap:5px;margin:14px 0;padding:12px 13px;
+  border:1px solid rgba(158,177,215,.13);border-radius:13px;background:rgba(255,255,255,.035)
+}
+.jmb-proxy-note b{color:#dce8f6;font:850 10px/1.3 "DM Sans",system-ui,sans-serif}
+.jmb-proxy-note span{color:#9faec3;font:500 10px/1.6 "DM Sans",system-ui,sans-serif}
+.jmb-proxy-status{
+  margin:14px 0;padding:12px 13px;min-height:42px;
+  border:1px solid rgba(132,158,203,.18);border-radius:13px;
+  background:rgba(5,11,20,.62);color:#c7d5e8;
+  font:650 10px/1.65 "DM Sans",system-ui,sans-serif;overflow-wrap:anywhere
+}
+.jmb-proxy-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px;margin-top:15px}
+.jmb-proxy-secondary,.jmb-proxy-primary{
+  min-height:43px;padding:10px 12px;border-radius:12px;
+  font:850 10px/1.25 "DM Sans",system-ui,sans-serif;cursor:pointer;
+  transition:transform .16s,border-color .16s,background .16s,opacity .16s
+}
+.jmb-proxy-secondary{
+  border:1px solid rgba(191,211,239,.2);background:rgba(255,255,255,.055);color:#e0eafa
+}
+.jmb-proxy-primary{
+  border:1px solid rgba(99,217,210,.38);
+  background:linear-gradient(110deg,#1b7778,#475d9b);color:#fff;
+  box-shadow:0 8px 20px rgba(27,119,120,.18)
+}
+.jmb-proxy-secondary:active,.jmb-proxy-primary:active{transform:scale(.985)}
+.jmb-proxy-secondary:disabled,.jmb-proxy-primary:disabled{opacity:.5;cursor:wait}
+#proxyBtn{white-space:nowrap}
+@media(max-width:480px){
+  .jmb-proxy-dialog{width:calc(100vw - 18px)!important;max-height:calc(100svh - 22px)!important}
+  .jmb-proxy-sheet{max-height:calc(100svh - 22px);padding:16px;border-radius:19px}
+  .jmb-proxy-actions{grid-template-columns:1fr}
+  .jmb-proxy-secondary,.jmb-proxy-primary{min-height:42px}
+}
+@media(prefers-reduced-motion:reduce){
+  .jmb-proxy-secondary,.jmb-proxy-primary,.jmb-proxy-close{transition:none!important}
+}
