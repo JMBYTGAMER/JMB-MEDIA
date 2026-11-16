@@ -31,7 +31,7 @@ function queryUrl(){
  return "/json/stations/search?"+p.toString();
 }
 function render(){
- var band=$("bandFilter").value,list=stations.filter(safeStation);
+ var band=$("bandFilter").value,favOnly=$("favoritesOnly").value==="yes",list=stations.filter(safeStation);if(favOnly)list=list.filter(function(s){return favorites.indexOf(s.stationuuid)>=0;});
  if(band==="fm")list=list.filter(function(s){return /\bfm\b/i.test(s.tags||"")||/\bfm\b/i.test(s.name||"");});
  if(band==="am")list=list.filter(function(s){return /\bam\b/i.test(s.tags||"")||/\bam\b/i.test(s.name||"");});
  if(band==="internet")list=list.filter(function(s){return !/\b(am|fm)\b/i.test((s.tags||"")+" "+(s.name||""));});
@@ -92,6 +92,8 @@ $("radioVolume").addEventListener("input",function(){audio.volume=Number(this.va
 audio.addEventListener("playing",function(){$("radioPlay").textContent="Ⅱ";});audio.addEventListener("pause",function(){$("radioPlay").textContent="▶";});audio.addEventListener("ended",function(){$("radioPlay").textContent="▶";});
 audio.addEventListener("error",function(){if(current)window.JMBToast("This station stream is offline or blocked by its provider.");$("radioPlay").textContent="▶";});
 ["radioCountry","radioLanguage","radioGenre","bandFilter"].forEach(function(id){$(id).addEventListener("change",load);});
+$("favoritesOnly").addEventListener("change",render);
+var initialQuery=new URLSearchParams(location.search).get("q");if(initialQuery)$("stationSearch").value=initialQuery.slice(0,120);
 $("stationSearch").addEventListener("input",function(){clearTimeout(timer);timer=setTimeout(load,350);});window.addEventListener("online",function(){if(!stations.length)load();});
 load();
 })();
