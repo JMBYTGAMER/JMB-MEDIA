@@ -15,6 +15,25 @@ var sources=[
 {name:"NPR News",region:"World",format:"text",feed:"https://feeds.npr.org/1001/rss.xml",site:"https://www.npr.org/sections/news/"}
 ];
 var items=[];
+var SOCIAL_CACHE_KEY="jmb-social-feed-cache-v1";
+function loadSocialCache(){
+ try{
+  var saved=JSON.parse(localStorage.getItem(SOCIAL_CACHE_KEY)||"[]");
+  if(!Array.isArray(saved))return [];
+  return saved.map(function(x){
+   var source=sources.find(function(s){return s.name===x.sourceName;});
+   if(!source||!x.title||!safeUrl(x.link))return null;
+   return {title:x.title,link:x.link,description:x.description||"",date:Number(x.date)||0,source:source,kind:x.kind||source.format||"text",media:safeUrl(x.media||""),thumb:safeUrl(x.thumb||""),videoId:x.videoId||""};
+  }).filter(Boolean);
+ }catch(e){return [];}
+}
+function saveSocialCache(){
+ try{
+  localStorage.setItem(SOCIAL_CACHE_KEY,JSON.stringify(items.slice(0,120).map(function(x){
+   return {title:x.title,link:x.link,description:x.description,date:x.date,sourceName:x.source.name,kind:x.kind,media:x.media,thumb:x.thumb,videoId:x.videoId};
+  })));
+ }catch(e){}
+}
 function esc(s){return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 function clean(s){var d=new DOMParser().parseFromString(String(s||""),"text/html");return (d.body.textContent||"").replace(/\s+/g," ").trim().slice(0,240);}
 function nodeText(node,name){var a=node.getElementsByTagName(name);return a.length?(a[0].textContent||"").trim():"";}
@@ -63,11 +82,14 @@ function render(){
  }).join("");
 }
 async function init(){
+ var initialQuery=new URLSearchParams(location.search).get("q");if(initialQuery) $("socialSearch").value=initialQuery.slice(0,120);
  fill("regionFilter",sources.map(function(s){return s.region;}));fill("sourceFilter",sources.map(function(s){return s.name;}));
+ items=loadSocialCache();if(items.length){render();renderSide();$("socialStatus").textContent="Showing your saved news edition · checking live sources…";}
  var results=await Promise.allSettled(sources.map(async function(s){return parse(await fetchFeed(s.feed),s);}));
- results.forEach(function(r){if(r.status==="fulfilled")items=items.concat(r.value);});
- render();renderSide();
- if(!items.length){$("socialStatus").textContent="News feeds are unavailable."; $("storyList").innerHTML='<div class="empty-state">The live feeds could not be reached. Open an official publisher or video link in this section and reload later.</div>';}
+ var fresh=[];results.forEach(function(r){if(r.status==="fulfilled")fresh=fresh.concat(r.value);});
+ if(fresh.length){items=fresh;items.sort(function(a,b){return b.date-a.date;});saveSocialCache();render();renderSide();$("socialStatus").textContent=items.length+" live updates · saved for your next visit";}
+ else if(items.length){render();renderSide();$("socialStatus").textContent="Offline edition · showing "+items.length+" saved updates";}
+ else{$("socialStatus").textContent="News feeds are unavailable."; $("storyList").innerHTML='<div class="empty-state">The live feeds could not be reached. Open an official publisher or video link in this section and reload later.</div>';}
 }
 ["socialSearch","formatFilter","regionFilter","sourceFilter"].forEach(function(id){$(id).addEventListener(id==="socialSearch"?"input":"change",render);});
 init();
