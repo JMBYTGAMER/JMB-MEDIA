@@ -32,6 +32,8 @@
   const esc = value => String(value == null ? "" : value).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   let channelList = [];
   let expanded = false;
+  let selectedFilter = "all";
+  const groupOf = item => item.kind.includes("NEWS") ? "news" : item.kind === "EDUCATION" ? "education" : "entertainment";
 
   function findListing(item){
     const aliases = item.aliases.map(clean);
@@ -43,9 +45,15 @@
   }
 
   function render(){
+    const counts = lineup.reduce((result, item) => {
+      const group = groupOf(item);
+      result[group] = (result[group] || 0) + 1;
+      return result;
+    }, {});
     const cards = lineup.map((item,index) => {
       const match = findListing(item);
       const extra = index >= 4 ? " is-extra" : "";
+      const group = groupOf(item);
       const status = match
         ? '<span class="kf-state">JMB directory listing</span>'
         : '<span class="kf-state is-source">Official source available</span>';
@@ -55,22 +63,34 @@
       const secondAction = match
         ? '<a class="kf-source" href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer">Official ↗</a>'
         : '<button type="button" class="kf-find" data-kf-find="' + esc(item.id) + '">Find listing</button>';
-      return '<article class="kf-card' + extra + '" style="--kf-accent:' + esc(item.color) + ';--kf-index:' + index + '">' +
+      return '<article class="kf-card' + extra + '" data-group="' + group + '" style="--kf-accent:' + esc(item.color) + ';--kf-index:' + index + '">' +
         '<div class="kf-card-top"><span class="kf-mark">' + esc(item.mark) + '</span><span class="kf-meta"><span class="kf-kind">' + esc(item.kind) + '</span>' + status + '</span></div>' +
         '<h3>' + esc(item.name) + '</h3><p>' + esc(item.desc) + '</p>' +
         '<div class="kf-actions">' + mainAction + secondAction + '</div>' +
       '</article>';
     }).join("");
 
+    const filters = [
+      ["all","All",lineup.length],
+      ["news","News",counts.news || 0],
+      ["entertainment","Entertainment",counts.entertainment || 0],
+      ["education","Education",counts.education || 0]
+    ];
+    const filterMarkup = filters.map(([key,label,count]) =>
+      '<button type="button" class="kf-filter' + (selectedFilter === key ? ' is-active' : '') + '" data-kf-filter="' + key + '" aria-pressed="' + (selectedFilter === key) + '">' +
+      esc(label) + '<span>' + count + '</span></button>'
+    ).join("");
+
     root.innerHTML =
-      '<div class="kf-head"><div class="kf-head-copy"><span class="kf-eyebrow">JMB MEDIA · KERALA FIRST</span><h2 class="kf-title">Your Malayalam favourites</h2><p class="kf-subtitle">Asianet, Kairali, 24 News, Surya TV and more — right at the front. Public streams play inside JMB TV when a compatible listing exists; otherwise use the broadcaster&#39;s own watch page.</p></div>' +
-      '<div class="kf-head-actions"><span class="kf-pill-count">20 CHANNEL PICKS</span><button type="button" class="kf-tool" data-kf-proxy>⚙ Connection</button><button type="button" class="kf-tool" data-kf-test>Test proxy</button></div></div>' +
-      '<div class="kf-grid">' + cards + '</div>' +
-      '<div class="kf-foot"><div class="kf-foot-note"><strong>More than the featured picks.</strong> The searchable public directory remains below.<span class="kf-directory-count" id="kfDirectoryCount">Loading public channel directory…</span></div>' +
-      '<button type="button" class="kf-expand" data-kf-expand>Show all 20 channels ↓</button></div>';
+      '<div class="kf-head"><div class="kf-head-copy"><span class="kf-eyebrow">JMB MEDIA · KERALA FIRST</span><h2 class="kf-title">Your Malayalam favourites</h2><p class="kf-subtitle">Asianet, Kairali, 24 News, Surya TV and more — browse your favourites or jump into the full channel directory.</p></div>' +
+      '<div class="kf-head-actions"><span class="kf-pill-count">' + lineup.length + ' FEATURED CHANNELS</span></div></div>' +
+      '<div class="kf-filter-row" role="group" aria-label="Filter featured channels">' + filterMarkup + '</div>' +
+      '<div class="kf-grid" data-filter="' + selectedFilter + '">' + cards + '</div>' +
+      '<div class="kf-foot"><div class="kf-foot-note"><strong>Want even more?</strong> Search the full public channel directory below.<span class="kf-directory-count" id="kfDirectoryCount">Loading public channel directory…</span></div>' +
+      '<div class="kf-foot-actions"><button type="button" class="kf-expand" data-kf-expand>' + (expanded ? 'Show fewer channels ↑' : 'Show all ' + lineup.length + ' channels ↓') + '</button><button type="button" class="kf-browse" data-kf-browse>Browse directory ↓</button></div></div>';
     root.classList.toggle("is-expanded", expanded);
     const toggle = root.querySelector("[data-kf-expand]");
-    if (toggle) toggle.textContent = expanded ? "Show fewer channels ↑" : "Show all 20 channels ↓";
+    if (toggle) toggle.textContent = expanded ? "Show fewer channels ↑" : "Show all " + lineup.length + " channels ↓";
     const count = root.querySelector("#kfDirectoryCount");
     if (count) count.textContent = channelList.length
       ? channelList.length.toLocaleString() + " public stream listings loaded"
@@ -92,17 +112,26 @@
     if (expand) {
       expanded = !expanded;
       root.classList.toggle("is-expanded",expanded);
-      expand.textContent = expanded ? "Show fewer channels ↑" : "Show all 20 channels ↓";
+      expand.textContent = expanded ? "Show fewer channels ↑" : "Show all " + lineup.length + " channels ↓";
       return;
     }
-    if (event.target.closest("[data-kf-proxy]")) {
-      const control = document.getElementById("proxyBtn");
-      if (control) control.click();
+    const filter = event.target.closest("[data-kf-filter]");
+    if (filter) {
+      selectedFilter = filter.dataset.kfFilter || "all";
+      const grid = root.querySelector(".kf-grid");
+      if (grid) grid.dataset.filter = selectedFilter;
+      root.querySelectorAll("[data-kf-filter]").forEach(button => {
+        const active = button === filter;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
       return;
     }
-    if (event.target.closest("[data-kf-test]")) {
-      const control = document.getElementById("proxyTest");
-      if (control) control.click();
+    if (event.target.closest("[data-kf-browse]")) {
+      const input = document.getElementById("q");
+      const search = document.querySelector(".tv-search-panel");
+      if (search) search.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+      if (input) window.setTimeout(() => input.focus({ preventScroll: true }), 250);
       return;
     }
     const play = event.target.closest("[data-kf-play]");
