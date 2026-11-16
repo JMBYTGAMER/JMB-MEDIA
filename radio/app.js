@@ -36,7 +36,7 @@ function render(){
  if(band==="am")list=list.filter(function(s){return /\bam\b/i.test(s.tags||"")||/\bam\b/i.test(s.name||"");});
  if(band==="internet")list=list.filter(function(s){return !/\b(am|fm)\b/i.test((s.tags||"")+" "+(s.name||""));});
  $("radioStatus").textContent=list.length.toLocaleString()+" stations found";
- if(!list.length){$("radioGrid").innerHTML='<div class="empty-state">No stations matched. Try removing a filter or searching a different spelling.</div>';return;}
+ if(!list.length){$("radioGrid").innerHTML=favOnly?'<div class="empty-state"><strong>No favourite stations yet.</strong><p>Tap the heart on a station card to save it here. Your favourites stay on this device.</p></div>':'<div class="empty-state">No stations matched. Try removing a filter or searching a different spelling.</div>';return;}
  $("radioGrid").innerHTML=list.map(function(s){
   var fav=favorites.indexOf(s.stationuuid)>=0,icon=safeUrl(s.favicon),logo=icon?'<img src="'+esc(s.favicon)+'" alt="" style="width:52px;height:52px;object-fit:contain;border-radius:12px;background:#fff" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="avatar">📻</div>';
   var type=/\bfm\b/i.test((s.tags||"")+" "+(s.name||""))?"FM-tagged":/\bam\b/i.test((s.tags||"")+" "+(s.name||""))?"AM-tagged":"Internet stream";
