@@ -142,7 +142,7 @@
 </style>
 
 <link rel="stylesheet" href="jmb-tv-only.css?v=8">
-<link rel="stylesheet" href="jmb-tv-experience.css?v=5"><link rel="stylesheet" href="/assets/css/brand-intro.css?v=1">
+<link rel="stylesheet" href="jmb-tv-experience.css?v=5"><link rel="stylesheet" href="kerala-featured.css?v=1"><link rel="stylesheet" href="/assets/css/brand-intro.css?v=1">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to content</a>
@@ -175,6 +175,8 @@
     </div>
     <div class="tv-heading-actions"><div id="tvNetworkState" class="tv-mode-tag" role="status" aria-live="polite"><span class="tv-live-dot"></span><span id="tvNetworkLabel">CHECKING CONNECTION</span></div></div>
   </div>
+
+  <section id="keralaFeatured" class="kf-section" aria-label="Featured Malayalam TV channels"></section>
 
   <section class="tv-search-panel" aria-label="Find a TV channel">
     <label class="tv-search-field">
@@ -582,6 +584,8 @@ async function load() {
       fetchPlaylistText(FREE_TV_PLAYLIST, false, false)
     ]);
     channels = combinePlaylists(mainText, categoryText, areaText, supplementalText);
+    window.__JMBTV_CHANNELS = channels;
+    window.dispatchEvent(new CustomEvent("jmbtv:channelsready", { detail: channels }));
     directorySources = supplementalText ? 'IPTV-org + public broadcast feed' : 'IPTV-org';
     if (!channels.length) throw new Error('The public channel lists returned no usable entries. Please retry when the playlist provider is online.');
     const cats = [...new Set(channels.flatMap(c => c.cats))].sort();
@@ -1368,6 +1372,22 @@ function applyFilter() {
     const haystack = normaliseSearch([c.name, c.tvg, ...(c.cats || []), ...(c.langs || []), ...(c.areas || [])].join(' '));
     return (!hideBad || !bad.has(c.url)) && (!favOnly || fav.has(c.url)) && (!cat || c.cats.includes(cat)) && (!lang || c.langs.includes(lang)) && (!area || (c.areas || []).includes(area)) && (!channelSearch || haystack.includes(channelSearch));
   });
+  // Keep the Kerala favourites near the top of the general directory too.
+  const preferredNames = [
+    ["asianet","asianet tv"],["kairali tv","kairali"],["24 news","twenty four","twentyfour"],
+    ["surya tv","surya"],["asianet news"],["kairali news"],["manorama news"],
+    ["mathrubhumi news"],["news18 kerala","news 18 kerala"],["reporter tv","reporter live"],
+    ["mediaone","media one"],["janam tv"],["jaihind tv","jaihind news"],["kaumudy tv"],
+    ["dd malayalam"],["amrita tv"],["flowers tv"],["mazhavil manorama"],["zee keralam"],["victers","kite victers"]
+  ];
+  const priority = channel => {
+    const name = normaliseSearch([channel.name, channel.tvg].join(" "));
+    const index = preferredNames.findIndex(group => group.some(alias =>
+      name === alias || name.startsWith(alias + " hd") || name.startsWith(alias + " sd") || name.startsWith(alias + " live")
+    ));
+    return index < 0 ? 999 : index;
+  };
+  filtered.sort((a, b) => priority(a) - priority(b));
   stopPreview(); $('grid').innerHTML = ''; shown = 0;
   syncUrl(); refreshBar();
   if (!filtered.length) $('grid').innerHTML = '<div class="col-span-full text-center t-muted py-16">' + (favOnly && !fav.size ? 'No favorites yet. Tap the heart on any channel.' : isBiggBossSearch ? 'No Asianet channel entries match the current filters. Clear the filters or try searching Asianet.' : 'No channels match.') + ' <button id="noRes" class="underline hover:text-red-500">Clear filters</button></div>';
@@ -1458,35 +1478,87 @@ function netMsg(c, d, viaProx) {
 // loaded and every request (playlist + video pieces) is routed through the proxy, so HTTP-only
 // and relative links work too.
 let curVia = 0, proxyFails = 0, startT = 0, vidT = 0;
+let streamAttempt = 0;
 function startStream(c, n = 0) {
-  if (n === 0) savePos(); v.onloadedmetadata = null;
-  cur = c; curVia = n; $('err').classList.add('hidden'); $('bigPlay').classList.remove('hidden'); spin(true); syncMovieUi();
+  const attempt = ++streamAttempt;
+  if (n === 0) savePos();
+  v.onloadedmetadata = null;
+  clearTimeout(startT);
+  cur = c; curVia = n;
+  $('err').classList.add('hidden');
+  $('bigPlay').classList.remove('hidden');
+  spin(true); syncMovieUi();
+
   if (hls) { hls.destroy(); hls = null; }
+  v.pause();
+  v.removeAttribute('src');
+  v.load();
   renderAudio();
+
   const px = proxyList(), via = n > 0 ? px[n - 1] : null, total = px.length + 1;
-  const src = via ? c.url : url(c.url), next = () => n + 1 < total && (startStream(c, n + 1), true);
-  let recov = 0; clearTimeout(startT);
-  startT = setTimeout(() => { // never started playing: move on instead of leaving a black screen
-    if (cur === c && curVia === n && !(v.currentTime > 0) && !next()) giveUp(c, {}, n, 'This channel is taking too long to start. It may be offline or slow. Try Retry or another channel.');
-  }, 15000);
+  const src = via ? c.url : url(c.url);
+  const isCurrent = () => attempt === streamAttempt && cur === c && curVia === n;
+  const next = () => {
+    if (!isCurrent() || n + 1 >= total) return false;
+    startStream(c, n + 1);
+    return true;
+  };
+  const markReady = () => {
+    if (!isCurrent()) return;
+    clearTimeout(startT);
+    spin(false);
+  };
+  let recoveries = 0;
+  startT = setTimeout(() => {
+    if (!isCurrent()) return;
+    if (v.currentTime > 0) { markReady(); return; }
+    if (!next()) giveUp(c, {}, n, 'This channel did not send a playable stream in time. It may be offline, unavailable to this browser, or not allow public playback. Try its official source or another channel.');
+  }, 18000);
+
   if (window.Hls && Hls.isSupported()) {
-    const cfg = { enableWorker: true, lowLatencyMode: true };
-    if (via) cfg.xhrSetup = (xhr, u) => xhr.open('GET', via.isWrapped(u) ? u : via.wrap(u), true);
-    hls = new Hls(cfg);
-    hls.loadSource(src); hls.attachMedia(v);
-    hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, renderAudio);
-    hls.on(Hls.Events.AUDIO_TRACK_SWITCHED, renderAudio);
-    hls.on(Hls.Events.MANIFEST_PARSED, () => v.play().catch(() => {}));
-    hls.on(Hls.Events.ERROR, (_, d) => {
-      if (!d.fatal) return;
-      if (d.type === Hls.ErrorTypes.NETWORK_ERROR) { if (!next()) giveUp(c, d, n); }
-      else if (d.type === Hls.ErrorTypes.MEDIA_ERROR) { if (++recov <= 2) hls.recoverMediaError(); else if (!next()) fail("This channel's video format can't be played by this browser. Try another browser, or hide the channel."); }
-      else if (!next()) fail('Playback failed. Try another channel.');
+    const cfg = {
+      enableWorker: true,
+      lowLatencyMode: false,
+      maxBufferLength: 30,
+      manifestLoadingTimeOut: 14000,
+      manifestLoadingMaxRetry: 2,
+      levelLoadingMaxRetry: 2,
+      fragLoadingMaxRetry: 3
+    };
+    if (via) cfg.xhrSetup = (xhr, requestUrl) => xhr.open('GET', via.isWrapped(requestUrl) ? requestUrl : via.wrap(requestUrl), true);
+    const player = new Hls(cfg);
+    hls = player;
+    player.on(Hls.Events.MEDIA_ATTACHED, () => {
+      if (isCurrent()) player.loadSource(src);
     });
+    player.on(Hls.Events.AUDIO_TRACKS_UPDATED, renderAudio);
+    player.on(Hls.Events.AUDIO_TRACK_SWITCHED, renderAudio);
+    player.on(Hls.Events.MANIFEST_PARSED, () => {
+      if (!isCurrent()) return;
+      markReady();
+      v.play().catch(() => {});
+    });
+    player.on(Hls.Events.ERROR, (_, data) => {
+      if (!isCurrent() || !data.fatal) return;
+      if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+        if (!next()) giveUp(c, data, n);
+      } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+        if (++recoveries <= 2) player.recoverMediaError();
+        else if (!next()) giveUp(c, data, n, "This channel's video format is not supported by this browser. Try the official source or another channel.");
+      } else if (!next()) {
+        giveUp(c, data, n, 'Playback could not be started by the browser. Try the official source or another channel.');
+      }
+    });
+    player.attachMedia(v);
   } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
-    v.src = via ? via.wrap(c.url) : src; v.play().catch(() => {});
-    v.onerror = () => { if (!next()) giveUp(c, {}, n); };
-  } else fail('HLS is not supported in this browser.');
+    v.onerror = () => { if (isCurrent() && !next()) giveUp(c, {}, n); };
+    v.onloadedmetadata = markReady;
+    v.src = via ? via.wrap(c.url) : src;
+    v.play().catch(() => {});
+  } else {
+    clearTimeout(startT);
+    fail('HLS playback is not supported by this browser.');
+  }
 }
 async function giveUp(c, d, n, msg) {
   fail(msg || netMsg(c, d, n > 0));
@@ -1824,6 +1896,7 @@ load();
   });
 })();
 </script>
+<script src="kerala-featured.js?v=1"></script>
 <script src="/assets/js/brand-intro.js?v=1"></script>
 </body>
 </html>
