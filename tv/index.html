@@ -766,6 +766,20 @@ function setProxy(mode) {
   syncProxyUi();
 }
 
+async function proxyHealthy(worker) {
+  if (!worker) return false;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 9000);
+  try {
+    const response = await fetch(worker.ping, { cache: 'no-store', signal: controller.signal });
+    return response.ok && (await response.text()).trim() === 'jb-proxy-ok';
+  } catch (e) {
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 let proxyDialog;
 function buildProxyDialog() {
   if (proxyDialog) return proxyDialog;
@@ -948,6 +962,10 @@ async function testProxy() {
   const order = d.querySelector('#jmbProxyOrder').value;
   const workers = proxyCandidates(mode, raw, order);
 
+  if (raw && !yourProxy(raw)) {
+    status.textContent = 'Enter a valid HTTPS Worker base URL, without a path, query string or login details.';
+    return false;
+  }
   if (mode === 'off') {
     status.textContent = 'Proxy mode is Off. This test is not needed for direct playback.';
     return false;
