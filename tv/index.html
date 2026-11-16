@@ -706,16 +706,17 @@ $('scanStop').onclick = () => { if (scan) scan.stop = true; };
 $('hideBtn').onclick = () => { hideBad = !hideBad; try { localStorage.setItem('jbHide', hideBad ? '1' : '0'); } catch (e) {} applyFilter(); };
 $('resetBtn').onclick = () => { if (confirm('Show all hidden channels and forget scan results?')) { bad.clear(); good.clear(); saveSets(); applyFilter(); } };
 
-// ---- Proxy fallback (direct first, then the Workers you configure) ----
-const PLABEL = { off: 'Off', auto: 'Auto', jmb: 'JMB proxy', custom: 'Your proxy' };
-let proxyMode = 'auto', proxyBackup = '', proxyOrder = 'primary';
+// ---- JMB MEDIA managed Cloudflare Worker proxy (direct playback first) ----
+const PLABEL = { off: 'Off', auto: 'JMB proxy', jmb: 'JMB proxy' };
+let proxyMode = 'auto';
 try {
   const savedMode = localStorage.getItem('jbProxy');
-  proxyMode = ['off', 'auto', 'jmb', 'custom'].includes(savedMode) ? savedMode : 'auto';
-  proxyBackup = localStorage.getItem('jbProxyBackup') || '';
-  proxyOrder = localStorage.getItem('jbProxyOrder') === 'backup' ? 'backup' : 'primary';
-  if (proxyMode === 'custom' && !proxyBackup) proxyMode = 'auto';
-  localStorage.setItem('jbProxyPrefVersion', '4');
+  proxyMode = savedMode === 'off' ? 'off' : 'auto';
+  // Remove the retired bring-your-own-worker settings from older versions.
+  localStorage.removeItem('jbProxyBackup');
+  localStorage.removeItem('jbProxyOrder');
+  localStorage.setItem('jbProxy', proxyMode);
+  localStorage.setItem('jbProxyPrefVersion', '5');
 } catch (e) {}
 
 function makeProxy(name, value) {
@@ -736,32 +737,24 @@ function makeProxy(name, value) {
   } catch (e) { return null; }
 }
 function jmbProxy() { return makeProxy('JMB proxy', PROXY); }
-function yourProxy(value = proxyBackup) { return makeProxy('Your proxy', value); }
-
-function proxyCandidates(mode = proxyMode, customValue = proxyBackup, order = proxyOrder) {
-  const primary = jmbProxy();
-  const custom = yourProxy(customValue);
+function proxyCandidates(mode = proxyMode) {
   if (mode === 'off') return [];
-  if (mode === 'jmb') return primary ? [primary] : [];
-  if (mode === 'custom') return custom ? [custom] : [];
-  const list = order === 'backup' ? [custom, primary] : [primary, custom];
-  const seen = new Set();
-  return list.filter(p => p && !seen.has(p.prefix) && seen.add(p.prefix));
+  const worker = jmbProxy();
+  return worker ? [worker] : [];
 }
-const configuredProxies = () => proxyCandidates('auto', proxyBackup, proxyOrder);
 const proxyList = () => proxyCandidates();
 
 function syncProxyUi() {
   const b = $('proxyBtn');
   if (!b) return;
   b.textContent = 'Proxy: ' + PLABEL[proxyMode];
-  b.title = 'Choose and test your playback proxy';
+  b.title = 'JMB MEDIA managed Cloudflare Worker proxy settings';
   b.setAttribute('aria-label', 'Playback proxy: ' + PLABEL[proxyMode] + '. Open proxy settings.');
   b.classList.toggle('!bg-red-600', proxyMode !== 'off');
   b.classList.toggle('!text-white', proxyMode !== 'off');
 }
 function setProxy(mode) {
-  proxyMode = ['off', 'auto', 'jmb', 'custom'].includes(mode) ? mode : 'auto';
+  proxyMode = mode === 'off' ? 'off' : 'auto';
   try { localStorage.setItem('jbProxy', proxyMode); } catch (e) {}
   syncProxyUi();
 }
@@ -789,136 +782,56 @@ function buildProxyDialog() {
   proxyDialog.innerHTML = `
     <div class="jmb-proxy-sheet">
       <div class="jmb-proxy-heading">
-        <div><span class="jmb-proxy-kicker">JMB MEDIA · CONNECTION MANAGER</span><h2 id="jmbProxyTitle">Choose your proxy</h2></div>
+        <div><span class="jmb-proxy-kicker">JMB MEDIA · PLAYBACK</span><h2 id="jmbProxyTitle">JMB proxy</h2></div>
         <button type="button" class="jmb-proxy-close" aria-label="Close proxy settings">×</button>
       </div>
-      <p class="jmb-proxy-description">Choose how JMB TV connects to compatible public streams. Direct playback is always tried first; the selected proxy is used as a fallback.</p>
-
-      <label class="jmb-proxy-field">
-        <span>Proxy mode</span>
-        <select id="jmbProxyMode">
-          <option value="auto">Auto — JMB proxy, then your proxy</option>
-          <option value="jmb">JMB proxy — built in</option>
-          <option value="custom">Your proxy — use my Worker</option>
-          <option value="off">Off — direct connection only</option>
-        </select>
-      </label>
-
       <div class="jmb-proxy-built-in">
         <span class="jmb-proxy-built-icon">✦</span>
-        <span><b>JMB proxy</b><small>Configured for media.jmbhost.qzz.io</small></span>
-        <span class="jmb-proxy-built-state">BUILT IN</span>
+        <span><b>JMB Cloudflare proxy</b><small>Managed by JMB MEDIA · automatic fallback</small></span>
+        <span class="jmb-proxy-built-state">JMB</span>
       </div>
-
-      <label class="jmb-proxy-field">
-        <span>Your Cloudflare Worker URL</span>
-        <input id="jmbProxyBackup" type="url" inputmode="url" autocomplete="url" placeholder="https://your-worker.workers.dev/">
-        <small>Use a Worker you own or are authorised to use. It must run the JMB-compatible proxy code and allow this website's origin.</small>
-      </label>
-
-      <label class="jmb-proxy-field" id="jmbProxyOrderWrap">
-        <span>Fallback order in Auto mode</span>
-        <select id="jmbProxyOrder">
-          <option value="primary">JMB proxy first</option>
-          <option value="backup">Your proxy first</option>
-        </select>
-      </label>
-
+      <p class="jmb-proxy-description">JMB TV tries a channel directly first. If a compatible public HLS stream needs browser CORS support, it automatically retries through the JMB Cloudflare Worker. No Worker URL or setup is needed.</p>
       <div class="jmb-proxy-note">
         <b>What this proxy does</b>
-        <span>Helps compatible public HLS streams load when browser CORS rules prevent direct playback. It does not unlock paid channels, DRM, logins or regional restrictions.</span>
+        <span>Helps compatible public HLS streams load when browser CORS rules prevent direct playback. It cannot unlock paid channels, DRM, logins or regional restrictions.</span>
       </div>
-
-      <div id="jmbProxyStatus" class="jmb-proxy-status" role="status" aria-live="polite">
-        Ready. Test a proxy to check its Worker connection and HLS playlist support.
-      </div>
+      <div id="jmbProxyStatus" class="jmb-proxy-status" role="status" aria-live="polite">JMB proxy is selected. Test the connection to check Worker availability.</div>
       <div class="jmb-proxy-actions">
-        <button type="button" id="jmbProxyTest" class="jmb-proxy-secondary">Test selected proxy</button>
-        <button type="button" id="jmbProxySave" class="jmb-proxy-primary">Save &amp; use</button>
+        <button type="button" id="jmbProxyTest" class="jmb-proxy-secondary">Test JMB proxy</button>
+        <button type="button" id="jmbProxySave" class="jmb-proxy-primary">Use JMB proxy</button>
       </div>
+      <button type="button" id="jmbProxyOff" class="jmb-proxy-secondary">Use direct playback only</button>
     </div>`;
   document.body.appendChild(proxyDialog);
 
-  const mode = proxyDialog.querySelector('#jmbProxyMode');
-  const input = proxyDialog.querySelector('#jmbProxyBackup');
-  const order = proxyDialog.querySelector('#jmbProxyOrder');
-  const orderWrap = proxyDialog.querySelector('#jmbProxyOrderWrap');
   const status = proxyDialog.querySelector('#jmbProxyStatus');
   const testButton = proxyDialog.querySelector('#jmbProxyTest');
   const saveButton = proxyDialog.querySelector('#jmbProxySave');
-
-  function syncModeFields() {
-    const selected = mode.value;
-    const hasCustom = !!input.value.trim();
-    input.disabled = selected === 'off' || selected === 'jmb';
-    order.disabled = selected !== 'auto' || !hasCustom;
-    orderWrap.hidden = selected !== 'auto';
-    testButton.disabled = selected === 'off';
-    if (selected === 'custom' && !hasCustom) {
-      status.textContent = 'Add your HTTPS Worker URL before testing Your proxy.';
-    }
-  }
-  mode.addEventListener('change', syncModeFields);
-  input.addEventListener('input', syncModeFields);
-
   const close = () => proxyDialog.close();
   proxyDialog.querySelector('.jmb-proxy-close').addEventListener('click', close);
   proxyDialog.addEventListener('click', e => { if (e.target === proxyDialog) close(); });
-  testButton.addEventListener('click', testProxy);
-  saveButton.addEventListener('click', async () => {
-    const selected = mode.value;
-    const raw = input.value.trim();
-    const custom = raw ? makeProxy('Your proxy', raw) : null;
-
-    if (raw && !custom) {
-      status.textContent = 'Enter a valid HTTPS Worker base URL, for example https://your-worker.workers.dev/.';
-      input.focus();
-      return;
-    }
-    if (selected === 'custom' && !custom) {
-      status.textContent = 'Add your own Worker URL to use Your proxy.';
-      input.focus();
-      return;
-    }
-
-    if (selected === 'custom') {
-      saveButton.disabled = true;
-      testButton.disabled = true;
-      status.textContent = 'Checking Your proxy before saving…';
-      const result = await testProxyWorker(custom);
-      saveButton.disabled = false;
-      testButton.disabled = false;
-      status.textContent = result.message;
-      if (!result.ok) return;
-    }
-
-    proxyBackup = raw;
-    proxyOrder = order.value === 'backup' && raw ? 'backup' : 'primary';
-    setProxy(selected);
-    try {
-      localStorage.setItem('jbProxyBackup', proxyBackup);
-      localStorage.setItem('jbProxyOrder', proxyOrder);
-    } catch (e) {
-      status.textContent = 'Browser storage is unavailable. Settings may not persist after closing this page.';
-    }
-
-    status.textContent = 'Saved. Active mode: ' + PLABEL[proxyMode] + '.';
+  testButton.addEventListener('click', async () => {
+    testButton.disabled = true;
+    status.textContent = 'Testing the JMB Worker and a public HLS playlist…';
+    const result = await testProxyWorker(jmbProxy());
+    status.textContent = result.message;
+    testButton.disabled = false;
+  });
+  saveButton.addEventListener('click', () => {
+    setProxy('auto');
+    status.textContent = 'JMB proxy enabled. It will be used automatically when direct playback fails.';
     if (cur && !cur.isMovie) startStream(cur);
     window.setTimeout(close, 650);
   });
-
+  proxyDialog.querySelector('#jmbProxyOff').addEventListener('click', () => {
+    setProxy('off');
+    if (cur && !cur.isMovie) startStream(cur);
+    close();
+  });
   proxyDialog._sync = () => {
-    mode.value = proxyMode;
-    input.value = proxyBackup;
-    order.value = proxyOrder;
-    syncModeFields();
     status.textContent = proxyMode === 'off'
-      ? 'Direct connection only. No proxy will be used.'
-      : proxyMode === 'custom'
-        ? 'Your proxy is selected. Test it before saving any changes.'
-        : proxyMode === 'jmb'
-          ? 'JMB proxy selected. Test its connection and HLS support.'
-          : 'Auto mode tries the JMB proxy and your configured Worker in the selected order.';
+      ? 'Direct playback only. The JMB proxy is currently disabled.'
+      : 'JMB proxy is enabled and ready for automatic fallback. Test its connection if a channel fails.';
   };
   return proxyDialog;
 }
@@ -929,26 +842,26 @@ function openProxySettings() {
 }
 
 async function testProxyWorker(worker) {
-  if (!worker) return { ok: false, message: 'No valid HTTPS Worker URL is available.' };
+  if (!worker) return { ok: false, message: 'The JMB Worker URL is not configured in this build.' };
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 12000);
   try {
     const ping = await fetch(worker.ping, { cache: 'no-store', signal: controller.signal });
     const body = (await ping.text()).trim();
     if (!ping.ok || body !== 'jb-proxy-ok') {
-      return { ok: false, message: worker.name + ': health check failed (' + ping.status + '). Check the Worker deployment and allowed site origin.' };
+      return { ok: false, message: 'JMB Worker health check failed (' + ping.status + '). The Worker may be offline or its allowed origin may need updating.' };
     }
     const sample = await fetch(worker.wrap('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'), { cache: 'no-store', signal: controller.signal });
     const playlist = await sample.text();
     if (!sample.ok || !playlist.trimStart().startsWith('#EXTM3U')) {
-      return { ok: false, message: worker.name + ': online, but the public HLS test playlist did not load (' + sample.status + ').' };
+      return { ok: false, message: 'JMB Worker is online, but the public HLS test playlist failed (' + sample.status + ').' };
     }
     if (!playlist.includes(worker.prefix)) {
-      return { ok: false, message: worker.name + ': online, but HLS playlist rewriting is missing. Deploy the current cors-proxy-worker.js.' };
+      return { ok: false, message: 'JMB Worker is online, but playlist rewriting is missing. Update it with cors-proxy-worker.js.' };
     }
-    return { ok: true, message: worker.name + ': READY — Worker health and HLS playlist test passed.' };
+    return { ok: true, message: 'JMB proxy READY — Worker health and HLS playlist tests passed.' };
   } catch (e) {
-    return { ok: false, message: worker.name + ': could not be reached from this browser. Check the URL, deployment and CORS origin.' };
+    return { ok: false, message: 'JMB Worker could not be reached from this browser. Check its deployment and allowed site origin.' };
   } finally {
     clearTimeout(timer);
   }
@@ -956,42 +869,15 @@ async function testProxyWorker(worker) {
 
 async function testProxy() {
   const d = buildProxyDialog();
+  if (!d.open) d.showModal();
   const status = d.querySelector('#jmbProxyStatus');
-  const mode = d.querySelector('#jmbProxyMode').value;
-  const raw = d.querySelector('#jmbProxyBackup').value.trim();
-  const order = d.querySelector('#jmbProxyOrder').value;
-  const workers = proxyCandidates(mode, raw, order);
-
-  if (raw && !yourProxy(raw)) {
-    status.textContent = 'Enter a valid HTTPS Worker base URL, without a path, query string or login details.';
-    return false;
-  }
-  if (mode === 'off') {
-    status.textContent = 'Proxy mode is Off. This test is not needed for direct playback.';
-    return false;
-  }
-  if (mode === 'custom' && !workers.length) {
-    status.textContent = 'Add a valid HTTPS Worker URL to test Your proxy.';
-    return false;
-  }
-  if (!workers.length) {
-    status.textContent = 'No valid proxy is configured for this mode.';
-    return false;
-  }
-
   const button = d.querySelector('#jmbProxyTest');
   button.disabled = true;
-  status.textContent = 'Testing proxy health and a public HLS playlist…';
-  const results = [];
-  let allOk = true;
-  for (const worker of workers) {
-    const result = await testProxyWorker(worker);
-    results.push(result.message);
-    if (!result.ok) allOk = false;
-  }
-  status.textContent = results.join('  ·  ');
+  status.textContent = 'Testing the JMB Worker and a public HLS playlist…';
+  const result = await testProxyWorker(jmbProxy());
+  status.textContent = result.message;
   button.disabled = false;
-  return allOk;
+  return result.ok;
 }
 
 $('proxyBtn').onclick = openProxySettings;
