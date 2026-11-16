@@ -197,7 +197,7 @@ html.light .jmb-to-top{box-shadow:0 10px 26px rgba(40,70,110,.16)!important}
     backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
   }
   .toolbar .field{min-width:0!important;max-width:100%;font-size:12px}
-  .card-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .card-grid{grid-template-columns:1fr!important;gap:10px!important}
   .media-card,.news-card{padding:12px!important;border-radius:16px!important}
   .service-card{min-height:218px!important;padding:15px!important;border-radius:18px!important}
   .source-shelf{gap:9px}
@@ -205,6 +205,7 @@ html.light .jmb-to-top{box-shadow:0 10px 26px rgba(40,70,110,.16)!important}
   .feature-band{padding:18px!important;border-radius:18px!important}
   .quick-search{gap:8px}
   .jmb-to-top{right:12px!important;bottom:calc(90px + env(safe-area-inset-bottom))!important}
+  body.has-jmb-radio-player .jmb-to-top{bottom:calc(158px + env(safe-area-inset-bottom))!important}
   .radio-player{
     bottom:calc(88px + env(safe-area-inset-bottom))!important;
     backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;
