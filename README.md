@@ -51,9 +51,9 @@ This project is plain HTML, CSS and JavaScript. Enable **GitHub Pages** for the 
 
 ## JMB TV streaming proxy
 
-The TV page uses the Cloudflare Worker endpoint configured in `tv/index.html` for HLS streams that need a same-origin media proxy. The Worker source is `cors-proxy-worker.js` and its allowed origins include `https://media.jmbhost.qzz.io`.
+The TV page uses the JMB-configured Cloudflare Worker endpoint in `tv/index.html` for compatible public HLS streams that need a media proxy. The Worker source is `cors-proxy-worker.js`; its allowed origin is `https://media.jmbhost.qzz.io`.
 
-After changing the Worker source, deploy it in Cloudflare Workers. The deployed endpoint must match the `PROXY` constant in `tv/index.html` (`https://jb-proxy.johanbiju15.workers.dev/?url=` unless you change it). A GitHub commit does not deploy the Worker to Cloudflare. See `tv/STREAM-SETUP.md`.
+After changing the Worker source, deploy it in Cloudflare Workers. The deployed endpoint must match the `PROXY` constant in `tv/index.html` (`https://jb-proxy.johanbiju15.workers.dev/?url=`). A GitHub commit does not deploy Worker code to Cloudflare; the Cloudflare Worker must already be deployed and configured to allow the JMB MEDIA origin. See `tv/STREAM-SETUP.md`.
 
 
 ## TV directory sources
@@ -65,4 +65,4 @@ After changing the Worker source, deploy it in Cloudflare Workers. The deployed 
 
 ## Proxy settings
 
-JMB TV attempts a public stream directly first, then uses the configured Cloudflare Worker for compatible HLS streams that need browser CORS support. The player settings allow an optional backup Worker URL. A backup must be deployed by the site owner with the same `cors-proxy-worker.js` source and must allow the JMB MEDIA origin (`https://media.jmbhost.qzz.io`). The proxy fallback does not bypass subscriptions, DRM, regional restrictions, or broadcaster access controls. A successful proxy health test confirms only that the Worker responds and rewrites a sample playlist; it does not guarantee that every channel is available.
+JMB TV attempts a public stream directly first, then uses the configured Cloudflare Worker for compatible HLS streams that need browser CORS support. The player settings use the JMB-configured Worker automatically; visitors do not need to enter a Worker URL. The proxy fallback does not bypass subscriptions, DRM, regional restrictions, or broadcaster access controls. A successful proxy health test confirms only that the Worker responds and rewrites a sample playlist; it does not guarantee that every channel is available.
