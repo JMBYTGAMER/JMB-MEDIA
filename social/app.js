@@ -87,7 +87,7 @@ async function init(){
  items=loadSocialCache();if(items.length){render();renderSide();$("socialStatus").textContent="Showing your saved news edition · checking live sources…";}
  var results=await Promise.allSettled(sources.map(async function(s){return parse(await fetchFeed(s.feed),s);}));
  var fresh=[];results.forEach(function(r){if(r.status==="fulfilled")fresh=fresh.concat(r.value);});
- if(fresh.length){items=fresh;items.sort(function(a,b){return b.date-a.date;});saveSocialCache();render();renderSide();$("socialStatus").textContent=items.length+" live updates · saved for your next visit";}
+ if(fresh.length){var unique=new Map();fresh.forEach(function(x){if(x.link&&!unique.has(x.link))unique.set(x.link,x);});items=Array.from(unique.values()).sort(function(a,b){return b.date-a.date;}).slice(0,120);saveSocialCache();render();renderSide();$("socialStatus").textContent=items.length+" live updates · saved for your next visit";}
  else if(items.length){render();renderSide();$("socialStatus").textContent="Offline edition · showing "+items.length+" saved updates";}
  else{$("socialStatus").textContent="News feeds are unavailable."; $("storyList").innerHTML='<div class="empty-state">The live feeds could not be reached. Open an official publisher or video link in this section and reload later.</div>';}
 }
