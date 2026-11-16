@@ -105,6 +105,7 @@ async function refreshFeeds(){
  render();renderHealth();if(button){button.disabled=false;button.textContent="↻ Refresh";}loading=false;
 }
 function init(){
+ var query=new URLSearchParams(location.search).get("q");if(query) $("newsSearch").value=query.slice(0,120);
  renderSources();fill("regionFilter",sources.map(function(s){return s.region;}));fill("languageFilter",sources.map(function(s){return s.language;}));fill("publisherFilter",sources.map(function(s){return s.name;}));
  var saved=loadSaved();if(saved.publishers){lastUpdated=saved.time;allItems.sort(function(a,b){return b.date-a.date;});render();setStatus("Showing saved headlines · checking for new editions…");}
  $("newsRetry").addEventListener("click",refreshFeeds);
