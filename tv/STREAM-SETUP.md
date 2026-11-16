@@ -56,3 +56,10 @@ The configured endpoint is `https://jb-proxy.johanbiju15.workers.dev/?url=`. Its
 Direct playback is still attempted first. The player avoids wrapping playlist segment URLs twice: the Worker rewrites the HLS playlist, and the browser leaves those already-proxied segment URLs unchanged. The proxy helps compatible public streams with browser CORS restrictions; it does not bypass subscriptions, DRM, logins, geographic restrictions or broadcaster access controls.
 
 Only use an HTTPS Worker you control for the optional backup. Its code must include `https://media.jmbhost.qzz.io` in the `ALLOWED` origin list. Deploying this static website through GitHub does not deploy a Cloudflare Worker; update the Worker separately only when its source changes.
+
+
+## JMB-managed shared Worker
+
+JMB MEDIA uses the same JMB-managed Cloudflare Worker endpoint as the JB TV demo: `https://jb-proxy.johanbiju15.workers.dev/?url=`. The JMB TV page is configured to use it automatically; visitors are not asked to enter a Worker URL.
+
+The repository's `cors-proxy-worker.js` now permits both exact site origins: `https://media.jmbhost.qzz.io` and `https://tv.jbhub.ryzn.pro`. That is a source-code change only. It must be deployed to the existing Worker in Cloudflare before the live service accepts requests from both websites. A GitHub Pages deployment does not publish Worker code.
