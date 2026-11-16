@@ -63,7 +63,7 @@
     }).join("");
 
     root.innerHTML =
-      '<div class="kf-head"><div class="kf-head-copy"><span class="kf-eyebrow">JMB MEDIA · KERALA FIRST</span><h2 class="kf-title">Your Malayalam favourites</h2><p class="kf-subtitle">Asianet, Kairali, 24 News, Surya TV and more — right at the front. Public streams play inside JMB TV when a compatible listing exists; otherwise use the broadcaster\\'s own watch page.</p></div>' +
+      '<div class="kf-head"><div class="kf-head-copy"><span class="kf-eyebrow">JMB MEDIA · KERALA FIRST</span><h2 class="kf-title">Your Malayalam favourites</h2><p class="kf-subtitle">Asianet, Kairali, 24 News, Surya TV and more — right at the front. Public streams play inside JMB TV when a compatible listing exists; otherwise use the broadcaster&#39;s own watch page.</p></div>' +
       '<div class="kf-head-actions"><span class="kf-pill-count">20 CHANNEL PICKS</span><button type="button" class="kf-tool" data-kf-proxy>⚙ Connection</button><button type="button" class="kf-tool" data-kf-test>Test proxy</button></div></div>' +
       '<div class="kf-grid">' + cards + '</div>' +
       '<div class="kf-foot"><div class="kf-foot-note"><strong>More than the featured picks.</strong> The searchable public directory remains below.<span class="kf-directory-count" id="kfDirectoryCount">Loading public channel directory…</span></div>' +
