@@ -44,7 +44,7 @@ function render(){
  }).join("");
 }
 async function load(){
- var seq=++loadSeq;
+ var retry=$("radioRetry"),seq=++loadSeq;if(retry){retry.disabled=true;retry.textContent="Refreshing…";}
  if(loadController)loadController.abort();
  loadController=new AbortController();
  var signal=loadController.signal;
@@ -61,11 +61,11 @@ async function load(){
    fill("radioLanguage",results[2].map(function(x){return x.name;}));
    optionsLoaded=true;
   }
-  render();
+  render();if(retry){retry.disabled=false;retry.textContent="↻ Refresh stations";}
  }catch(e){
   if(seq!==loadSeq)return;
   $("radioStatus").textContent="Could not connect to Radio Browser.";
-  $("radioGrid").innerHTML='<div class="empty-state" role="status">The station directory is temporarily unavailable. Check your connection and try again.</div>';
+  $("radioGrid").innerHTML='<div class="empty-state" role="status">The station directory is temporarily unavailable. Check your connection and try again.</div>';if(retry){retry.disabled=false;retry.textContent="↻ Try again";}
  }
 }
 function play(s){
@@ -93,6 +93,7 @@ audio.addEventListener("playing",function(){$("radioPlay").textContent="Ⅱ";});
 audio.addEventListener("error",function(){if(current)window.JMBToast("This station stream is offline or blocked by its provider.");$("radioPlay").textContent="▶";});
 ["radioCountry","radioLanguage","radioGenre","bandFilter"].forEach(function(id){$(id).addEventListener("change",load);});
 $("favoritesOnly").addEventListener("change",render);
+$("radioRetry").addEventListener("click",load);
 var initialQuery=new URLSearchParams(location.search).get("q");if(initialQuery)$("stationSearch").value=initialQuery.slice(0,120);
 $("stationSearch").addEventListener("input",function(){clearTimeout(timer);timer=setTimeout(load,350);});window.addEventListener("online",function(){if(!stations.length)load();});
 load();
