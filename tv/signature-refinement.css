@@ -74,3 +74,34 @@
 @media(prefers-reduced-motion:reduce){
   #grid article .thumb img,.kf-card,.kf-item,.kf-channel,.kf-tile{transition:none!important}
 }
+
+/* Keep useful tools in their natural place instead of showing extra status panels. */
+#keralaFeatured .kf-head-actions{display:none!important}
+.tv-heading-actions{display:none!important}
+#bar #proxyTest{display:none!important}
+#bar #proxyBtn{min-height:38px;padding-inline:14px;border-radius:12px!important}
+#bar #proxyBtn:focus-visible{outline:3px solid rgba(83,223,210,.75);outline-offset:3px}
+
+/* A compact, consistent favourite-channel grid on phones and tablets. */
+#keralaFeatured .kf-grid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:12px!important;
+}
+#keralaFeatured .kf-card{min-width:0;min-height:190px}
+#keralaFeatured .kf-card p{overflow-wrap:anywhere}
+#keralaFeatured .kf-actions{min-width:0}
+@media(max-width:900px){
+  #keralaFeatured .kf-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:760px){
+  #keralaFeatured.kf-section{margin:12px 0 20px!important}
+  #keralaFeatured .kf-grid{gap:10px!important}
+  #keralaFeatured .kf-card{min-height:196px;padding:11px!important}
+  #keralaFeatured .kf-title{font-size:23px!important}
+  #keralaFeatured .kf-subtitle{max-width:56ch}
+}
+@media(max-width:359px){
+  #keralaFeatured .kf-grid{grid-template-columns:minmax(0,1fr)!important}
+  #keralaFeatured .kf-card{min-height:0}
+}
