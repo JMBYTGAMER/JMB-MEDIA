@@ -712,12 +712,14 @@ const PLABEL = { off: 'Off', auto: 'JMB proxy' };
 let proxyMode = 'auto';
 try {
   const savedMode = localStorage.getItem('jbProxy');
-  proxyMode = savedMode === 'off' ? 'off' : 'auto';
-  // Remove the retired bring-your-own-worker settings from older versions.
+  const savedVersion = localStorage.getItem('jbProxyPrefVersion');
+  // First visit after this repair: re-enable the built-in JMB proxy.
+  // A user's direct-only choice is preserved only after the repaired preference version.
+  proxyMode = savedVersion === '6' && savedMode === 'off' ? 'off' : 'auto';
   localStorage.removeItem('jbProxyBackup');
   localStorage.removeItem('jbProxyOrder');
   localStorage.setItem('jbProxy', proxyMode);
-  localStorage.setItem('jbProxyPrefVersion', '5');
+  localStorage.setItem('jbProxyPrefVersion', '6');
 } catch (e) {}
 
 function makeProxy(name, value) {
@@ -760,18 +762,44 @@ function setProxy(mode) {
   syncProxyUi();
 }
 
-async function proxyHealthy(worker) {
-  if (!worker) return false;
+let proxyHealthCache = null;
+async function inspectProxyWorker(worker, force = false) {
+  if (!worker) return { ok: false, status: 0, message: 'The JMB proxy URL is not configured.' };
+  const now = Date.now();
+  if (!force && proxyHealthCache && proxyHealthCache.base === worker.base && now - proxyHealthCache.checked < (proxyHealthCache.result.ok ? 20000 : 2500)) {
+    return proxyHealthCache.result;
+  }
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 9000);
+  const timer = setTimeout(() => controller.abort(), 5000);
+  let result;
   try {
     const response = await fetch(worker.ping, { cache: 'no-store', signal: controller.signal });
-    return response.ok && (await response.text()).trim() === 'jb-proxy-ok';
+    const body = (await response.text()).trim();
+    const ok = response.ok && body === 'jb-proxy-ok';
+    result = ok
+      ? { ok: true, status: response.status, message: '' }
+      : {
+          ok: false,
+          status: response.status,
+          message: response.status === 403
+            ? 'The JMB proxy rejected this website (HTTP 403). Deploy the current cors-proxy-worker.js from JMB MEDIA and make sure https://media.jmbhost.qzz.io is included in its ALLOWED origins.'
+            : 'The JMB proxy health check failed (HTTP ' + response.status + '). Check the Cloudflare Worker deployment and try again.'
+        };
   } catch (e) {
-    return false;
+    result = {
+      ok: false,
+      status: 0,
+      message: 'The JMB proxy could not be reached from this website. The Cloudflare Worker must be deployed with https://media.jmbhost.qzz.io in its ALLOWED origins. The proxy will stay enabled so you can retry after deployment.'
+    };
   } finally {
     clearTimeout(timer);
   }
+  proxyHealthCache = { base: worker.base, checked: Date.now(), result };
+  return result;
+}
+async function proxyHealthy(worker) {
+  const result = await inspectProxyWorker(worker);
+  return result.ok;
 }
 
 let proxyDialog;
@@ -1490,20 +1518,22 @@ const endHold = () => { clearTimeout(holdT); if (held) { stopPreview(); setTimeo
 
 // ---- Playback ----
 function netMsg(c, d, viaProx) {
-  const code = d.response && d.response.code, hint = proxyList().length ? '' : ' Try turning the Proxy button on.';
-  if (viaProx && code >= 400) return `The proxy reached this channel, but its server answered ${code}. It is probably region-locked, blocking proxies, or offline. You can hide it.`;
+  const code = d.response && d.response.code;
+  if (viaProx && code >= 400) return `The JMB proxy reached this stream, but the broadcaster answered ${code}. The stream may be offline or may not permit this type of playback.`;
   if (code === 404 || code === 410) return 'This channel is offline (stream not found).';
-  if (code === 401 || code === 403) return `The stream server refused access (${code}).`;
-  if (code >= 500) return `The stream server has a problem (${code}). Try again later.`;
-  if (/^http:/.test(c.url) && location.protocol === 'https:') return 'This stream is HTTP-only (or offline), so it cannot play on an HTTPS site.' + hint;
-  return 'The direct stream could not be reached from this browser. JMB TV is retrying through the JMB proxy. If that also fails, the broadcaster may be offline, restricted by its provider, or may block third-party playback.' + hint;
+  if (code === 401 || code === 403) return `The broadcaster refused access (${code}). JMB MEDIA cannot override provider permissions or regional restrictions.`;
+  if (code >= 500) return `The broadcaster has a server problem (${code}). Try again later.`;
+  if (viaProx) return 'The JMB proxy was attempted, but the browser could not complete this stream request. Test the JMB proxy connection; the broadcaster may also block third-party playback.';
+  if (!proxyList().length) return 'Direct-only playback is selected. Turn on the JMB proxy in Playback options to try compatible public streams through the JMB Worker.';
+  if (/^http:/.test(c.url) && location.protocol === 'https:') return 'This stream is HTTP-only or offline. JMB TV will try the configured JMB proxy next.';
+  return 'The direct stream could not be reached. JMB TV will now retry through the configured JMB proxy. If that attempt also fails, the broadcaster may be offline or may not permit browser playback.';
 }
 // Tries the direct stream first, then each enabled proxy. With a proxy, the ORIGINAL playlist URL is
 // loaded and every request (playlist + video pieces) is routed through the proxy, so HTTP-only
 // and relative links work too.
 let curVia = 0, proxyFails = 0, startT = 0, vidT = 0;
 let streamAttempt = 0;
-function startStream(c, n = 0) {
+async function startStream(c, n = 0) {
   const attempt = ++streamAttempt;
   if (n === 0) savePos();
   v.onloadedmetadata = null;
@@ -1530,14 +1560,27 @@ function startStream(c, n = 0) {
   const markReady = () => {
     if (!isCurrent()) return;
     clearTimeout(startT);
+    proxyFails = 0;
     spin(false);
   };
   let recoveries = 0;
   startT = setTimeout(() => {
     if (!isCurrent()) return;
     if (v.currentTime > 0) { markReady(); return; }
-    if (!next()) giveUp(c, {}, n, 'This channel did not send a playable stream in time. It may be offline, unavailable to this browser, or not allow public playback. Try its official source or another channel.');
+    if (!next()) giveUp(c, {}, n, 'This channel did not send a playable stream in time. It may be offline or unavailable to this browser. Try its official source or another channel.');
   }, 18000);
+
+  // Verify the JMB Worker origin before sending a playlist through it.
+  // This catches an outdated Cloudflare ALLOWED list with a clear message.
+  if (via) {
+    const health = await inspectProxyWorker(via);
+    if (!isCurrent()) return;
+    if (!health.ok) {
+      clearTimeout(startT);
+      await giveUp(c, { response: { code: health.status || 0 } }, n, health.message);
+      return;
+    }
+  }
 
   if (window.Hls && Hls.isSupported()) {
     const cfg = {
@@ -1586,10 +1629,13 @@ function startStream(c, n = 0) {
 }
 async function giveUp(c, d, n, msg) {
   fail(msg || netMsg(c, d, n > 0));
-  if (n > 0 && ++proxyFails >= 3) { // several proxied failures in a row: is the proxy itself down?
+  if (n > 0 && ++proxyFails >= 3) {
     proxyFails = 0;
-    const p = proxyList()[0], prev = proxyMode;
-    if (p && !(await proxyHealthy(p))) { setProxy('off'); toast('Proxy seems to be down – turned off', () => setProxy(prev)); }
+    const worker = proxyList()[0];
+    if (worker && !(await proxyHealthy(worker))) {
+      // Never silently disable the built-in proxy after failed channels.
+      toast('JMB proxy is unavailable. It remains enabled; check Playback options for the Worker status.');
+    }
   }
 }
 function fail(m) {
@@ -1603,7 +1649,12 @@ function fail(m) {
     ? normaliseSearch([x.name, x.tvg].join(' ')).includes('asianet')
     : (x.cats || []).some(k => (cur.cats || []).includes(k)))).slice(0, 3) : [];
   const altMarkup = alternatives.length ? `<div class="tv-alt-wrap"><span class="tv-alt-label">${isAsianet ? 'OTHER ASIANET LISTINGS' : 'TRY ANOTHER CHANNEL'}</span><div class="tv-alt-list">${alternatives.map(x => `<button type="button" class="tv-alt-channel" data-alt-channel="${x.id}"><span>${esc(x.name)}</span><b>PLAY ↗</b></button>`).join('')}</div></div>` : '';
-  $('err').innerHTML = `<div class="tv-playback-error"><span class="tv-error-mark">!</span><div class="tv-error-copy"><strong>We couldn't start this channel</strong><p>${safe}</p><small>This channel stays in your directory. JMB TV tries its built-in JMB proxy automatically; you can test the JMB proxy or choose another listing.</small></div><div class="tv-error-actions"><button id="retry" class="btn !text-white">Try again</button>${live ? `<button id="proxyTestErr" class="btn !text-white">Test JMB proxy</button><button id="proxyErr" class="btn !text-white">JMB proxy settings</button>` : ''}</div>${altMarkup}</div>`;
+  const proxyHelp = curVia > 0
+    ? 'The JMB proxy was tried for this channel. You can test the Worker or choose another public listing.'
+    : proxyList().length
+      ? 'Direct playback failed. Automatic JMB proxy fallback is enabled for compatible public streams.'
+      : 'Direct-only playback is selected. Enable the JMB proxy in Playback options to try the automatic fallback.';
+  $('err').innerHTML = `<div class="tv-playback-error"><span class="tv-error-mark">!</span><div class="tv-error-copy"><strong>We couldn't start this channel</strong><p>${safe}</p><small>This channel stays in your directory. ${proxyHelp}</small></div><div class="tv-error-actions"><button id="retry" class="btn !text-white">Try again</button>${live ? `<button id="proxyTestErr" class="btn !text-white">Test JMB proxy</button><button id="proxyErr" class="btn !text-white">JMB proxy settings</button>` : ''}</div>${altMarkup}</div>`;
   $('err').classList.remove('hidden');
 }
 $('err').onclick = e => {
