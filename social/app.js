@@ -81,16 +81,40 @@ function render(){
   return '<article class="story"><div class="story-meta"><span>'+label+'</span><span>'+esc(x.source.name)+'</span><span>'+esc(date)+'</span></div><h3><a href="'+esc(x.link)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a></h3>'+media+(x.description?'<p>'+esc(x.description)+'</p>':"")+audio+'<div class="card-actions"><a class="btn small secondary" href="'+esc(x.link)+'" target="_blank" rel="noopener">'+(x.kind==="video"?"Watch at source ↗":x.kind==="audio"?"Open episode ↗":"Read at source ↗")+'</a></div></article>';
  }).join("");
 }
+async function refreshNews(){
+ if(window.__jmbSocialLoading)return;
+ window.__jmbSocialLoading=true;
+ var button=$("socialRetry");
+ if(button){button.disabled=true;button.textContent="Refreshing…";}
+ $("socialStatus").textContent=items.length?"Checking publishers for fresh updates…":"Connecting to publisher feeds…";
+ var results=await Promise.allSettled(sources.map(async function(s){return parse(await fetchFeed(s.feed),s);}));
+ var fresh=[];results.forEach(function(r){if(r.status==="fulfilled")fresh=fresh.concat(r.value);});
+ if(fresh.length){
+  var unique=new Map();fresh.forEach(function(x){if(x.link&&!unique.has(x.link))unique.set(x.link,x);});
+  items=Array.from(unique.values()).sort(function(a,b){return b.date-a.date;}).slice(0,120);
+  saveSocialCache();render();renderSide();
+  $("socialStatus").textContent=items.length+" live updates · saved for your next visit";
+ }else if(items.length){
+  render();renderSide();
+  $("socialStatus").textContent="Offline edition · showing "+items.length+" saved updates";
+ }else{
+  $("socialStatus").textContent="News feeds are unavailable.";
+  $("storyList").innerHTML='<div class="empty-state"><strong>Could not load the world desk.</strong><p>Check your connection or try refreshing. You can still open the official source links in the side panels.</p><button id="socialEmptyRetry" class="btn small secondary" type="button">Try again</button></div>';
+ }
+ if(button){button.disabled=false;button.textContent=fresh.length?"↻ Refresh news":"↻ Try again";}
+ window.__jmbSocialLoading=false;
+}
 async function init(){
  var initialQuery=new URLSearchParams(location.search).get("q");if(initialQuery) $("socialSearch").value=initialQuery.slice(0,120);
  fill("regionFilter",sources.map(function(s){return s.region;}));fill("sourceFilter",sources.map(function(s){return s.name;}));
- items=loadSocialCache();if(items.length){render();renderSide();$("socialStatus").textContent="Showing your saved news edition · checking live sources…";}
- var results=await Promise.allSettled(sources.map(async function(s){return parse(await fetchFeed(s.feed),s);}));
- var fresh=[];results.forEach(function(r){if(r.status==="fulfilled")fresh=fresh.concat(r.value);});
- if(fresh.length){var unique=new Map();fresh.forEach(function(x){if(x.link&&!unique.has(x.link))unique.set(x.link,x);});items=Array.from(unique.values()).sort(function(a,b){return b.date-a.date;}).slice(0,120);saveSocialCache();render();renderSide();$("socialStatus").textContent=items.length+" live updates · saved for your next visit";}
- else if(items.length){render();renderSide();$("socialStatus").textContent="Offline edition · showing "+items.length+" saved updates";}
- else{$("socialStatus").textContent="News feeds are unavailable."; $("storyList").innerHTML='<div class="empty-state">The live feeds could not be reached. Open an official publisher or video link in this section and reload later.</div>';}
+ items=loadSocialCache();
+ if(items.length){render();renderSide();$("socialStatus").textContent="Showing your saved news edition · checking live sources…";}
+ await refreshNews();
 }
+$("socialRetry").addEventListener("click",refreshNews);
+$("storyList").addEventListener("click",function(e){if(e.target.closest("#socialEmptyRetry"))refreshNews();});
+window.addEventListener("online",function(){if(!window.__jmbSocialLoading)refreshNews();});
+
 ["socialSearch","formatFilter","regionFilter","sourceFilter"].forEach(function(id){$(id).addEventListener(id==="socialSearch"?"input":"change",render);});
 init();
 })();
