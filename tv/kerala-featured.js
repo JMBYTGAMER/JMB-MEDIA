@@ -83,7 +83,7 @@
 
     root.innerHTML =
       '<div class="kf-head"><div class="kf-head-copy"><span class="kf-eyebrow">JMB MEDIA · KERALA FIRST</span><h2 class="kf-title">Your Malayalam favourites</h2><p class="kf-subtitle">Asianet, Kairali, 24 News, Surya TV and more — browse your favourites or jump into the full channel directory.</p></div>' +
-      '<div class="kf-head-actions"><span class="kf-pill-count">' + lineup.length + ' FEATURED CHANNELS</span></div></div>' +
+      '</div>' +
       '<div class="kf-filter-row" role="group" aria-label="Filter featured channels">' + filterMarkup + '</div>' +
       '<div class="kf-grid" data-filter="' + selectedFilter + '">' + cards + '</div>' +
       '<div class="kf-foot"><div class="kf-foot-note"><strong>Want even more?</strong> Search the full public channel directory below.<span class="kf-directory-count" id="kfDirectoryCount">Loading public channel directory…</span></div>' +
