@@ -152,7 +152,7 @@ body{
   min-height:38px;padding:8px 12px;border-radius:11px;
   border:1px solid var(--jmb-redesign-border);
   background:rgba(255,255,255,.045);color:#cbd8ea;
-  font:800 11px/1.2 inherit;cursor:pointer;
+  font:800 11px/1.2 "DM Sans",system-ui,sans-serif;cursor:pointer;
   transition:background .18s,border-color .18s,color .18s,transform .18s;
 }
 .story-save:hover{transform:translateY(-1px);border-color:rgba(120,229,215,.34)}
@@ -197,6 +197,7 @@ body{
 .skip-link:focus{z-index:10002}
 
 /* TV gets the same spacing, controls and cards as the rest of the hub. */
+.tv-main{width:min(1240px,calc(100% - 40px));margin-inline:auto}
 .tv-topbar{
   background:rgba(8,13,23,.91)!important;
   border-bottom:1px solid var(--jmb-redesign-border)!important;
