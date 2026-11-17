@@ -890,7 +890,7 @@ async function testProxyWorker(worker) {
     }
     return { ok: true, message: 'JMB proxy READY — Worker health and HLS playlist tests passed.' };
   } catch (e) {
-    return { ok: false, message: 'JMB Worker could not be reached from this browser. Check its deployment and allowed site origin.' };
+    return { ok: false, message: 'The JMB Worker could not be reached from media.jmbhost.qzz.io. Deploy the current cors-proxy-worker.js and confirm this exact origin is in its ALLOWED list.' };
   } finally {
     clearTimeout(timer);
   }
