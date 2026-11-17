@@ -168,3 +168,18 @@ html.light .quick-search select{background:#fff;color:#24344c;border-color:rgba(
  .quick-search{grid-template-columns:minmax(0,1fr)}
  .quick-search input,.quick-search .btn{grid-column:1}
 }
+
+/* Directory refresh controls and polished live-status labels */
+.directory-actions{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.directory-actions>div{display:grid;gap:5px;min-width:0}
+.directory-source{font-size:10px;line-height:1.5;color:#8494aa;letter-spacing:.045em}
+.refresh-btn{white-space:nowrap;min-width:132px;border:1px solid rgba(174,198,233,.16);background:rgba(255,255,255,.045)}
+.refresh-btn:disabled{opacity:.58;cursor:wait;transform:none}
+.directory-actions [role=status]{overflow-wrap:anywhere}
+html.light .directory-source{color:#718098}
+html.light .refresh-btn{background:rgba(255,255,255,.8);border-color:rgba(48,73,110,.16);color:#2b3b54}
+@media(max-width:680px){
+ .directory-actions{align-items:flex-start}
+ .directory-actions>div{flex:1}
+ .refresh-btn{min-width:0;min-height:38px;padding-inline:10px;font-size:10px}
+}
