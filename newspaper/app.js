@@ -21,8 +21,8 @@ var sources=[
 ];
 var allItems=[],feedHealth={},cacheKey="jmb-newspaper-feed-cache-v3",lastUpdated=0,loading=false;
 function esc(s){return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
-function safeUrl(s){try{var u=new URL(s);return (u.protocol==="https:"||u.protocol==="http:")?u.href:"";}catch(e){return "";}}
-function safeImage(s){try{var u=new URL(s);return u.protocol==="https:";}catch(e){return false;}}
+function safeUrl(s){var raw=String(s||"").trim();if(!raw)return "";try{var u=new URL(raw);return (u.protocol==="https:"||u.protocol==="http:")&&!u.username&&!u.password?u.href:"";}catch(e){return "";}}
+function safeImage(s){var raw=String(s||"").trim();if(!raw)return false;try{var u=new URL(raw);return u.protocol==="https:"&&!u.username&&!u.password;}catch(e){return false;}}
 function clean(s,max){var d=new DOMParser().parseFromString(String(s||""),"text/html");return (d.body.textContent||"").replace(/\s+/g," ").trim().slice(0,max||700);}
 function nodeText(node,tag){var n=node.getElementsByTagName(tag)[0];return n?(n.textContent||"").trim():"";}
 function nodeFirst(node,tags){for(var i=0;i<tags.length;i++){var n=node.getElementsByTagName(tags[i])[0];if(n)return n;}return null;}
@@ -80,6 +80,7 @@ function render(){
  var q=$("newsSearch").value.toLowerCase().trim(),region=$("regionFilter").value,language=$("languageFilter").value,publisher=$("publisherFilter").value,sort=$("sortFilter").value;
  var rows=allItems.filter(function(x){var blob=(x.title+" "+x.description+" "+x.source.name).toLowerCase();return (!q||blob.indexOf(q)>=0)&&(!region||x.source.region===region)&&(!language||x.source.language===language)&&(!publisher||x.source.name===publisher);});
  rows.sort(function(a,b){return sort==="source"?a.source.name.localeCompare(b.source.name):b.date-a.date;});
+ $("newsStatus").textContent=rows.length+" results · "+allItems.length+" loaded"+(lastUpdated?" · updated "+new Date(lastUpdated).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}):"");
  if(!rows.length){$("newsGrid").innerHTML='<div class="empty-state news-empty"><div class="empty-icon">📰</div><b>No headlines loaded yet</b><p>Try refreshing the feeds. You can still open a newspaper from the publisher directory below.</p><button class="btn small" id="newsEmptyRetry" type="button">Retry headlines</button></div>';return;}
  $("newsStatus").textContent=rows.length+" stories · "+sources.length+" publications · "+(lastUpdated?"Updated "+new Date(lastUpdated).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}):"saved edition");
  $("newsGrid").innerHTML=rows.slice(0,90).map(function(x){var date=x.date?new Date(x.date).toLocaleString(undefined,{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"Latest update";var image=x.image&&safeImage(x.image)?'<img class="news-thumb" src="'+esc(x.image)+'" alt="" loading="lazy" onerror="this.remove()">':'<div class="news-thumb news-thumb-placeholder">📰</div>';return '<article class="media-card news-card"><div class="news-card-top">'+image+'<div class="news-card-meta"><span class="news-source">'+esc(x.source.name)+'</span><span class="muted tiny">'+esc(x.source.region)+' · '+esc(x.source.language)+'</span><span class="news-date">'+esc(date)+'</span></div></div><h3 class="news-headline">'+esc(x.title)+'</h3><p class="news-excerpt">'+esc(x.description||"Open this story in the JMB reader.")+'</p><div class="news-card-footer"><button class="btn small" data-read="'+allItems.indexOf(x)+'" type="button">Read on JMB <span>→</span></button><a class="btn small ghost" href="'+esc(x.link)+'" target="_blank" rel="noopener noreferrer">Original article ↗</a></div></article>';}).join("");
