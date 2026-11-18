@@ -19,8 +19,10 @@ var SOCIAL_CACHE_KEY="jmb-social-feed-cache-v1";
 var SOCIAL_SAVED_KEY="jmb-social-saved-stories-v1";
 var savedStories=[];
 function safeUrl(value){
+ var raw=String(value||"").trim();
+ if(!raw)return "";
  try{
-  var u=new URL(String(value||""),location.href);
+  var u=new URL(raw,location.href);
   if((u.protocol!=="https:"&&u.protocol!=="http:")||u.username||u.password)return "";
   return u.href;
  }catch(e){return "";}
