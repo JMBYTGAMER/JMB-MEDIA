@@ -3,8 +3,36 @@
 var $=function(id){return document.getElementById(id);};
 var hosts=["https://de1.api.radio-browser.info","https://nl1.api.radio-browser.info","https://at1.api.radio-browser.info"];
 var stations=[],audio=$("radioAudio"),current=null,favorites=loadFavorites(),timer=null,optionsLoaded=false,loadSeq=0,loadController=null;
+var RADIO_CACHE_KEY="jmb-radio-directory-v1";
 function esc(s){return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
-function safeUrl(s){try{var u=new URL(s);return u.protocol==="https:"&&!u.username&&!u.password?u.href:"";}catch(e){return "";}}
+function safeUrl(s){var raw=String(s||"").trim();if(!raw)return "";try{var u=new URL(raw);return u.protocol==="https:"&&!u.username&&!u.password?u.href:"";}catch(e){return "";}}
+function textValue(value,max){return String(value||"").replace(/\\s+/g," ").trim().slice(0,max);}
+function normalizeStation(s){
+ if(!s||!s.stationuuid||!s.name)return null;
+ var name=textValue(s.name,150),tags=textValue(s.tags,220),stream=safeUrl(s.url_resolved);
+ if(!name||!stream||/(adult|erotic|porn|explicit|xxx|sex)/i.test(name+" "+tags))return null;
+ return {
+  stationuuid:textValue(s.stationuuid,80),name:name,url_resolved:stream,
+  favicon:safeUrl(s.favicon),country:textValue(s.country,90),state:textValue(s.state,90),
+  language:textValue(s.language,100),tags:tags,codec:textValue(s.codec,24),
+  bitrate:Math.max(0,Math.min(100000,Number(s.bitrate)||0)),
+  clickcount:Math.max(0,Number(s.clickcount)||0)
+ };
+}
+function loadDirectoryCache(){
+ try{
+  var data=JSON.parse(localStorage.getItem(RADIO_CACHE_KEY)||"[]");
+  return Array.isArray(data)?data.map(normalizeStation).filter(Boolean).slice(0,200):[];
+ }catch(e){return [];}
+}
+function saveDirectoryCache(list){
+ try{
+  var merged=new Map();
+  (list||[]).forEach(function(s){var clean=normalizeStation(s);if(clean&&!merged.has(clean.stationuuid))merged.set(clean.stationuuid,clean);});
+  loadDirectoryCache().forEach(function(s){if(!merged.has(s.stationuuid))merged.set(s.stationuuid,s);});
+  localStorage.setItem(RADIO_CACHE_KEY,JSON.stringify(Array.from(merged.values()).slice(0,200)));
+ }catch(e){}
+}
 function loadFavorites(){try{return JSON.parse(localStorage.getItem("jmb-radio-favorites")||"[]");}catch(e){return [];}}
 function saveFavorites(){try{localStorage.setItem("jmb-radio-favorites",JSON.stringify(favorites));}catch(e){window.JMBToast("Browser storage is unavailable; favourites may not be saved.");}}
 function safeStation(s){return !/(adult|erotic|porn|explicit|xxx|sex)/i.test(String(s.tags||""))&&!/(adult|erotic|porn|explicit|xxx|sex)/i.test(String(s.name||""));}
@@ -31,7 +59,13 @@ function queryUrl(){
  return "/json/stations/search?"+p.toString();
 }
 function render(){
- var band=$("bandFilter").value,favOnly=$("favoritesOnly").value==="yes",list=stations.filter(safeStation);if(favOnly)list=list.filter(function(s){return favorites.indexOf(s.stationuuid)>=0;});
+ var q=$("stationSearch").value.toLowerCase().trim(),country=$("radioCountry").value,language=$("radioLanguage").value,genre=$("radioGenre").value;
+ var band=$("bandFilter").value,favOnly=$("favoritesOnly").value==="yes",list=stations.filter(safeStation);
+ if(q)list=list.filter(function(s){return [s.name,s.country,s.state,s.language,s.tags].join(" ").toLowerCase().indexOf(q)>=0;});
+ if(country)list=list.filter(function(s){return s.country===country;});
+ if(language)list=list.filter(function(s){return (s.language||"").split(",").some(function(x){return x.trim()===language;});});
+ if(genre)list=list.filter(function(s){return (s.tags||"").toLowerCase().split(",").some(function(x){return x.trim()===genre;});});
+ if(favOnly)list=list.filter(function(s){return favorites.indexOf(s.stationuuid)>=0;});
  if(band==="fm")list=list.filter(function(s){return /\bfm\b/i.test(s.tags||"")||/\bfm\b/i.test(s.name||"");});
  if(band==="am")list=list.filter(function(s){return /\bam\b/i.test(s.tags||"")||/\bam\b/i.test(s.name||"");});
  if(band==="internet")list=list.filter(function(s){return !/\b(am|fm)\b/i.test((s.tags||"")+" "+(s.name||""));});
@@ -55,17 +89,27 @@ async function load(){
   if(!optionsLoaded){jobs.push(api("/json/countries?order=name&reverse=false",signal));jobs.push(api("/json/languages?order=name&reverse=false",signal));}
   var results=await Promise.all(jobs);
   if(seq!==loadSeq)return;
-  stations=results[0].filter(safeStation);
+  stations=results[0].map(normalizeStation).filter(Boolean).filter(safeStation);
+  saveDirectoryCache(stations);
   if(!optionsLoaded){
    fill("radioCountry",results[1].map(function(x){return x.name;}));
    fill("radioLanguage",results[2].map(function(x){return x.name;}));
    optionsLoaded=true;
   }
-  render();if(retry){retry.disabled=false;retry.textContent="↻ Refresh stations";}
+  render();
+  $("radioStatus").textContent+=" · live directory";
+  if(retry){retry.disabled=false;retry.textContent="↻ Refresh stations";}
  }catch(e){
   if(seq!==loadSeq)return;
-  $("radioStatus").textContent="Could not connect to Radio Browser.";
-  $("radioGrid").innerHTML='<div class="empty-state" role="status">The station directory is temporarily unavailable. Check your connection and try again.</div>';if(retry){retry.disabled=false;retry.textContent="↻ Try again";}
+  stations=loadDirectoryCache();
+  if(stations.length){
+   render();
+   $("radioStatus").textContent=$("radioStatus").textContent+" · saved offline directory";
+  }else{
+   $("radioStatus").textContent="Could not connect to Radio Browser.";
+   $("radioGrid").innerHTML='<div class="empty-state" role="status"><strong>The station directory is temporarily unavailable.</strong><p>Check your connection and try again. Your favourites are kept on this device.</p></div>';
+  }
+  if(retry){retry.disabled=false;retry.textContent="↻ Try again";}
  }
 }
 function play(s){
@@ -95,6 +139,6 @@ audio.addEventListener("error",function(){if(current)window.JMBToast("This stati
 $("favoritesOnly").addEventListener("change",render);
 $("radioRetry").addEventListener("click",load);
 var initialQuery=new URLSearchParams(location.search).get("q");if(initialQuery)$("stationSearch").value=initialQuery.slice(0,120);
-$("stationSearch").addEventListener("input",function(){clearTimeout(timer);timer=setTimeout(load,350);});window.addEventListener("online",function(){if(!stations.length)load();});
+$("stationSearch").addEventListener("input",function(){clearTimeout(timer);timer=setTimeout(load,350);});window.addEventListener("online",function(){load();});
 load();
 })();
