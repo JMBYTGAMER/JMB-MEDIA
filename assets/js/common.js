@@ -19,10 +19,10 @@ if(toggle&&mobile){
  if(!mobile.id)mobile.id="jmbMobileNav";
  toggle.setAttribute("aria-controls",mobile.id);
  syncMenu(false);
- var currentPath=location.pathname.replace(/\\/+$/,"")||"/";
+ var currentPath=location.pathname.replace(/\/+$/,"")||"/";
  mobile.querySelectorAll("a").forEach(function(a){
   try{
-   var targetPath=new URL(a.getAttribute("href"),location.href).pathname.replace(/\\/+$/,"")||"/";
+   var targetPath=new URL(a.getAttribute("href"),location.href).pathname.replace(/\/+$/,"")||"/";
    if(targetPath===currentPath){a.setAttribute("aria-current","page");a.setAttribute("aria-label",(a.textContent||"").trim()+" (current page)");}
   }catch(e){}
   a.addEventListener("click",function(){closeMenu(false);});
