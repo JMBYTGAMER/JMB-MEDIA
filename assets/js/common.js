@@ -5,10 +5,29 @@ window.JMBBase=base;
 function storageGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function storageSet(k,v){try{localStorage.setItem(k,v);return true;}catch(e){return false;}}
 var toggle=document.querySelector("[data-menu-toggle]"),mobile=document.querySelector("[data-mobile-nav]");
-function closeMenu(returnFocus){if(!toggle||!mobile)return;mobile.classList.remove("open");toggle.setAttribute("aria-expanded","false");if(returnFocus)toggle.focus();}
+function syncMenu(open){
+ if(!toggle||!mobile)return;
+ mobile.classList.toggle("open",open);
+ mobile.setAttribute("aria-hidden",String(!open));
+ toggle.setAttribute("aria-expanded",String(open));
+ toggle.setAttribute("aria-label",open?"Close menu":"Open menu");
+ toggle.setAttribute("title",open?"Close menu":"Open menu");
+ toggle.textContent=open?"×":"☰";
+}
+function closeMenu(returnFocus){if(!toggle||!mobile)return;syncMenu(false);if(returnFocus)toggle.focus();}
 if(toggle&&mobile){
- toggle.addEventListener("click",function(){var open=mobile.classList.toggle("open");toggle.setAttribute("aria-expanded",String(open));if(open){var first=mobile.querySelector("a");if(first)first.focus();}});
- mobile.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(){closeMenu(false);});});
+ if(!mobile.id)mobile.id="jmbMobileNav";
+ toggle.setAttribute("aria-controls",mobile.id);
+ syncMenu(false);
+ var currentPath=location.pathname.replace(/\\/+$/,"")||"/";
+ mobile.querySelectorAll("a").forEach(function(a){
+  try{
+   var targetPath=new URL(a.getAttribute("href"),location.href).pathname.replace(/\\/+$/,"")||"/";
+   if(targetPath===currentPath){a.setAttribute("aria-current","page");a.setAttribute("aria-label",(a.textContent||"").trim()+" (current page)");}
+  }catch(e){}
+  a.addEventListener("click",function(){closeMenu(false);});
+ });
+ toggle.addEventListener("click",function(){syncMenu(toggle.getAttribute("aria-expanded")!=="true");if(toggle.getAttribute("aria-expanded")==="true"){var first=mobile.querySelector("a");if(first)first.focus();}});
  document.addEventListener("pointerdown",function(e){if(mobile.classList.contains("open")&&!mobile.contains(e.target)&&!toggle.contains(e.target))closeMenu(false);});
  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&mobile.classList.contains("open"))closeMenu(true);});
 }
