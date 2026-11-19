@@ -1501,11 +1501,26 @@ function applyFilter() {
   filtered = directoryMatches.concat(officialMatches);
   // Keep the Kerala favourites near the top of the general directory too.
   const preferredNames = [
-    ["asianet","asianet tv"],["kairali tv","kairali"],["24 news","twenty four","twentyfour"],
-    ["surya tv","surya"],["asianet news"],["kairali news"],["manorama news"],
-    ["mathrubhumi news"],["news18 kerala","news 18 kerala"],["reporter tv","reporter live"],
-    ["mediaone","media one"],["janam tv"],["jaihind tv","jaihind news"],["kaumudy tv"],
-    ["dd malayalam"],["amrita tv"],["flowers tv"],["mazhavil manorama"],["zee keralam"],["victers","kite victers"]
+    ["asianet","asianet tv"],
+    ["24 news","twenty four","twentyfour"],
+    ["mazhavil manorama","mazhavil"],
+    ["kairali tv","kairali"],
+    ["flowers tv","flowers"],
+    ["surya tv","surya"],
+    ["asianet news"],
+    ["manorama news"],
+    ["mathrubhumi news"],
+    ["news18 kerala","news 18 kerala"],
+    ["reporter tv","reporter live"],
+    ["mediaone","media one"],
+    ["kairali news"],
+    ["amrita tv"],
+    ["janam tv"],
+    ["jaihind tv","jaihind news"],
+    ["kaumudy tv"],
+    ["dd malayalam"],
+    ["zee keralam"],
+    ["victers","kite victers"]
   ];
   const priority = channel => {
     const name = normaliseSearch([channel.name, channel.tvg].join(" "));
