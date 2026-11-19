@@ -117,11 +117,26 @@ function loadSaved(feeds){
  return {items:restored,publishers:new Set(restored.map(function(x){return x.source.name;})).size,time:when};
 }
 function fill(id,values){var el=$(id);if(!el)return;var old=el.value;Array.from(new Set(values)).sort().forEach(function(v){if(!Array.from(el.options).some(function(o){return o.value===v;}))el.insertAdjacentHTML("beforeend",'<option value="'+esc(v)+'">'+esc(v)+'</option>');});if(Array.from(el.options).some(function(o){return o.value===old;}))el.value=old;}
+function readLocationPrefs(){try{return JSON.parse(localStorage.getItem("jmb-newspaper-location-v1")||"{}")||{};}catch(e){return {};}}
+function saveLocationPrefs(){try{localStorage.setItem("jmb-newspaper-location-v1",JSON.stringify({country:$("countryFilter").value,state:$("stateFilter").value,district:$("districtFilter").value,city:$("cityFilter").value}));}catch(e){}}
+function rebuildStateOptions(preferred){
+ var country=$("countryFilter").value,state=$("stateFilter");
+ if(country==="IN"){
+  state.innerHTML='<option value="Kerala">Kerala</option><option value="">All India / choose state</option>'+INDIA_STATES.filter(function(x){return x!=="Kerala";}).map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join("");
+  state.value=preferred!==undefined&&Array.from(state.options).some(function(o){return o.value===preferred;})?preferred:"Kerala";
+ }else{
+  state.innerHTML='<option value="">All regions</option>';state.value="";
+ }
+}
 function buildLocationOptions(){
- var country=$("countryFilter"),state=$("stateFilter"),district=$("districtFilter"),city=$("cityFilter");
- country.innerHTML=COUNTRY_OPTIONS.map(function(x){return '<option value="'+x[0]+'">'+esc(x[1])+'</option>';}).join("");country.value="IN";
- state.innerHTML='<option value="Kerala">Kerala</option><option value="">All India / choose state</option>'+INDIA_STATES.filter(function(x){return x!=="Kerala";}).map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join("");state.value="Kerala";
- updateDistrictOptions();updateCityOptions();
+ var prefs=readLocationPrefs(),country=$("countryFilter"),district=$("districtFilter"),city=$("cityFilter");
+ country.innerHTML=COUNTRY_OPTIONS.map(function(x){return '<option value="'+x[0]+'">'+esc(x[1])+'</option>';}).join("");
+ country.value=COUNTRY_OPTIONS.some(function(x){return x[0]===prefs.country;})?prefs.country:"IN";
+ rebuildStateOptions(country.value==="IN"?prefs.state:"");
+ updateDistrictOptions();
+ if(prefs.district&&Array.from(district.options).some(function(o){return o.value===prefs.district;}))district.value=prefs.district;
+ updateCityOptions();
+ if(prefs.city&&Array.from(city.options).some(function(o){return o.value===prefs.city;}))city.value=prefs.city;
 }
 function updateDistrictOptions(){
  var state=$("stateFilter").value,district=$("districtFilter");
@@ -249,7 +264,7 @@ async function refreshFeeds(){
  loading=false;
 }
 async function changeLocation(){
- currentPage=1;feedHealth={};activeFeeds=makeActiveFeeds();updateEditionMeta();restoreActiveCache();render();
+ currentPage=1;saveLocationPrefs();feedHealth={};activeFeeds=makeActiveFeeds();updateEditionMeta();restoreActiveCache();render();
  await refreshFeeds();
 }
 function openReader(index){
@@ -276,8 +291,7 @@ function init(){
  ["newsSearch","publisherFilter","sortFilter"].forEach(function(id){$(id).addEventListener(id==="newsSearch"?"input":"change",function(){currentPage=1;render();});});
  $("languageFilter").addEventListener("change",changeLocation);
  $("countryFilter").addEventListener("change",function(){
-  var code=$("countryFilter").value;
-  $("stateFilter").innerHTML=code==="IN"?'<option value="Kerala">Kerala</option><option value="">All India / choose state</option>'+INDIA_STATES.filter(function(x){return x!=="Kerala";}).map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join(""):'<option value="">All regions</option>';
+  rebuildStateOptions($("countryFilter").value==="IN"?"Kerala":"");
   updateDistrictOptions();updateCityOptions();changeLocation();
  });
  $("stateFilter").addEventListener("change",function(){updateDistrictOptions();updateCityOptions();changeLocation();});
