@@ -531,7 +531,7 @@ function localHasListing(item) {
 function localCardItem(item) {
  const group=item.kind.includes("NEWS")?"News":item.kind==="EDUCATION"?"Education":"Entertainment";
  return {
-  id:"local-"+item.id, name:item.name, tvg:item.aliases[0], logo:"",
+  id:"local-"+item.id, url:item.url, name:item.name, tvg:item.aliases[0], logo:"",
   cats:[group], langs:["Malayalam"], areas:["India"],
   officialOnly:true, officialUrl:item.url, officialKind:item.kind,
   officialMark:item.mark, officialColor:item.color, officialDescription:item.desc
@@ -1257,10 +1257,16 @@ v.addEventListener('contextmenu', e => { if (mode === 'watch') e.preventDefault(
 // ---- Home extras: favorites, hero, picks, radio, accent colors, shortcuts ----
 let fav = new Set(getObj('jbFav', [])), favOnly = false;
 function toggleFav(c, btn) {
-  if (!c) return;
+  if (!c || !c.url) return;
   if (fav.has(c.url)) { fav.delete(c.url); toast('Removed from Favorites'); } else { fav.add(c.url); toast('Added to Favorites'); }
   setObj('jbFav', [...fav]);
-  document.querySelectorAll(`[data-fav="${c.id}"]`).forEach(b => b.classList.toggle('saved', fav.has(c.url)));
+  const saved = fav.has(c.url);
+  document.querySelectorAll(`[data-fav="${c.id}"]`).forEach(b => b.classList.toggle('saved', saved));
+  if (btn) {
+    btn.classList.toggle('saved', saved);
+    btn.setAttribute('aria-pressed', String(saved));
+    btn.setAttribute('aria-label', (saved ? 'Remove ' : 'Add ') + c.name + (saved ? ' from' : ' to') + ' favourites');
+  }
   if (favOnly) applyFilter();
 }
 function countUp(el, n) {
@@ -1424,6 +1430,7 @@ function card(c, i = 0) {
     return `<article class="tv-channel-card tv-official-directory-card group" aria-label="${esc(c.name)} official broadcaster page" style="animation-delay:${Math.min(i,24)*30}ms">
       <div class="relative aspect-video rounded-xl t-card flex items-center justify-center overflow-hidden thumb">
         <span class="tv-official-mark" style="--official-accent:${esc(c.officialColor)}">${mark}</span>
+        <button type="button" data-local-fav="${esc(c.id)}" class="heart fv tv-official-favorite absolute top-1.5 right-1.5 z-10 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-600 ${fav.has(c.officialUrl) ? 'saved' : ''}" aria-label="${fav.has(c.officialUrl) ? 'Remove ' : 'Add '}${esc(c.name)} ${fav.has(c.officialUrl) ? 'from' : 'to'} favourites" aria-pressed="${fav.has(c.officialUrl)}" title="Favourite">${ic('heart',16)}</button>
         <span class="tv-official-badge">OFFICIAL SOURCE</span>
       </div>
       <h3 class="mt-2 text-sm font-medium line2">${esc(c.name)}</h3>
@@ -1480,8 +1487,9 @@ function applyFilter() {
   });
   // If a broadcaster has no matching public stream listing, keep it discoverable
   // in the same grid with a clearly labelled official-source link, never a fake Play action.
-  const officialMatches = favOnly ? [] : LOCAL_BROADCASTS.filter(item => {
+  const officialMatches = LOCAL_BROADCASTS.filter(item => {
     if (localHasListing(item)) return false;
+    if (favOnly && !fav.has(item.url)) return false;
     const haystack = normaliseSearch([item.name,item.kind,item.desc,...item.aliases].join(" "));
     const group = item.kind.includes("NEWS") ? "News" : item.kind === "EDUCATION" ? "Education" : "Entertainment";
     return (!channelSearch || haystack.includes(channelSearch)) &&
@@ -1533,6 +1541,12 @@ $('more').onclick = more;
 const clickCard = e => {
   if (e.target.closest('#noRes')) return resetFilters();
   if (e.target.closest('[data-official-link]')) return;
+  const localButton = e.target.closest('[data-local-fav]');
+  if (localButton) {
+    const item = LOCAL_BROADCASTS.find(x => x.id === localButton.dataset.localFav);
+    if (item) return toggleFav({ id:"local-"+item.id, name:item.name, url:item.url }, localButton);
+    return;
+  }
   const fb = e.target.closest('[data-fav]');
   if (fb) return toggleFav(channels[+fb.dataset.fav], fb);
   if (held) return;
