@@ -1,0 +1,114 @@
+/* JMB TV — refined normal directory layout */
+#grid{
+  align-items:stretch!important;
+  grid-auto-rows:1fr;
+}
+#grid .tv-channel-card{
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  padding:clamp(8px,1.1vw,12px)!important;
+  border-radius:17px!important;
+  border-color:var(--tv-line)!important;
+  background:linear-gradient(155deg,color-mix(in srgb,var(--tv-panel) 96%,white 4%),var(--tv-panel))!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.13),inset 0 1px rgba(255,255,255,.035)!important;
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease!important;
+}
+#grid .tv-channel-card:hover{
+  transform:translateY(-3px)!important;
+  border-color:color-mix(in srgb,var(--tv-cyan) 32%,var(--tv-line))!important;
+  box-shadow:0 17px 36px rgba(0,0,0,.19)!important;
+}
+#grid .tv-channel-card .thumb{
+  flex:none;
+  border-radius:12px!important;
+  border:1px solid color-mix(in srgb,var(--tv-line) 85%,transparent)!important;
+  background:radial-gradient(ellipse at 20% 8%,rgba(103,228,212,.09),transparent 48%),var(--tv-bg)!important;
+}
+#grid .tv-channel-card h3{
+  font-size:clamp(12px,1.1vw,15px)!important;
+  font-weight:800!important;
+  line-height:1.35!important;
+  margin:11px 3px 4px!important;
+}
+#grid .tv-channel-card p{
+  font-size:10px!important;
+  line-height:1.5!important;
+  margin:0 3px 2px!important;
+}
+#grid .tv-channel-card .heart,
+#grid .tv-official-favorite{
+  width:38px!important;height:38px!important;
+  display:grid!important;place-items:center!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  border-radius:12px!important;
+  background:rgba(7,12,22,.82)!important;
+  color:#f4f7ff!important;
+  backdrop-filter:blur(12px);
+}
+#grid .tv-channel-card .heart.saved,
+#grid .tv-official-favorite.saved{
+  color:#fff!important;
+  background:linear-gradient(140deg,#ec526c,#f47d67)!important;
+  border-color:rgba(255,158,150,.7)!important;
+}
+#grid .tv-channel-card .heart svg,
+#grid .tv-official-favorite svg{width:18px;height:18px}
+#grid .tv-channel-card .thumb>span.absolute.bottom-1{
+  padding:6px 8px!important;border-radius:8px!important;
+  font-size:8px!important;letter-spacing:.08em;
+}
+#grid .tv-channel-card .tv-watch-btn{min-height:42px!important;border-radius:11px!important}
+#grid .tv-official-directory-card .tv-official-link{min-height:42px;border-radius:11px}
+#grid .tv-official-directory-card .tv-official-mark{
+  width:clamp(68px,8vw,92px);height:clamp(68px,8vw,92px);
+  font-size:clamp(27px,4vw,38px);
+}
+#grid .tv-official-directory-card .tv-official-badge{font-size:8px}
+html.light #grid .tv-channel-card{
+  background:linear-gradient(155deg,#fff,#f5f8fd)!important;
+  box-shadow:0 10px 28px rgba(35,56,90,.07)!important;
+}
+html.light #grid .tv-channel-card .heart,
+html.light #grid .tv-official-favorite{
+  background:rgba(23,35,56,.82)!important;color:#fff!important;
+}
+@media(max-width:680px){
+  #grid{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:16px!important;
+  }
+  #grid .tv-channel-card{
+    padding:9px!important;
+    border-radius:17px!important;
+  }
+  #grid .tv-channel-card .thumb{aspect-ratio:4/3!important;border-radius:12px!important}
+  #grid .tv-channel-card .thumb img{padding:12px!important}
+  #grid .tv-channel-card h3{font-size:15px!important;margin:10px 3px 4px!important}
+  #grid .tv-channel-card p{font-size:11px!important}
+  #grid .tv-channel-card .heart,
+  #grid .tv-official-favorite{width:40px!important;height:40px!important}
+  #grid .tv-official-directory-card{padding:9px!important}
+  #grid .tv-official-directory-card .tv-official-mark{width:72px;height:72px;font-size:29px}
+  #grid .tv-official-link{min-height:42px;font-size:11px}
+  #bar:not(.hidden){
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    align-items:stretch!important;
+    gap:8px!important;padding:11px!important;
+    border-radius:16px!important;
+  }
+  #bar #count{grid-column:1/-1!important;flex:auto!important;font-size:10px!important}
+  #bar .btn,#bar summary{min-width:0!important;min-height:42px!important;white-space:normal!important}
+  #bar details{min-width:0}
+  #bar details summary{display:flex;align-items:center;justify-content:center;padding:0 10px}
+}
+@media(max-width:370px){
+  #bar:not(.hidden){grid-template-columns:1fr!important}
+  #bar #count{grid-column:1!important}
+  #grid{gap:13px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #grid .tv-channel-card{transition:none!important}
+  #grid .tv-channel-card:hover{transform:none!important}
+}
