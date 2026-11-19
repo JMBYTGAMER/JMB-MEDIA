@@ -74,23 +74,25 @@ html.light #grid .tv-official-favorite{
   background:rgba(23,35,56,.82)!important;color:#fff!important;
 }
 @media(max-width:680px){
+  /* Return to the compact two-column channel grid used by the earlier JMB TV layout. */
   #grid{
-    grid-template-columns:minmax(0,1fr)!important;
-    gap:16px!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:13px 10px!important;
   }
   #grid .tv-channel-card{
-    padding:9px!important;
-    border-radius:17px!important;
+    padding:6px!important;
+    border-radius:14px!important;
   }
-  #grid .tv-channel-card .thumb{aspect-ratio:4/3!important;border-radius:12px!important}
-  #grid .tv-channel-card .thumb img{padding:12px!important}
-  #grid .tv-channel-card h3{font-size:15px!important;margin:10px 3px 4px!important}
-  #grid .tv-channel-card p{font-size:11px!important}
+  #grid .tv-channel-card .thumb{aspect-ratio:4/3!important;border-radius:10px!important}
+  #grid .tv-channel-card .thumb img{padding:8px!important}
+  #grid .tv-channel-card h3{font-size:12px!important;line-height:1.35!important;margin:9px 2px 3px!important}
+  #grid .tv-channel-card p{font-size:9px!important;line-height:1.4!important;margin:0 2px 2px!important}
   #grid .tv-channel-card .heart,
-  #grid .tv-official-favorite{width:40px!important;height:40px!important}
-  #grid .tv-official-directory-card{padding:9px!important}
-  #grid .tv-official-directory-card .tv-official-mark{width:72px;height:72px;font-size:29px}
-  #grid .tv-official-link{min-height:42px;font-size:11px}
+  #grid .tv-official-favorite{width:32px!important;height:32px!important;border-radius:10px!important}
+  #grid .tv-official-directory-card{padding:6px!important}
+  #grid .tv-official-directory-card .tv-official-mark{width:56px;height:56px;font-size:23px;border-radius:16px}
+  #grid .tv-official-directory-card .tv-official-badge{font-size:6px;padding:4px 5px}
+  #grid .tv-official-link{min-height:36px;font-size:9px;padding-inline:7px}
   #bar:not(.hidden){
     display:grid!important;
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
@@ -106,7 +108,10 @@ html.light #grid .tv-official-favorite{
 @media(max-width:370px){
   #bar:not(.hidden){grid-template-columns:1fr!important}
   #bar #count{grid-column:1!important}
-  #grid{gap:13px!important}
+  #grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px 7px!important}
+  #grid .tv-channel-card h3{font-size:11px!important}
+  #grid .tv-channel-card p{font-size:8px!important}
+  #grid .tv-official-link{font-size:8px!important}
 }
 @media(prefers-reduced-motion:reduce){
   #grid .tv-channel-card{transition:none!important}
