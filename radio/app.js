@@ -140,19 +140,23 @@ function findCachedPreset(preset){
  var aliases=preset.aliases.map(function(x){return x.toLowerCase();});
  var matches=candidates.filter(function(s){var name=s.name.toLowerCase();return aliases.some(function(a){return name===a||name.indexOf(a)>=0;});});
  var city=preset.city.toLowerCase();
- return matches.find(function(s){return (s.state||"").toLowerCase().indexOf(city)>=0||s.name.toLowerCase().indexOf(city)>=0;})||matches[0]||null;
+ var localMatch=matches.find(function(s){return (s.state||"").toLowerCase().indexOf(city)>=0||s.name.toLowerCase().indexOf(city)>=0;});
+ return localMatch||(matches.length===1?matches[0]:null);
 }
 async function findPresetStream(preset){
  var key=tunerBank+":"+preset.freq+":"+preset.city;
  if(tunerStationCache.has(key))return tunerStationCache.get(key);
- var p=new URLSearchParams();p.set("name",preset.aliases[0]);p.set("country","India");p.set("hidebroken","true");p.set("order","clickcount");p.set("reverse","true");p.set("limit","30");
+ var city=preset.city.toLowerCase(),unique=new Map(),station=null;
  try{
-  var results=await api("/json/stations/search?"+p.toString());
-  var valid=results.map(normalizeStation).filter(Boolean).filter(safeStation);
-  var aliasNames=preset.aliases.map(function(x){return x.toLowerCase();});
-  var matched=valid.filter(function(s){var n=s.name.toLowerCase();return aliasNames.some(function(a){return n===a||n.indexOf(a)>=0;});});
-  var city=preset.city.toLowerCase();
-  var station=matched.find(function(s){return (s.state||"").toLowerCase().indexOf(city)>=0||s.name.toLowerCase().indexOf(city)>=0;})||matched[0]||null;
+  for(var i=0;i<preset.aliases.length;i++){
+   var p=new URLSearchParams();p.set("name",preset.aliases[i]);p.set("country","India");p.set("hidebroken","true");p.set("order","clickcount");p.set("reverse","true");p.set("limit","30");
+   var results=await api("/json/stations/search?"+p.toString());
+   results.map(normalizeStation).filter(Boolean).filter(safeStation).forEach(function(x){unique.set(x.stationuuid,x);});
+   var candidates=Array.from(unique.values()).filter(function(s){var n=s.name.toLowerCase();return n.indexOf(preset.aliases[i].toLowerCase())>=0;});
+   station=candidates.find(function(s){return (s.state||"").toLowerCase().indexOf(city)>=0||s.name.toLowerCase().indexOf(city)>=0;})||null;
+   if(station)break;
+  }
+  if(!station&&unique.size===1)station=Array.from(unique.values())[0];
   if(station&&!stations.some(function(x){return x.stationuuid===station.stationuuid;})){stations.unshift(station);stations=stations.slice(0,240);saveDirectoryCache(stations);}
   tunerStationCache.set(key,station);
   return station;
