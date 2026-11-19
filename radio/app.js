@@ -109,7 +109,7 @@ function updateTunerReadout(){
  $("tunerDial").min=bankRangeValue.min;$("tunerDial").max=bankRangeValue.max;$("tunerDial").step=bankRangeValue.step;$("tunerDial").value=tunerFrequency;
  $("tunerRangeMin").textContent=fmtFrequency(bankRangeValue.min,tunerBank);$("tunerRangeMax").textContent=fmtFrequency(bankRangeValue.max,tunerBank);
  $("tunerKnob").style.setProperty("--knob-angle",(-135+270*((tunerFrequency-bankRangeValue.min)/(bankRangeValue.max-bankRangeValue.min)))+"deg");
- $("tunerKnob").setAttribute("aria-valuemin",String(bankRangeValue.min));$("tunerKnob").setAttribute("aria-valuemax",String(bankRangeValue.max));$("tunerKnob").setAttribute("aria-valuenow",String(tunerFrequency));
+ $("tunerKnob").setAttribute("aria-valuemin",String(bankRangeValue.min));$("tunerKnob").setAttribute("aria-valuemax",String(bankRangeValue.max));$("tunerKnob").setAttribute("aria-valuenow",String(tunerFrequency));$("tunerKnob").setAttribute("aria-valuetext",fmtFrequency(tunerFrequency,tunerBank)+" "+bankRangeValue.unit);
  $("tunerStationName").textContent=preset?preset.name+" · "+preset.city:"No preset at this frequency";
  $("tunerMatchStatus").textContent=preset?"Frequency preset · online stream check required":"Move the dial to a marked station frequency";
  var cachedPreset=preset?(tunerStationCache.get(tunerBank+":"+preset.freq+":"+preset.city)||findCachedPreset(preset)):null;
