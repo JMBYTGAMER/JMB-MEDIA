@@ -42,8 +42,8 @@ var DISTRICT_CITIES={
  "Kannur":["Kannur","Thalassery","Payyannur","Mattannur","Iritty"],
  "Kasaragod":["Kasaragod","Kanhangad","Nileshwar","Uppala"]
 };
-var INDIA_STATES=["Kerala","Tamil Nadu","Karnataka","Maharashtra","Goa","Telangana","Andhra Pradesh","Delhi","Gujarat","West Bengal","Rajasthan","Punjab","Uttar Pradesh"];
-var COUNTRY_OPTIONS=[["IN","India"],["AE","United Arab Emirates"],["GB","United Kingdom"],["US","United States"],["CA","Canada"],["AU","Australia"],["SG","Singapore"],["QA","Qatar"],["SA","Saudi Arabia"]];
+var INDIA_STATES=["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Andaman and Nicobar Islands","Chandigarh","Dadra and Nagar Haveli and Daman and Diu","Delhi","Jammu and Kashmir","Ladakh","Lakshadweep","Puducherry"];
+var COUNTRY_OPTIONS=[["IN","India"],["AE","United Arab Emirates"],["GB","United Kingdom"],["US","United States"],["CA","Canada"],["AU","Australia"],["SG","Singapore"],["QA","Qatar"],["SA","Saudi Arabia"],["KW","Kuwait"],["OM","Oman"],["BH","Bahrain"],["MY","Malaysia"],["NZ","New Zealand"],["ZA","South Africa"],["FR","France"],["DE","Germany"],["IT","Italy"],["ES","Spain"],["JP","Japan"],["KR","South Korea"],["LK","Sri Lanka"],["NP","Nepal"],["BD","Bangladesh"],["PK","Pakistan"],["NG","Nigeria"],["KE","Kenya"],["BR","Brazil"]];
 var cacheKey="jmb-newspaper-edition-cache-v4",allItems=[],activeFeeds=[],feedHealth={},lastUpdated=0,loading=false,currentPage=1,pageSize=8,editionLocation="Kerala";
 function esc(s){return String(s||"").replace(/[&<>\"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 function safeUrl(s){var raw=String(s||"").trim();if(!raw)return "";try{var u=new URL(raw);return (u.protocol==="https:"||u.protocol==="http:")&&!u.username&&!u.password?u.href:"";}catch(e){return "";}}
@@ -120,35 +120,35 @@ function fill(id,values){var el=$(id);if(!el)return;var old=el.value;Array.from(
 function readLocationPrefs(){try{return JSON.parse(localStorage.getItem("jmb-newspaper-location-v1")||"{}")||{};}catch(e){return {};}}
 function saveLocationPrefs(){try{localStorage.setItem("jmb-newspaper-location-v1",JSON.stringify({country:$("countryFilter").value,state:$("stateFilter").value,district:$("districtFilter").value,city:$("cityFilter").value}));}catch(e){}}
 function rebuildStateOptions(preferred){
- var country=$("countryFilter").value,state=$("stateFilter");
- if(country==="IN"){
-  state.innerHTML='<option value="Kerala">Kerala</option><option value="">All India / choose state</option>'+INDIA_STATES.filter(function(x){return x!=="Kerala";}).map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join("");
-  state.value=preferred!==undefined&&Array.from(state.options).some(function(o){return o.value===preferred;})?preferred:"Kerala";
- }else{
-  state.innerHTML='<option value="">All regions</option>';state.value="";
- }
+ var country=$("countryFilter").value;
+ var options=country==="IN"?["Kerala"].concat(INDIA_STATES.filter(function(x){return x!=="Kerala";})):[];
+ $("stateOptions").innerHTML=options.map(function(x){return '<option value="'+esc(x)+'"></option>';}).join("");
+ $("stateFilter").value=preferred!==undefined?preferred:(country==="IN"?"Kerala":"");
+ $("stateFilter").placeholder=country==="IN"?"Choose or type an Indian state":"Type a state, province or region";
 }
 function buildLocationOptions(){
- var prefs=readLocationPrefs(),country=$("countryFilter"),district=$("districtFilter"),city=$("cityFilter");
+ var prefs=readLocationPrefs(),country=$("countryFilter");
  country.innerHTML=COUNTRY_OPTIONS.map(function(x){return '<option value="'+x[0]+'">'+esc(x[1])+'</option>';}).join("");
  country.value=COUNTRY_OPTIONS.some(function(x){return x[0]===prefs.country;})?prefs.country:"IN";
- rebuildStateOptions(country.value==="IN"?prefs.state:"");
+ rebuildStateOptions(prefs.state!==undefined&&country.value==="IN"?prefs.state:undefined);
+ $("districtFilter").value=prefs.district||"";
  updateDistrictOptions();
- if(prefs.district&&Array.from(district.options).some(function(o){return o.value===prefs.district;}))district.value=prefs.district;
+ $("cityFilter").value=prefs.city||"";
  updateCityOptions();
- if(prefs.city&&Array.from(city.options).some(function(o){return o.value===prefs.city;}))city.value=prefs.city;
 }
 function updateDistrictOptions(){
  var state=$("stateFilter").value,district=$("districtFilter");
  var list=state==="Kerala"?KERALA_DISTRICTS:[];
- district.innerHTML='<option value="">All districts</option>'+list.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join("");
- district.disabled=!list.length;
+ $("districtOptions").innerHTML=list.map(function(x){return '<option value="'+esc(x)+'"></option>';}).join("");
+ district.disabled=false;
+ district.placeholder=list.length?"Choose or type a Kerala district":"Type a district or locality";
 }
 function updateCityOptions(){
  var district=$("districtFilter").value,city=$("cityFilter");
- var list=district? (DISTRICT_CITIES[district]||[]):$("stateFilter").value==="Kerala"?Array.from(new Set([].concat.apply([],Object.keys(DISTRICT_CITIES).map(function(k){return DISTRICT_CITIES[k];})))):[];
- city.innerHTML='<option value="">All cities</option>'+list.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join("");city.disabled=!list.length;
- city.disabled=!list.length;
+ var list=district?(DISTRICT_CITIES[district]||[]):$("stateFilter").value==="Kerala"?Array.from(new Set([].concat.apply([],Object.keys(DISTRICT_CITIES).map(function(k){return DISTRICT_CITIES[k];})))):[];
+ $("cityOptions").innerHTML=list.map(function(x){return '<option value="'+esc(x)+'"></option>';}).join("");
+ city.disabled=false;
+ city.placeholder=list.length?"Choose or type a city":"Type a city or town";
 }
 function countryLanguage(){
  var code=$("countryFilter").value||"IN",lang=$("languageFilter").value;
@@ -291,11 +291,15 @@ function init(){
  ["newsSearch","publisherFilter","sortFilter"].forEach(function(id){$(id).addEventListener(id==="newsSearch"?"input":"change",function(){currentPage=1;render();});});
  $("languageFilter").addEventListener("change",changeLocation);
  $("countryFilter").addEventListener("change",function(){
-  rebuildStateOptions($("countryFilter").value==="IN"?"Kerala":"");
+  rebuildStateOptions();
+  $("districtFilter").value="";$("cityFilter").value="";
   updateDistrictOptions();updateCityOptions();changeLocation();
  });
- $("stateFilter").addEventListener("change",function(){updateDistrictOptions();updateCityOptions();changeLocation();});
- $("districtFilter").addEventListener("change",function(){updateCityOptions();changeLocation();});
+ $("stateFilter").addEventListener("change",function(){
+  $("districtFilter").value="";$("cityFilter").value="";
+  updateDistrictOptions();updateCityOptions();changeLocation();
+ });
+ $("districtFilter").addEventListener("change",function(){$("cityFilter").value="";updateCityOptions();changeLocation();});
  $("cityFilter").addEventListener("change",changeLocation);
  render();refreshFeeds();
 }
