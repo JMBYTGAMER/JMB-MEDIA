@@ -33,9 +33,9 @@
   <div class="edition-controls-heading"><div><span class="page-kicker">YOUR EDITION</span><h2>Choose your news location</h2></div><span class="edition-auto-pill"><i></i> KERALA FIRST</span></div>
   <div class="edition-location-grid">
    <label>Country<select id="countryFilter" class="field"><option value="IN" selected>India</option><option value="AE">United Arab Emirates</option><option value="GB">United Kingdom</option><option value="US">United States</option><option value="CA">Canada</option><option value="AU">Australia</option><option value="SG">Singapore</option><option value="QA">Qatar</option><option value="SA">Saudi Arabia</option></select></label>
-   <label>State<select id="stateFilter" class="field"><option value="Kerala" selected>Kerala</option><option value="">All India / choose state</option></select></label>
-   <label>District<select id="districtFilter" class="field"><option value="">All districts</option></select></label>
-   <label>City<select id="cityFilter" class="field"><option value="">All cities</option></select></label>
+   <label>State<input id="stateFilter" class="field" list="stateOptions" value="Kerala" placeholder="Choose or type a state"><datalist id="stateOptions"></datalist></label>
+   <label>District<input id="districtFilter" class="field" list="districtOptions" placeholder="Choose or type a district"><datalist id="districtOptions"></datalist></label>
+   <label>City<input id="cityFilter" class="field" list="cityOptions" placeholder="Choose or type a city"><datalist id="cityOptions"></datalist></label>
   </div>
   <div class="edition-search-grid">
    <label class="edition-search-label">Search headlines<input id="newsSearch" class="field" type="search" placeholder="Search a headline, topic or place…" aria-label="Search newspaper headlines"></label>
