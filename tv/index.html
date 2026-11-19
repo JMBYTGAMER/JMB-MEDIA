@@ -532,7 +532,7 @@ function localHasListing(item) {
   if(!matchesName||!country.includes("india"))return false;
   // "24 News" is a shared name worldwide. Only treat an India/Malayalam
   // listing as the Kerala channel; never promote Pakistan's unrelated listing.
-  if(item.id==="24news" && language.length && !language.some(x=>x.includes("malayalam")))return false;
+  if(item.id==="24news" && !language.some(x=>x.includes("malayalam")))return false;
   return true;
  });
 }
@@ -1493,7 +1493,7 @@ function applyFilter() {
     const haystack = normaliseSearch([c.name, c.tvg, ...(c.cats || []), ...(c.langs || []), ...(c.areas || [])].join(' '));
     const isTwentyFour = /^(24 news|twenty four)(?:\\s|$)/.test(normaliseSearch([c.name,c.tvg].join(' ')));
     const isKeralaTwentyFour = (c.areas||[]).some(x=>normaliseSearch(x)==="india") &&
-      (!(c.langs||[]).length || (c.langs||[]).some(x=>normaliseSearch(x).includes("malayalam")));
+      (c.langs||[]).some(x=>normaliseSearch(x).includes("malayalam"));
     // Do not let an unrelated 24 News listing (for example, from Pakistan)
     // occupy the Kerala 24 News slot.
     if(isTwentyFour&&!isKeralaTwentyFour)return false;
