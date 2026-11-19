@@ -117,6 +117,12 @@ function loadSaved(feeds){
  return {items:restored,publishers:new Set(restored.map(function(x){return x.source.name;})).size,time:when};
 }
 function fill(id,values){var el=$(id);if(!el)return;var old=el.value;Array.from(new Set(values)).sort().forEach(function(v){if(!Array.from(el.options).some(function(o){return o.value===v;}))el.insertAdjacentHTML("beforeend",'<option value="'+esc(v)+'">'+esc(v)+'</option>');});if(Array.from(el.options).some(function(o){return o.value===old;}))el.value=old;}
+function syncPublisherOptions(){
+ var el=$("publisherFilter"),old=el.value;
+ var names=Array.from(new Set(activeFeeds.map(function(x){return x.name;}))).sort();
+ el.innerHTML='<option value="">All publishers</option>'+names.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join("");
+ if(names.indexOf(old)>=0)el.value=old;
+}
 function readLocationPrefs(){try{return JSON.parse(localStorage.getItem("jmb-newspaper-location-v1")||"{}")||{};}catch(e){return {};}}
 function saveLocationPrefs(){try{localStorage.setItem("jmb-newspaper-location-v1",JSON.stringify({country:$("countryFilter").value,state:$("stateFilter").value,district:$("districtFilter").value,city:$("cityFilter").value}));}catch(e){}}
 function rebuildStateOptions(preferred){
@@ -264,7 +270,7 @@ async function refreshFeeds(){
  loading=false;
 }
 async function changeLocation(){
- currentPage=1;saveLocationPrefs();feedHealth={};activeFeeds=makeActiveFeeds();updateEditionMeta();restoreActiveCache();render();
+ currentPage=1;saveLocationPrefs();feedHealth={};activeFeeds=makeActiveFeeds();syncPublisherOptions();updateEditionMeta();restoreActiveCache();render();
  await refreshFeeds();
 }
 function openReader(index){
@@ -280,7 +286,7 @@ function closeReader(){var panel=$("articleReader");if(panel){panel.hidden=true;
 function init(){
  buildLocationOptions();renderSources();activeFeeds=makeActiveFeeds();updateEditionMeta();restoreActiveCache();
  fill("languageFilter",["Malayalam","English","Hindi"]);
- fill("publisherFilter",sources.map(function(s){return s.name;}));
+ syncPublisherOptions();
  var query=new URLSearchParams(location.search).get("q");if(query)$("newsSearch").value=query.slice(0,120);
  $("newsRetry").addEventListener("click",refreshFeeds);
  $("newsGrid").addEventListener("click",function(e){var b=e.target.closest("[data-read]");if(b)openReader(Number(b.getAttribute("data-read")));if(e.target.closest("#newsEmptyRetry"))refreshFeeds();});
