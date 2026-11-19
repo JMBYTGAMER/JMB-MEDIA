@@ -136,7 +136,7 @@ function buildLocationOptions(){
  var prefs=readLocationPrefs(),country=$("countryFilter");
  country.innerHTML=COUNTRY_OPTIONS.map(function(x){return '<option value="'+x[0]+'">'+esc(x[1])+'</option>';}).join("");
  country.value=COUNTRY_OPTIONS.some(function(x){return x[0]===prefs.country;})?prefs.country:"IN";
- rebuildStateOptions(prefs.state!==undefined&&country.value==="IN"?prefs.state:undefined);
+ rebuildStateOptions(prefs.state!==undefined?prefs.state:undefined);
  $("districtFilter").value=prefs.district||"";
  updateDistrictOptions();
  $("cityFilter").value=prefs.city||"";
