@@ -502,7 +502,7 @@ function cleanChannelName(name) {
 const LOCAL_BROADCASTS = [
  {id:"asianet",name:"Asianet",mark:"A",kind:"ENTERTAINMENT",desc:"Malayalam serials, reality shows and entertainment.",aliases:["asianet","asianet tv"],url:"https://www.jiohotstar.com/",color:"#75ddd0"},
  {id:"kairali",name:"Kairali TV",mark:"K",kind:"ENTERTAINMENT",desc:"Malayalam entertainment from Kairali.",aliases:["kairali tv","kairali"],url:"https://kairalitv.in/",color:"#ed8ca8"},
- {id:"24news",name:"24 News",mark:"24",kind:"NEWS · LIVE",desc:"Twenty Four Malayalam news and live updates.",aliases:["24 news","twenty four","twentyfour"],url:"https://www.youtube.com/@24onlive/live",color:"#ff8b72"},
+ {id:"24news",name:"24 News Kerala",mark:"24",kind:"NEWS · LIVE",desc:"Twenty Four, the Malayalam news channel from Kerala.",aliases:["24 news","24 onlive","twenty four","twentyfour"],url:"https://www.twentyfournews.com/",color:"#ff8b72"},
  {id:"surya",name:"Surya TV",mark:"S",kind:"ENTERTAINMENT",desc:"Malayalam entertainment from the Sun Network.",aliases:["surya tv","surya"],url:"https://www.sunnxt.com/",color:"#f0b25e"},
  {id:"asianet-news",name:"Asianet News",mark:"AN",kind:"NEWS · LIVE",desc:"Malayalam news and breaking coverage.",aliases:["asianet news"],url:"https://www.youtube.com/@asianetnews/live",color:"#62bde8"},
  {id:"kairali-news",name:"Kairali News",mark:"KN",kind:"NEWS",desc:"News and current affairs from Kairali.",aliases:["kairali news"],url:"https://www.youtube.com/@kairalinews/live",color:"#d18bf0"},
@@ -526,7 +526,14 @@ function localHasListing(item) {
  const aliases=item.aliases.map(localName);
  return channels.some(ch=>{
   const name=localName([ch.name,ch.tvg].join(" "));
-  return aliases.some(alias=>name===alias||name.startsWith(alias+" hd")||name.startsWith(alias+" sd")||name.startsWith(alias+" live"));
+  const country=(ch.areas||[]).map(localName);
+  const language=(ch.langs||[]).map(localName);
+  const matchesName=aliases.some(alias=>name===alias||name.startsWith(alias+" hd")||name.startsWith(alias+" sd")||name.startsWith(alias+" live")||name.startsWith(alias+" kerala"));
+  if(!matchesName||!country.includes("india"))return false;
+  // "24 News" is a shared name worldwide. Only treat an India/Malayalam
+  // listing as the Kerala channel; never promote Pakistan's unrelated listing.
+  if(item.id==="24news" && language.length && !language.some(x=>x.includes("malayalam")))return false;
+  return true;
  });
 }
 function localCardItem(item) {
@@ -1484,6 +1491,12 @@ function applyFilter() {
   if (showHint) showHint.classList.toggle('hidden', !isBiggBossSearch);
   const directoryMatches = channels.filter(c => {
     const haystack = normaliseSearch([c.name, c.tvg, ...(c.cats || []), ...(c.langs || []), ...(c.areas || [])].join(' '));
+    const isTwentyFour = /^(24 news|twenty four)(?:\\s|$)/.test(normaliseSearch([c.name,c.tvg].join(' ')));
+    const isKeralaTwentyFour = (c.areas||[]).some(x=>normaliseSearch(x)==="india") &&
+      (!(c.langs||[]).length || (c.langs||[]).some(x=>normaliseSearch(x).includes("malayalam")));
+    // Do not let an unrelated 24 News listing (for example, from Pakistan)
+    // occupy the Kerala 24 News slot.
+    if(isTwentyFour&&!isKeralaTwentyFour)return false;
     return (!hideBad || !bad.has(c.url)) && (!favOnly || fav.has(c.url)) && (!cat || c.cats.includes(cat)) && (!lang || c.langs.includes(lang)) && (!area || (c.areas || []).includes(area)) && (!channelSearch || haystack.includes(channelSearch));
   });
   // If a broadcaster has no matching public stream listing, keep it discoverable
@@ -1502,7 +1515,7 @@ function applyFilter() {
   // Keep the Kerala favourites near the top of the general directory too.
   const preferredNames = [
     ["asianet","asianet tv"],
-    ["24 news","twenty four","twentyfour"],
+    ["24 news kerala","24 news","twenty four","twentyfour"],
     ["mazhavil manorama","mazhavil"],
     ["kairali tv","kairali"],
     ["flowers tv","flowers"],
