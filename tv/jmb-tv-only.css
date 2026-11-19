@@ -254,7 +254,8 @@ html.light #watch #back,html.light .tv-watch-home{background:#fff!important;colo
  .tv-head-actions{gap:5px}
  .tv-head-actions .btn,#installBtn,#aboutBtn,#theme{min-height:35px!important;padding:0 9px!important;font-size:10px!important}
  #aboutBtn{font-size:0!important;width:35px!important}
- #aboutBtn:after{content:"i";font:700 13px "DM Sans",sans-serif!important}
+ #aboutBtn:after{content:none!important;display:none!important}
+ #aboutBtn svg{display:block!important;width:20px!important;height:20px!important;margin:0 auto!important}
  main.tv-main{padding:19px 13px 28px!important}
  .tv-page-heading{margin:3px 2px 17px}
  .tv-page-heading h1{font-size:34px}
