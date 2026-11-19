@@ -1,6 +1,6 @@
 // JMB TV service worker: app shell + playlist caching. Streams (video) are never touched.
-const V = 'jmbtv-v24';
-const SHELL = ['./jmb-tv-experience.css?v=5', './visual-finish.css?v=1', './signature-refinement.css?v=2', './kerala-featured.css?v=3', './kerala-featured.js?v=2', './', '/assets/css/brand-intro.css?v=1', '/assets/js/brand-intro.js?v=1', '/assets/css/signature-refinement.css?v=2', '/assets/css/redesign.css?v=1', '/assets/css/quality.css?v=1', '/favicon/site.webmanifest?v=10', '/favicon/jmb-logo.svg?v=10', '/favicon/jmb-app-icon.svg?v=10', '/favicon/jmb-maskable-icon.svg?v=10'];
+const V = 'jmbtv-v25';
+const SHELL = ['./jmb-tv-experience.css?v=5', './channel-directory.css?v=1', './visual-finish.css?v=1', './signature-refinement.css?v=2', './', '/assets/css/brand-intro.css?v=1', '/assets/js/brand-intro.js?v=1', '/assets/css/signature-refinement.css?v=2', '/assets/css/redesign.css?v=1', '/assets/css/quality.css?v=1', '/favicon/site.webmanifest?v=10', '/favicon/jmb-logo.svg?v=10', '/favicon/jmb-app-icon.svg?v=10', '/favicon/jmb-maskable-icon.svg?v=10'];
 const CDN = ['cdnjs.cloudflare.com', 'cdn.tailwindcss.com'];
 const LISTS = ['/iptv/index.m3u', '/iptv/index.category.m3u', '/iptv/index.country.m3u', '/iptv/index.language.m3u'];
 const SUPPLEMENTAL = '/freecasthub/public-iptv/main/playlist.m3u';
