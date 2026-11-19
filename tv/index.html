@@ -146,7 +146,7 @@
 <link rel="stylesheet" href="flow-state.css?v=2"><link rel="stylesheet" href="visual-finish.css?v=2"><link rel="stylesheet" href="signature-refinement.css?v=2">
 <link rel="stylesheet" href="/assets/css/redesign.css?v=1">
 <link rel="stylesheet" href="/assets/css/quality.css?v=1">
-<link rel="stylesheet" href="directory-finish.css?v=1">
+<link rel="stylesheet" href="directory-finish.css?v=2">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to content</a>
@@ -809,11 +809,11 @@ let proxyHealthCache = null;
 async function inspectProxyWorker(worker, force = false) {
   if (!worker) return { ok: false, status: 0, message: 'The JMB proxy URL is not configured.' };
   const now = Date.now();
-  if (!force && proxyHealthCache && proxyHealthCache.base === worker.base && now - proxyHealthCache.checked < (proxyHealthCache.result.ok ? 20000 : 2500)) {
+  if (!force && proxyHealthCache && proxyHealthCache.base === worker.base && now - proxyHealthCache.checked < (proxyHealthCache.result.ok ? 20000 : 5000)) {
     return proxyHealthCache.result;
   }
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 5000);
+  const timer = setTimeout(() => controller.abort(), 10000);
   let result;
   try {
     const response = await fetch(worker.ping, { cache: 'no-store', signal: controller.signal });
@@ -832,7 +832,7 @@ async function inspectProxyWorker(worker, force = false) {
     result = {
       ok: false,
       status: 0,
-      message: 'The JMB proxy could not be reached from this website. The Cloudflare Worker must be deployed with https://media.jmbhost.qzz.io in its ALLOWED origins. The proxy will stay enabled so you can retry after deployment.'
+      message: 'Your browser could not read a response from the JMB Worker. This is commonly caused by an older Worker version that does not allow https://media.jmbhost.qzz.io, or by a Worker/network outage. Deploy the current Worker code, then run Test JMB proxy again.'
     };
   } finally {
     clearTimeout(timer);
@@ -862,7 +862,7 @@ function buildProxyDialog() {
         <span><b>JMB Cloudflare proxy</b><small>Managed by JMB MEDIA · automatic fallback</small></span>
         <span class="jmb-proxy-built-state">JMB</span>
       </div>
-      <p class="jmb-proxy-description">JMB TV tries a channel directly first. If a compatible public HLS stream needs browser CORS support, it automatically retries through the JMB Cloudflare Worker. No Worker URL or setup is needed.</p>
+      <p class="jmb-proxy-description">JMB TV tries a channel directly first, then retries compatible public HLS streams through the JMB Cloudflare Worker when browser CORS blocks direct playback. The Worker must be deployed once in Cloudflare before this feature can work. <a href="https://github.com/JMBYTGAMER/JMB-MEDIA/blob/main/docs/jmb-proxy-worker.md" target="_blank" rel="noopener noreferrer">Open the deployment guide ↗</a></p>
       <div class="jmb-proxy-note">
         <b>What this proxy does</b>
         <span>Helps compatible public HLS streams load when browser CORS rules prevent direct playback. It cannot unlock paid channels, DRM, logins or regional restrictions.</span>
@@ -884,7 +884,7 @@ function buildProxyDialog() {
   proxyDialog.addEventListener('click', e => { if (e.target === proxyDialog) close(); });
   testButton.addEventListener('click', async () => {
     testButton.disabled = true;
-    status.textContent = 'Testing the JMB Worker and a public HLS playlist…';
+    status.textContent = 'Step 1/2: checking the JMB Worker. Step 2/2: checking a public HLS playlist…';
     const result = await testProxyWorker(jmbProxy());
     status.textContent = result.message;
     testButton.disabled = false;
@@ -916,7 +916,7 @@ function openProxySettings() {
 async function testProxyWorker(worker) {
   if (!worker) return { ok: false, message: 'The JMB Worker URL is not configured in this build.' };
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 12000);
+  const timer = setTimeout(() => controller.abort(), 18000);
   try {
     const ping = await fetch(worker.ping, { cache: 'no-store', signal: controller.signal });
     const body = (await ping.text()).trim();
@@ -933,7 +933,7 @@ async function testProxyWorker(worker) {
     }
     return { ok: true, message: 'JMB proxy READY — Worker health and HLS playlist tests passed.' };
   } catch (e) {
-    return { ok: false, message: 'The JMB Worker could not be reached from media.jmbhost.qzz.io. Deploy the current cors-proxy-worker.js and confirm this exact origin is in its ALLOWED list.' };
+    return { ok: false, message: 'Your browser could not read a response from the JMB Worker. This is commonly caused by an older Worker version missing https://media.jmbhost.qzz.io in ALLOWED, or by a Worker/network outage. Deploy the current cors-proxy-worker.js, then test again.' };
   } finally {
     clearTimeout(timer);
   }
