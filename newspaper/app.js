@@ -132,7 +132,7 @@ function updateDistrictOptions(){
 function updateCityOptions(){
  var district=$("districtFilter").value,city=$("cityFilter");
  var list=district? (DISTRICT_CITIES[district]||[]):$("stateFilter").value==="Kerala"?Array.from(new Set([].concat.apply([],Object.keys(DISTRICT_CITIES).map(function(k){return DISTRICT_CITIES[k];})))):[];
- city.innerHTML='<option value="">All cities</option>'+list.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join("");
+ city.innerHTML='<option value="">All cities</option>'+list.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join("");city.disabled=!list.length;
  city.disabled=!list.length;
 }
 function countryLanguage(){
@@ -160,7 +160,7 @@ function makeActiveFeeds(){
  var label=city||district||state||(COUNTRY_OPTIONS.find(function(x){return x[0]===code;})||[code,code])[1];
  var query=[label,"latest news"].join(" ")+(lang==="ml"?" Malayalam":"");
  rows.push({name:"Google News · "+label,region:label,language:lang==="ml"?"Malayalam":lang==="hi"?"Hindi":"English",lang:lang,gl:code,country:code,state:state,site:"https://news.google.com/",feed:googleQueryFeed(query,lang,code)});
- var seen=new Set();return rows.filter(function(x){if(seen.has(x.name))return false;seen.add(x.name);return true;}).slice(0,10);
+ var seen=new Set();return rows.filter(function(x){if(seen.has(x.name))return false;seen.add(x.name);return true;}).slice(0,12);
 }
 function editionDate(){return new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});}
 function updateEditionMeta(){
@@ -249,7 +249,7 @@ async function refreshFeeds(){
  loading=false;
 }
 async function changeLocation(){
- currentPage=1;activeFeeds=makeActiveFeeds();updateEditionMeta();restoreActiveCache();render();
+ currentPage=1;feedHealth={};activeFeeds=makeActiveFeeds();updateEditionMeta();restoreActiveCache();render();
  await refreshFeeds();
 }
 function openReader(index){
@@ -273,7 +273,8 @@ function init(){
  $("editionPagerTop").addEventListener("click",pagerClick);$("editionPagerBottom").addEventListener("click",pagerClick);
  $("readerClose").addEventListener("click",closeReader);$("articleReader").addEventListener("click",function(e){if(e.target===this)closeReader();});document.addEventListener("keydown",function(e){if(e.key==="Escape")closeReader();});
  $("manoramaOnJmb").addEventListener("click",function(){$("publisherFilter").value="Malayala Manorama";currentPage=1;render();$("editionPageTop").scrollIntoView({behavior:"smooth",block:"start"});});
- ["newsSearch","languageFilter","publisherFilter","sortFilter"].forEach(function(id){$(id).addEventListener(id==="newsSearch"?"input":"change",function(){currentPage=1;render();});});
+ ["newsSearch","publisherFilter","sortFilter"].forEach(function(id){$(id).addEventListener(id==="newsSearch"?"input":"change",function(){currentPage=1;render();});});
+ $("languageFilter").addEventListener("change",changeLocation);
  $("countryFilter").addEventListener("change",function(){
   var code=$("countryFilter").value;
   $("stateFilter").innerHTML=code==="IN"?'<option value="Kerala">Kerala</option><option value="">All India / choose state</option>'+INDIA_STATES.filter(function(x){return x!=="Kerala";}).map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join(""):'<option value="">All regions</option>';
